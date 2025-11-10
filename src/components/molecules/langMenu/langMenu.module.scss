@@ -1,0 +1,44 @@
+@import "../../../styles/var.scss";
+
+.langCard {
+    position: relative;
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+    margin-top: 1.5rem;
+    box-shadow: 0px 0px 14px rgba(235, 235, 235, 0.77);
+    margin-bottom: 2px;
+
+    overflow: hidden;
+    &.noShadow {
+        box-shadow: none !important;
+    }
+    .langs {
+        display: flex;
+        align-items: center;
+        button {
+            all: unset;
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            &:first-child {
+                padding: 20px 35px;
+            }
+            svg {
+                font-size: 16px;
+            }
+            &.active {
+                background-color: $main_light;
+                color: $main;
+            }
+        }
+    }
+}
+
+.loading {
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}

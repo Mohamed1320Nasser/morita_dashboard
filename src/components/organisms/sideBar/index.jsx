@@ -1,0 +1,116 @@
+import React, { useEffect, useRef, useState } from "react";
+import Logo from "../../atoms/logo";
+import styles from "./sideBar.module.scss";
+import Link from "next/link";
+
+import { LuLayoutDashboard, LuChevronUp, LuChevronDown } from "react-icons/lu";
+import { MdCategory } from "react-icons/md";
+import { LuGamepad2 } from "react-icons/lu";
+import { MdPriceCheck } from "react-icons/md";
+import { Collapse } from 'react-bootstrap';
+import { useRouter } from "next/router";
+
+const SideBar = () => {
+  const router = useRouter()
+
+  const links = [
+    { label: 'Dashboard', icon: <LuLayoutDashboard />, href: '/' },
+    { label: 'Service Categories', icon: <MdCategory />, href: '/categories' },
+    { label: 'Services Management', icon: <LuGamepad2 />, href: '/services' },
+    { label: 'Pricing Methods', icon: <MdPriceCheck />, href: '/pricing/methods' },
+  ]
+
+
+
+  const [openGroupKey, setOpenGroupKey] = useState(null);
+  const groupRefs = useRef({});
+
+  useEffect(() => {
+    for (const link of links) {
+      if (link.links && Array.isArray(link.links)) {
+        if (link.links.some(sublink => sublink.href === router.pathname)) {
+          setOpenGroupKey(link.groupKey);
+          break;
+        }
+      }
+    }
+  }, [links, router.pathname]);
+
+
+  useEffect(() => {
+    if (openGroupKey && groupRefs.current[openGroupKey]) {
+      const elem = groupRefs.current[openGroupKey];
+      const rect = elem.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        elem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }, [openGroupKey]);
+
+
+  const toggleGroup = (key) => {
+    setOpenGroupKey(prevKey => (prevKey === key ? null : key));
+  };
+
+  return (
+    <aside className={styles.sideBar}>
+      <div className={styles.logoView}>
+        <Link href="/">
+          <Logo />
+        </Link>
+      </div>
+      <div className={styles.sideLinks}>
+        {links.map((link, index) => {
+          const isGroup = link.hasOwnProperty('links') && Array.isArray(link.links);
+
+          if (isGroup) {
+            const isExpanded = openGroupKey === link.groupKey;
+            return (
+              <div
+                key={index}
+                ref={el => (groupRefs.current[link.groupKey] = el)}
+                className={styles.group}
+              >
+                <button onClick={() => toggleGroup(link.groupKey)}>
+                  <span>{link.label}</span>
+                  {isExpanded ? <LuChevronUp /> : <LuChevronDown />}
+                </button>
+                <Collapse in={isExpanded}>
+                  <div className={styles.sublinks}>
+                    {link.links.map((sublink, subIndex) => {
+                      return (
+                        <Link
+                          href={sublink.href}
+                          key={subIndex}
+                          className={`${styles.tab} ${router.pathname === sublink.href ? styles.active : ''}`}
+                        // onClick={toggle}
+                        >
+                          {sublink.icon}
+                          <span>{sublink.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </Collapse>
+              </div>
+            );
+          } else {
+            return (
+              <Link
+                href={link.href}
+                key={index}
+                className={`${styles.tab} ${router.pathname === link.href ? styles.active : ''}`}
+              // onClick={toggle}
+              >
+                {link.icon}
+                <span>{link.label}</span>
+              </Link>
+            );
+          }
+        })}
+      </div>
+    </aside>
+  );
+};
+
+export default SideBar;

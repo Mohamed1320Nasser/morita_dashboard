@@ -1,0 +1,78 @@
+@import '../../../styles/var.scss';
+
+.sideLink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.8rem 8px;
+    border-radius: 12px;
+    transition: 0.3s;
+    position: relative;
+    text-decoration: none;
+
+    svg {
+        width: 22px;
+        color: #E9F2F8;
+        font-size: 18px;
+        // path {
+        //     stroke: $placeholder;
+        //         transition: 0.3s;
+
+        //     fill: $placeholder;
+        // }
+    }
+
+}
+
+.title {
+    color: #E9F2F8;
+    font-weight: 200;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.active {
+    background-color: $lightBg;
+    border-radius: 12px;
+    display: block;
+    transition: 0.3s;
+
+    svg {
+        path {
+            stroke: $lightText;
+        }
+    }
+
+    .title {
+        color: $lightText;
+    }
+}
+
+.count {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    background: $main_light;
+    width: 20px;
+    color: $main;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: 0.3s;
+    animation: opacity 0.3s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes opacity {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

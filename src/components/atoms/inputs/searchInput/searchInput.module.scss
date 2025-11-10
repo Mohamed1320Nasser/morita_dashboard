@@ -1,0 +1,51 @@
+@import '../../../../styles/var.scss';
+
+.input {
+    background-color: $main_light;
+    position: relative;
+    border-radius: 50px;
+    
+   
+   
+    input {
+        all: unset;
+        width: 20vw;
+        padding: 10px 16px;
+        padding-left: 3rem;
+        font-size: 14px;
+        font-weight: 300;
+        box-sizing: border-box;
+        &::placeholder {
+            color:$placeholder;
+            // color: #000000;
+            // opacity: 0.5;
+        }
+    }
+}
+.ico {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color:$placeholder;
+    scale: 0.95;
+
+}
+.search {
+    left: 1rem;
+}
+.delete {
+    background: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    // padding-right: 20px;
+    right: 1rem;
+}
+.defaultInput {
+    background-color: transparent;
+    input {
+        font-size: 14px;
+        width: 100%;
+    }
+
+}

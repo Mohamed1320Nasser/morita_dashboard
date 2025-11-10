@@ -1,0 +1,29 @@
+@import '../../../styles/var.scss';
+
+.pageTitle {
+    font-size: 1.5rem;
+    color: $mainDark;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.label {
+    font-size: 15px !important;
+    color: black !important;
+    font-weight: 400;
+}
+.ar {
+    font-family: 'Vazirmatn', sans-serif;
+}
+.section{
+    font-size: 1.5rem;
+    font-weight: 500;
+    &.sm {
+        font-size: 1.20rem;
+        
+    }
+}
+.label{
+    font-size: 13px;
+    color: $placeholder;
+}

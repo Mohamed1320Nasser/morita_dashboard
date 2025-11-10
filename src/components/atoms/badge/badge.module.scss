@@ -1,0 +1,56 @@
+@import '../../../styles/var.scss';
+
+.badge {
+    font-weight: 400 !important;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 15px;
+    text-transform: capitalize;
+    transition: 0.3s;
+
+    &.clickable {
+        cursor: pointer;
+
+        &:active {
+            scale: 0.98;
+        }
+    }
+}
+
+.lg {
+    font-size: 20px !important;
+}
+
+.suceess {
+    background-color: $lightSuccess !important;
+    color: $success !important;
+
+    a {
+        color: $success !important;
+    }
+}
+
+.danger {
+    background-color: $lightDanger !important;
+    color: $danger !important;
+}
+
+.pending {
+    background-color: $lightWarning !important;
+    color: $warning !important;
+}
+
+.purple {
+    background-color: $lightPurple !important;
+    color: $purple !important;
+}
+
+.blue {
+    background-color: $lightBlue !important;
+    color: $blue !important;
+}
+
+.yellow {
+    background-color: $lightYellow !important;
+    color: $yellow !important;
+}

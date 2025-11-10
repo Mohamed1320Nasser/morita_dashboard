@@ -1,0 +1,243 @@
+@import '../../../styles/var.scss';
+
+.login {
+    height: 100vh;
+    background-size: cover;
+    margin: 0;
+    /* Bias crop so subject on left stays in frame */
+    background-position: left 20% center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    background-image: url('/background/login.jpg');
+    padding: 0 4vw;
+}
+
+/* Navy blue overlay for brand consistency */
+.login::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 31, 63, 0.75) 0%, rgba(0, 10, 26, 0.85) 100%);
+    pointer-events: none;
+}
+
+/* Prefer a tall image on portrait/mobile */
+@media (orientation: portrait) {
+    .login {
+        background-image: url('/background/login.jpg');
+        /* Keep subject away from the form area on phones */
+        background-position: left 10% top;
+        justify-content: center;
+        padding: 0 20px 24px;
+    }
+    .login::before {
+        /* Stronger navy overlay on mobile for readability */
+        background: linear-gradient(135deg, rgba(0, 31, 63, 0.85) 0%, rgba(0, 10, 26, 0.92) 100%);
+    }
+    .LoginCard {
+        margin: 0 auto;
+        max-width: 400px;
+        padding: 30px 25px;
+    }
+    .brandLogo {
+        height: 70px;
+    }
+    .brandName {
+        font-size: 22px;
+    }
+    .brandSlogan {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .LoginCard {
+        width: 92vw;
+        max-width: 360px;
+    }
+}
+
+/* Keep full subject visible on large laptop/desktop screens */
+@media (min-width: 1440px) {
+    .login {
+        background-size: contain;         /* show entire image */
+        background-repeat: no-repeat;
+        background-color: $navyBlue;      /* navy blue backdrop fill */
+        background-position: left center; /* keep person visible */
+        justify-content: flex-end;        /* form on the right */
+        padding-right: 5vw;
+    }
+    .login::before {
+        background: linear-gradient(90deg, rgba(0, 31, 63, 0.6) 0%, rgba(0, 10, 26, 0.75) 60%, rgba(0, 10, 26, 0.9) 100%);
+    }
+    .LoginCard {
+        max-width: 480px;
+    }
+}
+.LoginCard {
+    max-width: 450px;
+    width: 450px;
+    padding: 40px;
+    flex-direction: column;
+    display: flex;
+    background: rgba(0, 31, 63, 0.92); // Navy blue card
+    backdrop-filter: blur(16px);
+    border: 2px solid rgba(205, 127, 50, 0.3); // Bronze border
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 10, 26, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset; // Enhanced shadow
+    position: relative;
+    z-index: 1;
+}
+
+.brandHeader {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.brandLogo {
+    height: 90px;
+    width: auto;
+    filter: drop-shadow(0 4px 12px rgba(205, 127, 50, 0.4)); // Bronze glow
+    transition: all 0.3s ease;
+
+    &:hover {
+        filter: drop-shadow(0 6px 16px rgba(232, 152, 80, 0.6));
+        transform: scale(1.05);
+    }
+}
+
+.brandName {
+    color: $brandName; // Gray-white
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin: 0.5rem 0 0.3rem 0;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.brandSlogan {
+    color: $bronze; // Bronze
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0 0 1.5rem 0;
+    text-align: center;
+    letter-spacing: 1px;
+    opacity: 0.95;
+}
+
+.loginTitle {
+    color: #E8E8E8; // Gray-white
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1.5rem;
+
+    span {
+        font-weight: 400;
+        color: $bronze; // Bronze accent
+    }
+}
+.form {
+    margin-bottom: 1rem;
+}
+.formMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+.rememberMe {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: $brandName; // Gray-white
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+.rememberMe input {
+    width: 18px;
+    height: 18px;
+    accent-color: $bronze; // Bronze checkbox
+    cursor: pointer;
+}
+
+.forgotLink {
+    color: $bronze; // Bronze
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: $bronzeGlow; // Lighter bronze on hover
+        text-decoration: underline;
+    }
+}
+
+.subButton {
+    margin-top: 1rem;
+    flex-direction: column;
+    display: flex;
+}
+
+/* CloudX credit removed per branding requirements */
+
+/* Inputs and buttons inside the panel */
+.LoginCard input,
+.LoginCard textarea,
+.LoginCard select {
+    background: rgba(0, 10, 26, 0.6); // Darker navy input background
+    border: 1.5px solid rgba(205, 127, 50, 0.3); // Bronze border
+    color: $brandName; // Gray-white text
+    font-weight: 400;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: rgba(205, 127, 50, 0.5);
+        background: rgba(0, 10, 26, 0.7);
+    }
+}
+
+.LoginCard input::placeholder {
+    color: rgba(232, 232, 232, 0.5); // Light gray placeholder
+}
+
+.LoginCard input:focus,
+.LoginCard select:focus,
+.LoginCard textarea:focus {
+    outline: none;
+    border-color: $bronze; // Bronze focus
+    box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.2),
+                0 0 20px rgba(205, 127, 50, 0.15);
+    background: rgba(0, 10, 26, 0.8);
+}
+
+.LoginCard label {
+    color: $brandName; // Gray-white labels
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.LoginCard button {
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(205, 127, 50, 0.4);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}

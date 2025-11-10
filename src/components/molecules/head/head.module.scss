@@ -1,0 +1,33 @@
+@import '../../../styles/var.scss';
+
+.head {
+    display: flex;
+    align-items: center;
+    margin-top: 1.4rem;
+    justify-content: space-between;
+}
+.headTitle {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.des {
+    width: 80%;
+    color: $subText;
+    font-weight: 300;
+    font-size: 15px;
+    margin-top: 0.4rem;
+}
+.back {
+    all: unset;
+    cursor: pointer;
+    svg {
+        width: 25px;
+        height: 25px;
+    }
+}
+.btns {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

@@ -1,0 +1,260 @@
+@import '../../styles/var.scss';
+
+.categories {
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid #eaeef3;
+    .searchLeft { flex: 1; max-width: 420px; }
+    .searchLeft :global(input) {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid $lightBorder;
+      border-radius: 8px;
+      background: #fff;
+    }
+  }
+
+  .table {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    overflow-x: visible;
+    border: 0;
+    box-shadow: none;
+
+    .tableHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 1;
+    }
+
+    .thead {
+      display: flex;
+      border-bottom: 1px solid #eef1f4;
+      padding: 0.5rem 0;
+      .th { flex: 1; padding: 0 0.5rem; font-size: 0.8rem; color: #7a7e85; text-transform: uppercase; letter-spacing: .02em; }
+      .icon { flex: 0 0 54px; }
+      .actions { text-align: right; }
+    }
+
+    .tableBody {
+      .tableRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f3f5;
+        transition: background-color .15s ease;
+        &:hover { background-color: #fafbfc; }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .tableCell {
+          flex: 1;
+          padding: 0 0.5rem;
+          font-size: 0.9rem;
+          color: #5a5d61;
+
+          &.name {
+            font-weight: 600;
+            color: #12161c;
+            display: flex;
+            align-items: center;
+          }
+
+          &.status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .actions {
+            display: flex;
+            gap: 0.4rem;
+            justify-content: flex-end;
+          }
+        }
+      }
+    }
+  }
+}
+
+@import '../../styles/var.scss';
+
+.categoriesPage {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchSection {
+  flex: 1;
+  max-width: 400px;
+}
+
+.filterButtons {
+  display: flex;
+  gap: 0.5rem;
+  
+  button {
+    &.active {
+      background-color: $main;
+      color: white;
+    }
+  }
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.categoriesTable {
+  width: 100%;
+  border-collapse: collapse;
+  
+  thead {
+    background-color: $main_light;
+    
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 500;
+      color: $subText;
+      border-bottom: 1px solid $lightBorder;
+    }
+  }
+  
+  tbody {
+    tr {
+      border-bottom: 1px solid $lightBorder;
+      transition: background-color 0.2s;
+      
+      &:hover {
+        background-color: lighten($main_light, 2%);
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      td {
+        padding: 1rem;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+.description {
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  
+  button {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  color: $subText;
+  font-style: italic;
+  padding: 3rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.pageInfo {
+  color: $subText;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .categoriesPage {
+    padding: 1rem;
+  }
+  
+  .pageHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchSection {
+    max-width: none;
+  }
+  
+  .filterButtons {
+    justify-content: center;
+  }
+  
+  .categoriesTable {
+    font-size: 0.875rem;
+    
+    th, td {
+      padding: 0.5rem;
+    }
+  }
+  
+  .description {
+    max-width: 150px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+

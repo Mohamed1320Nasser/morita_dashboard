@@ -1,0 +1,122 @@
+@import '../../../styles/var.scss';
+
+.sideBar {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    background: $navyBlue; // Deep navy blue
+    background: linear-gradient(180deg, $navyBlue 0%, $mainDark 100%); // Gradient for depth
+    transition: all 0.3s ease-in-out;
+    box-shadow: 4px 0px 24px rgba(0, 31, 63, 0.6); // Navy shadow
+    padding: 1.5rem 1rem;
+    border-right: 1px solid rgba(205, 127, 50, 0.1); // Subtle bronze border
+    // overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.sideLinks {
+    height: calc(100% - 50px);
+    overflow-y: auto;
+    padding-bottom: 1rem;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab {
+        border-radius: 12px;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0.8rem 1rem;
+        margin: 0.4rem 0;
+        position: relative;
+        text-decoration: none;
+        color: #e9f2f8;
+        background: transparent;
+        position: relative;
+
+        svg {
+            width: 22px;
+            font-size: 18px;
+        }
+
+        span {
+            font-weight: 300;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        &.active,
+        &:hover {
+            background-color: $lightBg;
+            border-radius: 12px;
+        }
+
+
+        >* {
+            position: relative;
+            z-index: 1;
+        }
+    }
+}
+
+.group {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    button {
+        all: unset;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #FFFFFF4D;
+        width: 100%;
+        box-sizing: border-box;
+        font-weight: 400;
+        font-size: 13px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: 0.3s;
+
+        &:active {
+            scale: 0.98;
+        }
+
+        svg {
+            font-size: 20px;
+        }
+    }
+}
+
+.logoView {
+    text-align: center;
+
+    div {
+        margin-bottom: 1rem;
+    }
+}
+
+
+.open {
+    .icon {
+
+        svg {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+
+
+@media only screen and (max-width: 767px) {
+    .sideBar {
+        left: -100%;
+    }
+}

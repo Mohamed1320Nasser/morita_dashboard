@@ -1,0 +1,158 @@
+@import '../../../styles/var.scss';
+
+.pricingMethods {
+  min-height: 100vh;
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid #eaeef3;
+
+    .searchLeft {
+      flex: 1;
+      max-width: 420px;
+    }
+
+    .searchLeft :global(input) {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid $lightBorder;
+      border-radius: 8px;
+      background: #fff;
+    }
+  }
+
+  .table {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    overflow-x: visible;
+    border: 0;
+    box-shadow: none;
+
+    .tableHead {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 0.5rem;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 1;
+
+      .filters {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .select {
+        height: 36px;
+        padding: 0 12px;
+        border: 1px solid $lightBorder;
+        border-radius: 8px;
+        min-width: 150px;
+        background: #fff;
+        cursor: pointer;
+
+        &:focus {
+          outline: none;
+          border-color: $main;
+        }
+      }
+    }
+
+    .thead {
+      display: flex;
+      border-bottom: 1px solid #eef1f4;
+      padding: 0.5rem 0;
+
+      .th {
+        flex: 1;
+        padding: 0 0.5rem;
+        font-size: 0.8rem;
+        color: #7a7e85;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+      }
+
+      .icon { flex: 0 0 54px; }
+      .actions { text-align: right; }
+    }
+
+    .tableBody {
+      .tableRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f3f5;
+        transition: background-color .15s ease;
+
+        &:hover {
+          background-color: #fafbfc;
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .tableCell {
+          flex: 1;
+          padding: 0 0.5rem;
+          font-size: 0.9rem;
+          color: #5a5d61;
+
+          &.name {
+            font-weight: 600;
+            color: #12161c;
+            display: flex;
+            align-items: center;
+          }
+
+          &.service {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          &.status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          &.modifiers {
+            display: flex;
+            align-items: center;
+          }
+
+          .actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+          }
+        }
+      }
+    }
+  }
+
+  .emptyState {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #7a7e85;
+    font-size: 0.95rem;
+
+    p {
+      margin: 0;
+    }
+  }
+}

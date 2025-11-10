@@ -1,0 +1,111 @@
+@import '../../../../../../../styles/var.scss';
+
+.modifiers {
+  min-height: 100vh;
+
+  .contextHeader {
+    margin-bottom: 1.5rem;
+
+    .contextContent {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .contextInfo {
+        flex: 1;
+      }
+
+      .contextTitle {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: $mainDark;
+        display: flex;
+        align-items: center;
+      }
+
+      .contextSubtitle {
+        margin: 0;
+        font-size: 0.95rem;
+        color: $subText;
+      }
+
+      .contextStats {
+        display: flex;
+        gap: 2rem;
+
+        .stat {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .statLabel {
+            font-size: 0.85rem;
+            color: $subText;
+            margin-bottom: 0.25rem;
+          }
+
+          .statValue {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: $main;
+          }
+        }
+      }
+    }
+  }
+
+  .table {
+    overflow-x: auto;
+  }
+
+  .emptyState {
+    text-align: center;
+    padding: 3rem 1rem;
+
+    h3 {
+      font-size: 1.3rem;
+      color: $subText;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: $subText;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .placeholder {
+    padding: 3rem 2rem;
+    text-align: center;
+
+    h2 {
+      margin: 0 0 1rem 0;
+      color: $mainDark;
+    }
+
+    p {
+      margin: 0.5rem 0;
+      color: $subText;
+    }
+
+    ul {
+      text-align: left;
+      max-width: 500px;
+      margin: 1rem auto;
+      color: $subText;
+
+      li {
+        margin: 0.5rem 0;
+      }
+    }
+  }
+}
+

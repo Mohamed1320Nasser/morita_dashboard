@@ -1,0 +1,146 @@
+@import '../../../../../styles/var.scss';
+
+.pricingMethods {
+  .serviceContext {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+
+    .serviceContextContent {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+
+      .serviceInfo {
+        flex: 1;
+        min-width: 300px;
+
+        .serviceHeader {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          margin-bottom: 1rem;
+
+          .serviceEmoji {
+            font-size: 2rem;
+            line-height: 1;
+          }
+
+          .serviceDetails {
+            flex: 1;
+
+            .serviceName {
+              margin: 0 0 0.25rem 0;
+              font-size: 1.25rem;
+              font-weight: 600;
+              color: $mainDark;
+            }
+
+            .serviceDescription {
+              margin: 0;
+              font-size: 0.9rem;
+              color: $subText;
+              line-height: 1.4;
+            }
+          }
+        }
+
+        .serviceStats {
+          display: flex;
+          gap: 2rem;
+          flex-wrap: wrap;
+
+          .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            .statLabel {
+              font-size: 0.75rem;
+              color: $subText;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .statValue {
+              font-size: 1.5rem;
+              font-weight: 600;
+              color: $main;
+            }
+          }
+        }
+      }
+
+      .serviceActions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+    }
+  }
+
+  .quickActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $lightBorder;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .quickActionsLeft,
+    .quickActionsRight {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+  }
+
+  .table {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    overflow-x: visible;
+    border: 0;
+    box-shadow: none;
+  }
+
+  @media (max-width: 768px) {
+    .serviceContext {
+      .serviceContextContent {
+        flex-direction: column;
+
+        .serviceInfo {
+          min-width: 100%;
+
+          .serviceStats {
+            gap: 1rem;
+          }
+        }
+
+        .serviceActions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+      }
+    }
+
+    .quickActions {
+      flex-direction: column;
+      align-items: stretch;
+
+      .quickActionsLeft,
+      .quickActionsRight {
+        width: 100%;
+        justify-content: stretch;
+
+        button {
+          flex: 1;
+        }
+      }
+    }
+  }
+}
+

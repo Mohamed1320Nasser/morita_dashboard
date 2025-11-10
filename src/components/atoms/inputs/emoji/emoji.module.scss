@@ -1,0 +1,20 @@
+@import '../../../../styles/var.scss';
+
+.wrapper { margin-top: 10px; }
+.label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 300; color: $main; }
+.inputRow { display: flex; align-items: center; gap: 8px; position: relative; }
+.input {
+  flex: 1;
+  color: $main;
+  padding: 8px 12px;
+  border: 1px solid #f6f6f6;
+  border-radius: 8px;
+  background: $light;
+}
+.pickerBtn, .clearBtn {
+  all: unset; cursor: pointer; padding: 6px 10px; border-radius: 8px; background: $main_light; font-size: 14px;
+}
+.clearBtn { background: $lightDanger; color: $danger; }
+.popover { position: absolute; z-index: 10; margin-top: 8px; }
+
+

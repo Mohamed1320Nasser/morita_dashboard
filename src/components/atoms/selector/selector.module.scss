@@ -1,0 +1,46 @@
+@import "../../../styles/var.scss";
+
+.selector {
+    margin-top: 10px;
+    input {
+        all: unset;
+        border: 1px solid $lightBorder;
+        width: 100%;
+        padding: 8px 1rem;
+        box-sizing: border-box;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 300;
+    }
+    .selectorData {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        border: 1px solid $lightBorder;
+        gap: 5px;
+        padding: 10px;
+        button {
+            all: unset;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 1rem;
+            transition: 0.3s;
+            border-radius: 10px;
+            font-size: 14px;
+            &:hover {
+                background-color: $main;
+                color: #fff;
+            }
+        }
+        .active {
+            background-color: $main;
+            color: #fff;
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+    }
+}

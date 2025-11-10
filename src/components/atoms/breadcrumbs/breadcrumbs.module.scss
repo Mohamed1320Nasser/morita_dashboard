@@ -1,0 +1,57 @@
+@import '../../../styles/var.scss';
+
+.breadcrumbs {
+    display: flex;
+    gap: 8px;
+    
+}
+.item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        path {
+            fill: $main;
+        }
+    }
+    span {
+        font-size: 13px;
+        color:$main;
+    }
+}
+.parent{
+
+        position: relative;
+    padding-left: 1rem;
+
+        &::after {
+            content: ">";
+            font-size: 14px;
+            left: 0;
+            position: absolute;
+            top:50%;
+            transform: translateY(-50%);
+            color: $subText;
+        }
+    
+}
+
+.current {
+    position: relative;
+    padding-left: 1rem;
+    &::after {
+        content: ">";
+        font-size: 14px;
+        left: 0;
+        position: absolute;
+        top:50%;
+        transform: translateY(-50%);
+        color: $subText;
+    }
+    span {
+        color: $subText;
+    }
+}

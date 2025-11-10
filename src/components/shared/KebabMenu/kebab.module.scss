@@ -1,0 +1,21 @@
+.wrapper { position: relative; display: inline-block; }
+.kebab {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e6e9ee; background: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 3px; cursor: pointer;
+  span { width: 3px; height: 3px; border-radius: 50%; background: #6b7280; display: block; }
+}
+.kebab:hover { background: #f7f9fb; }
+.menu { 
+  position: fixed; 
+  background: #fff; 
+  border: 1px solid #e6e9ee; 
+  border-radius: 10px; 
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08); 
+  min-width: 160px; 
+  padding: 6px; 
+  z-index: 1000; 
+}
+.item { width: 100%; text-align: left; padding: 8px 10px; border-radius: 6px; background: transparent; border: 0; color: #111827; font-size: 0.9rem; cursor: pointer; }
+.item:hover { background: #f3f6f9; }
+.item.danger { color: #b91c1c; }
+
+

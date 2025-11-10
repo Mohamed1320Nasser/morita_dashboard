@@ -1,0 +1,150 @@
+@import '../../../styles/var.scss';
+
+
+.navBtn {
+    all: unset;
+    width: 42px;
+    height: 42px;
+    background-color: $main;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        path {
+            fill: transparent;
+        }
+    }
+}
+
+.button {
+    all: unset;
+    position: relative;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 300;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    border: 1px solid transparent;
+    transition: 0.3s;
+    justify-content: center;
+
+    &:disabled {
+        cursor: default !important;
+        opacity: 0.4;
+
+        &:active {
+            scale: 1 !important;
+        }
+    }
+
+    svg {
+        width: 17px;
+        height: 17px;
+    }
+
+    &.noClick {
+        cursor: default !important;
+
+        &:active {
+            scale: 1 !important;
+        }
+    }
+}
+
+.active {
+    color: $main;
+
+    &::after {
+        content: "";
+        width: 100%;
+        height: 3px;
+        bottom: 0;
+        transform: translateY(5px);
+        background-color: $main;
+        border-radius: 8px;
+        position: absolute;
+        transition: 0.3s;
+    }
+}
+
+.underline {
+    color: $main;
+
+    &::after {
+        content: "";
+        width: 100%;
+        height: 2px;
+        bottom: 0;
+        transform: translateY(5px);
+        background-color: $main;
+        border-radius: 8px;
+        position: absolute;
+        transition: 0.3s;
+    }
+}
+
+.buttonPrimary {
+    background-color: $main;
+    color: #fff;
+    padding: 8px 30px;
+}
+
+.buttonSecondary {
+    background-color: transparent;
+    border: 1px solid $main;
+    color: $main;
+    padding: 8px 30px;
+
+    svg {
+        path {
+            fill: $main;
+        }
+    }
+}
+
+.fullWidth {
+    justify-content: center;
+    padding: 10px 10px;
+    border-radius: 2px;
+}
+
+.danger {
+    padding: 8px 20px;
+    background-color: $danger;
+    color: $light;
+    font-weight: 500;
+}
+
+.cancel {
+    font-weight: 500;
+    color: $main;
+    padding: 8px 30px;
+    background-color: $main_light;
+}
+
+.primaryLight {
+    padding: 8px 20px;
+    background-color: $main_light;
+    color: $main;
+}
+
+.dangerLight {
+    padding: 8px 20px;
+    background-color: $lightDanger;
+    color: $danger;
+}
+
+.success {
+    padding: 8px 20px;
+    background-color: $lightSuccess;
+    color: $success;
+}
+
+
+.fullActive {
+    background: #B0C0D0 !important;
+    color: $main !important;
+}

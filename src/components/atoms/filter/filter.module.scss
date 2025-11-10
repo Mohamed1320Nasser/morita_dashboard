@@ -1,0 +1,41 @@
+.button {
+    all: unset;
+    padding: 5px;
+    font-size: 18px;
+}
+.filter {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    padding: 15px;
+    background: #fff;
+    z-index: 300;
+    border-radius: 10px;
+    width: 400px;
+    transition: 0.3s;
+    // height: 200px;
+    animation: opacity 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    h6 {
+        font-weight: 400;
+        font-size: 16px;
+        margin-bottom: 1rem;
+    }
+    label{
+        cursor: pointer;
+        margin-bottom: 8px;
+        display: block;
+        display: flex;
+        gap: 10px;
+        font-size: 15px;
+    }
+}
+.filterLg {
+    width: 90%;
+}
+@keyframes  opacity {
+    from {opacity:0}
+    to {opacity:1}
+}
+
