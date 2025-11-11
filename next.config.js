@@ -1,7 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // reactStrictMode: true,
-  images: { domains: ['cdn.dipdux.dev', 'cdn.eduloom.net'], formats: ['image/webp'], }
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.morita.vip',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.eduloom.net',
+      },
+    ],
+    formats: ['image/webp'],
+  }
 }
 
 
