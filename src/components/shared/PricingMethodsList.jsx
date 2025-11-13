@@ -162,7 +162,7 @@ const PricingMethodsList = ({
   /**
    * Professional price formatting:
    * - FIXED: Always 2 decimals (e.g., $150.00)
-   * - PER_LEVEL: 2 decimals if >= 1, otherwise up to 5 decimals removing trailing zeros (e.g., $0.00007)
+   * - PER_LEVEL: 2 decimals if >= 1, otherwise up to 8 decimals removing trailing zeros (e.g., $0.000054)
    * - Others: 2 decimals (e.g., $25.50/kill)
    */
   const formatPrice = (method) => {
@@ -172,9 +172,9 @@ const PricingMethodsList = ({
 
     // Show price without unit suffix since the unit is already displayed in the Pricing Unit column
     if (method.pricingUnit === 'PER_LEVEL') {
-      // For very small per-level prices (< 1), show up to 5 decimals without trailing zeros
+      // For very small per-level prices (< 1), show up to 8 decimals without trailing zeros
       if (price < 1) {
-        const formatted = price.toFixed(5).replace(/\.?0+$/, '')
+        const formatted = price.toFixed(8).replace(/\.?0+$/, '')
         return `$${formatted}`
       }
       // For larger per-level prices, show 2 decimals
