@@ -202,7 +202,7 @@ const PricingMethodForm = ({
           />
 
           <InputBox
-            label="Display Order"
+            label="Priority"
             value={String(form.displayOrder)}
             valueChange={(val) => update('displayOrder')(parseInt(val) || 0)}
             placeholder="0"

@@ -65,6 +65,39 @@
             position: relative;
             z-index: 1;
         }
+
+        &.special {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            margin-top: 0.8rem;
+            margin-bottom: 0.8rem;
+
+            &:hover {
+                background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+                transform: translateX(4px);
+                box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+            }
+
+            &.active {
+                background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+            }
+
+            svg {
+                color: #ffd700;
+                animation: pulse 2s ease-in-out infinite;
+            }
+
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.7;
+                }
+            }
+        }
     }
 }
 

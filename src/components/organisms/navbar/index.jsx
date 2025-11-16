@@ -10,6 +10,7 @@ import { BiLogOut } from 'react-icons/bi'
 import { TbUsers } from 'react-icons/tb'
 import { LuFilePlus2, LuGamepad2 } from 'react-icons/lu'
 import { MdCategory } from 'react-icons/md'
+import { IoFlashSharp } from 'react-icons/io5'
 
 const Navbar = () => {
   const router = useRouter()
@@ -25,7 +26,8 @@ const Navbar = () => {
     router.push('/login')
   }
   const [dashPages, setDashPages] = useState([
-    { title: "Service Categories", href: "/categories", icon: <MdCategory /> },
+    { title: "Quick Create", href: "/quick-create", icon: <IoFlashSharp />, isSpecial: true },
+    { title: "Categories", href: "/categories", icon: <MdCategory /> },
     { title: "New Category", href: "/categories/new", icon: <LuFilePlus2 /> },
     { title: "Services", href: "/services", icon: <LuGamepad2 /> },
     { title: "New Service", href: "/services/new", icon: <LuFilePlus2 /> },

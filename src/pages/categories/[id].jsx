@@ -65,7 +65,15 @@ const EditCategory = () => {
   return (
     <div className={styles.categoryForm}>
       <PageHead current="Categories">
-        <Head title="Edit Category" back="/categories" />
+        <Head title="Edit Category" back="/categories">
+          <Button
+            onClick={() => router.push(`/categories/${id}/add-services`)}
+            primary
+            style={{ marginLeft: 'auto' }}
+          >
+            📦 Add Multiple Services
+          </Button>
+        </Head>
       </PageHead>
       <Container>
         <Card>

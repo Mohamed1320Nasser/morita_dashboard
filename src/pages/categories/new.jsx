@@ -9,11 +9,13 @@ import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
 import Head from '@/components/molecules/head/head'
 import Card from '@/components/atoms/cards'
+import SuccessActionModal from '@/components/shared/SuccessActionModal'
 
 const NewCategory = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [successModal, setSuccessModal] = useState(null)
 
   const handleCreateCategory = async (payload) => {
     const errors = []
@@ -22,7 +24,18 @@ const NewCategory = () => {
     try {
       setSubmitting(true)
       const response = await categories.createCategory(payload)
-      if (response && response.success) { notify('Category created successfully!', 'success'); router.push('/categories') }
+      if (response && response.success) {
+        notify('Category created successfully!', 'success')
+        // Show success modal instead of immediate redirect
+        const categoryData = response.data?.category || response.data
+        // Handle nested data structure: response.data.category might be { data: { id, name, ... } }
+        const categoryId = categoryData?.data?.id || categoryData?.id
+        console.log('[NewCategory] categoryData:', categoryData, 'categoryId:', categoryId)
+        setSuccessModal({
+          id: categoryId,
+          name: payload.name
+        })
+      }
       else { notify(response?.error?.message || 'Failed to create category') }
     } finally { setSubmitting(false) }
   }
@@ -41,6 +54,14 @@ const NewCategory = () => {
           />
         </Card>
       </Container>
+
+      <SuccessActionModal
+        show={!!successModal}
+        onHide={() => setSuccessModal(null)}
+        itemType="category"
+        itemId={successModal?.id}
+        itemName={successModal?.name}
+      />
     </div>
     )
 }

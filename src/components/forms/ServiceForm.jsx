@@ -11,7 +11,6 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
   const [cats, setCats] = useState(catsProp)
   const [form, setForm] = useState({
     name: initial.name || '',
-    slug: initial.slug || '',
     emoji: normalizeIncomingEmoji(initial.emoji),
     description: initial.description || '',
     displayOrder: initial.displayOrder || 0,
@@ -20,7 +19,6 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
   })
   const lastInitialRef = useRef(JSON.stringify({
     name: initial.name,
-    slug: initial.slug,
     emoji: initial.emoji,
     description: initial.description,
     displayOrder: initial.displayOrder,
@@ -43,30 +41,28 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
   // Skip sync if initial is empty (create mode)
   useEffect(() => {
     // Check if we're in edit mode (has meaningful data) vs create mode (empty object)
-    const hasInitialData = initial.name || initial.slug || initial.categoryId
-    
+    const hasInitialData = initial.name || initial.categoryId
+
     if (!hasInitialData) {
       // Create mode - don't sync
       return
     }
-    
+
     const currentKey = JSON.stringify({
       name: initial.name,
-      slug: initial.slug,
       emoji: initial.emoji,
       description: initial.description,
       displayOrder: initial.displayOrder,
       active: initial.active,
       categoryId: initial.categoryId
     })
-    
+
     // Only sync if the initial data actually changed
     if (currentKey !== lastInitialRef.current) {
       lastInitialRef.current = currentKey
-      
+
       setForm({
         name: initial.name || '',
-        slug: initial.slug || '',
         emoji: normalizeIncomingEmoji(initial.emoji),
         description: initial.description || '',
         displayOrder: initial.displayOrder || 0,
@@ -74,18 +70,10 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
         categoryId: initial.categoryId ? String(initial.categoryId) : ''
       })
     }
-  }, [initial.name, initial.slug, initial.emoji, initial.description, initial.displayOrder, initial.active, initial.categoryId])
+  }, [initial.name, initial.emoji, initial.description, initial.displayOrder, initial.active, initial.categoryId])
 
   const update = (k, v) => {
-    setForm(prev => {
-      const next = { ...prev, [k]: v }
-      // Auto-generate slug from name (only if not in edit mode with existing slug)
-      if (k === 'name' && (!initial.slug || !prev.slug)) {
-        const slug = String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-        next.slug = slug
-      }
-      return next
-    })
+    setForm(prev => ({ ...prev, [k]: v }))
   }
 
   const handleSubmit = () => {
@@ -106,8 +94,8 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
           <EmojiField label="Emoji" value={form.emoji} onChange={(v) => update('emoji', v)} placeholder="Pick an emoji" />
 
           {/* Row 2 */}
-          <InputBox label="Slug *" value={form.slug} valueChange={(v) => update('slug', v)} placeholder="service-slug" />
-          <InputBox label="Display Order" value={form.displayOrder} valueChange={(v) => update('displayOrder', parseInt(v) || 0)} placeholder="0" />
+          <InputBox label="Priority" value={form.displayOrder} valueChange={(v) => update('displayOrder', parseInt(v) || 0)} placeholder="0" />
+          <div></div>
 
           {/* Row 3: Category spans 2 */}
           <div className={grid.span2}>

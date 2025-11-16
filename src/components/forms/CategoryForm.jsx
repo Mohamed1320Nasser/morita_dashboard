@@ -8,41 +8,29 @@ import grid from './forms.module.scss'
 
 const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSubmit }) => {
   const [name, setName] = useState(initial.name || '')
-  const [slug, setSlug] = useState(initial.slug || '')
   const [description, setDescription] = useState(initial.description || '')
   const [emoji, setEmoji] = useState(normalizeIncomingEmoji(initial.emoji))
   const [active, setActive] = useState(initial.active ?? true)
-  const lastInitialRef = useRef(JSON.stringify({ name: initial.name, slug: initial.slug, description: initial.description, emoji: initial.emoji, active: initial.active }))
+  const lastInitialRef = useRef(JSON.stringify({ name: initial.name, description: initial.description, emoji: initial.emoji, active: initial.active }))
 
   // Sync when initial prop changes (edit mode) - only when values actually change
   useEffect(() => {
-    const currentKey = JSON.stringify({ name: initial.name, slug: initial.slug, description: initial.description, emoji: initial.emoji, active: initial.active })
-    
+    const currentKey = JSON.stringify({ name: initial.name, description: initial.description, emoji: initial.emoji, active: initial.active })
+
     // Only sync if the initial data actually changed
     if (currentKey !== lastInitialRef.current) {
       lastInitialRef.current = currentKey
-      
+
       setName(initial.name || '')
-      setSlug(initial.slug || '')
       setDescription(initial.description || '')
       setEmoji(normalizeIncomingEmoji(initial.emoji))
       setActive(initial.active ?? true)
     }
-  }, [initial.name, initial.slug, initial.description, initial.emoji, initial.active])
-
-  const handleNameChange = (newName) => {
-    setName(newName)
-    // Auto-generate slug from name (only if not in edit mode with existing slug)
-    if (!initial.slug || !slug) {
-      const autoSlug = String(newName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      setSlug(autoSlug)
-    }
-  }
+  }, [initial.name, initial.description, initial.emoji, initial.active])
 
   const handleSubmit = () => {
     const payload = {
       name,
-      slug: slug || String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       description,
       emoji: valueForSubmit(emoji),
       active,
@@ -55,7 +43,7 @@ const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSub
       {title && <PageTitle title={title} />}
       <div className={grid.grid}>
         {/* Row 1 */}
-        <InputBox label="Category Name" placeholder="Enter category name" value={name} valueChange={handleNameChange} />
+        <InputBox label="Category Name" placeholder="Enter category name" value={name} valueChange={setName} />
         <EmojiField label="Emoji" value={emoji} onChange={setEmoji} placeholder="Pick an emoji (e.g., 🎮)" />
 
         {/* Row 2 */}

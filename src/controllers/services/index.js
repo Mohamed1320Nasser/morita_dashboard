@@ -42,9 +42,10 @@ export default {
     createService: async (data) => {
         try {
             const response = await postData('/services', data);
-            return { success: true, data: { service: response } }
+            console.log('[services.createService] response:', JSON.stringify(response));
+            return response;
         } catch (err) {
-            console.log(err)
+            console.log('[services.createService] Error:', err)
             return { success: false, error: err }
         }
     },

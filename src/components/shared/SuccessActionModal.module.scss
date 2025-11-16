@@ -1,0 +1,166 @@
+.successModal {
+  :global(.modal-content) {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.modalBody {
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.successIcon {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+
+  .iconCircle {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    border-radius: 50%;
+    animation: scaleIn 0.5s ease-out;
+
+    svg {
+      filter: drop-shadow(0 4px 12px rgba(16, 185, 129, 0.4));
+    }
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.message {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.actions {
+  text-align: left;
+}
+
+.actionsTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.actionCard {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:hover {
+    background: white;
+    border-color: #667eea;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  }
+
+  &:active {
+    transform: translateX(2px);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.actionIcon {
+  font-size: 32px;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.actionContent {
+  flex: 1;
+  text-align: left;
+}
+
+.actionLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.actionDescription {
+  font-size: 13px;
+  color: #666;
+}
+
+@media (max-width: 576px) {
+  .modalBody {
+    padding: 32px 20px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .message {
+    font-size: 14px;
+  }
+
+  .actionCard {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .actionIcon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .actionLabel {
+    font-size: 14px;
+  }
+
+  .actionDescription {
+    font-size: 12px;
+  }
+}

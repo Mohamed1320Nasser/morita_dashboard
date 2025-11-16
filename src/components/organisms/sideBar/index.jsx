@@ -7,6 +7,7 @@ import { LuLayoutDashboard, LuChevronUp, LuChevronDown } from "react-icons/lu";
 import { MdCategory } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
+import { IoFlashSharp } from "react-icons/io5";
 import { Collapse } from 'react-bootstrap';
 import { useRouter } from "next/router";
 
@@ -15,8 +16,9 @@ const SideBar = () => {
 
   const links = [
     { label: 'Dashboard', icon: <LuLayoutDashboard />, href: '/' },
-    { label: 'Service Categories', icon: <MdCategory />, href: '/categories' },
-    { label: 'Services Management', icon: <LuGamepad2 />, href: '/services' },
+    { label: 'Quick Create Service', icon: <IoFlashSharp />, href: '/quick-create', isSpecial: true },
+    { label: 'Categories', icon: <MdCategory />, href: '/categories' },
+    { label: 'Services', icon: <LuGamepad2 />, href: '/services' },
     { label: 'Pricing Methods', icon: <MdPriceCheck />, href: '/pricing/methods' },
   ]
 
@@ -99,7 +101,7 @@ const SideBar = () => {
               <Link
                 href={link.href}
                 key={index}
-                className={`${styles.tab} ${router.pathname === link.href ? styles.active : ''}`}
+                className={`${styles.tab} ${router.pathname === link.href ? styles.active : ''} ${link.isSpecial ? styles.special : ''}`}
               // onClick={toggle}
               >
                 {link.icon}

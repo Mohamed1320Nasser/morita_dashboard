@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import styles from './serviceForm.module.scss'
+import styles from '../serviceForm.module.scss'
 import Button from '@/components/atoms/buttons/button'
 import { useRouter } from 'next/router'
 import services from '@/controllers/services'
@@ -81,7 +81,14 @@ const EditService = () => {
   return (
     <div className={styles.serviceFormPage}>
       <PageHead current="Services">
-        <Head title="Edit Service" back="/services" />
+        <Head title="Edit Service" back="/services">
+          <Button
+            style="outline"
+            onClick={() => router.push(`/services/${id}/add-pricing-methods`)}
+          >
+            📦 Add Multiple Pricing Methods
+          </Button>
+        </Head>
       </PageHead>
       <Container>
         <Card>

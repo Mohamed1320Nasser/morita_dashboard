@@ -1,0 +1,185 @@
+.batchTable {
+  .header {
+    margin-bottom: 24px;
+
+    h4 {
+      color: #1e293b;
+      margin-bottom: 12px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .hint {
+      color: #64748b;
+      font-size: 14px;
+      padding: 12px 16px;
+      background: #f0f9ff;
+      border-left: 3px solid #3b82f6;
+      border-radius: 4px;
+      margin: 0;
+
+      strong {
+        color: #1e40af;
+      }
+    }
+  }
+
+  .tableWrapper {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+
+    .serviceTable {
+      margin-bottom: 0;
+      min-width: 900px;
+
+      thead {
+        background: #f8fafc;
+
+        th {
+          font-weight: 600;
+          color: #475569;
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border-bottom: 2px solid #e2e8f0;
+          padding: 12px;
+          vertical-align: middle;
+        }
+      }
+
+      tbody {
+        tr {
+          transition: background-color 0.15s ease;
+
+          &:hover {
+            background: #f8fafc;
+          }
+
+          &.errorRow {
+            background: #fef2f2;
+
+            &:hover {
+              background: #fee2e2;
+            }
+          }
+        }
+
+        td {
+          vertical-align: middle;
+          padding: 12px;
+
+          input,
+          textarea,
+          select {
+            font-size: 14px;
+          }
+
+          textarea {
+            resize: vertical;
+            min-height: 38px;
+          }
+
+          input[type='number'] {
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+
+  .rowNumber {
+    text-align: center;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .checkboxCell {
+    text-align: center;
+  }
+
+  .removeBtn {
+    color: #ef4444;
+    font-size: 28px;
+    font-weight: 400;
+    padding: 0;
+    line-height: 1;
+    text-decoration: none !important;
+    transition: color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      color: #dc2626;
+      transform: scale(1.1);
+    }
+
+    &:disabled {
+      color: #cbd5e1;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  .errorText {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+
+    .summary {
+      color: #475569;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .batchTable {
+    .tableWrapper {
+      .serviceTable {
+        font-size: 13px;
+
+        thead th {
+          font-size: 11px;
+          padding: 8px;
+        }
+
+        tbody td {
+          padding: 8px;
+        }
+      }
+    }
+
+    .actions {
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+
+      .buttons {
+        width: 100%;
+
+        button {
+          flex: 1;
+        }
+      }
+    }
+  }
+}
