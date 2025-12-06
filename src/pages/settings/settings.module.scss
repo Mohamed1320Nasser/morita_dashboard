@@ -1,0 +1,239 @@
+@import '../../styles/var.scss';
+
+.settings {
+  .sectionHeader {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eaeef3;
+
+    .sectionIcon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .sectionTitle {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #12161c;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .sectionDescription {
+      font-size: 0.85rem;
+      color: #7a7e85;
+      margin: 0;
+    }
+  }
+
+  .payoutGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .payoutItem {
+      label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #5a5d61;
+        margin-bottom: 0.5rem;
+      }
+
+      .inputGroup {
+        position: relative;
+
+        input {
+          width: 100%;
+          padding: 0.75rem 3rem 0.75rem 0.75rem;
+          border: 1px solid #e0e4e8;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          transition: border-color 0.2s ease;
+
+          &:focus {
+            outline: none;
+            border-color: $main;
+          }
+        }
+
+        .inputSuffix {
+          position: absolute;
+          right: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #7a7e85;
+          font-weight: 600;
+          pointer-events: none;
+        }
+      }
+
+      .helperText {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-top: 0.25rem;
+      }
+    }
+  }
+
+  .payoutSummary {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+
+    .summaryRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+
+      span:first-child {
+        color: #7a7e85;
+        font-weight: 500;
+      }
+
+      .totalValue {
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+    }
+
+    .warningText {
+      margin-top: 0.75rem;
+      padding: 0.5rem;
+      background: rgba(239, 68, 68, 0.05);
+      border-left: 3px solid #ef4444;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #ef4444;
+    }
+  }
+
+  .actionButtons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .servicesList {
+    .serviceItem {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid #eaeef3;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .serviceName {
+        font-size: 0.9rem;
+        color: #12161c;
+        font-weight: 500;
+      }
+    }
+
+    .emptyState {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+  }
+
+  .infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+
+    .infoItem {
+      .infoLabel {
+        font-size: 0.8rem;
+        color: #7a7e85;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .infoValue {
+        font-size: 0.95rem;
+        color: #12161c;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .infoBox {
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #12161c;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #7a7e85;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        font-size: 0.85rem;
+        color: #7a7e85;
+        line-height: 1.5;
+        position: relative;
+
+        &:before {
+          content: '•';
+          position: absolute;
+          left: 0.5rem;
+          color: $main;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .settings {
+    .payoutGrid,
+    .infoGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

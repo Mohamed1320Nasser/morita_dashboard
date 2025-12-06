@@ -94,7 +94,7 @@ const SuccessActionModal = ({
                 <div className={styles.actionIcon}>📦</div>
                 <div className={styles.actionContent}>
                   <div className={styles.actionLabel}>Add Multiple Services</div>
-                  <div className={styles.actionDescription}>Bulk add services to this category</div>
+                  <div className={styles.actionDescription}>Bulk add services with pricing and modifiers</div>
                 </div>
               </button>
 

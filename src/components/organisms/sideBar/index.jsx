@@ -7,7 +7,7 @@ import { LuLayoutDashboard, LuChevronUp, LuChevronDown } from "react-icons/lu";
 import { MdCategory } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
-import { IoFlashSharp } from "react-icons/io5";
+import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal } from "react-icons/io5";
 import { Collapse } from 'react-bootstrap';
 import { useRouter } from "next/router";
 
@@ -15,11 +15,25 @@ const SideBar = () => {
   const router = useRouter()
 
   const links = [
+    // Dashboard & Quick Actions
     { label: 'Dashboard', icon: <LuLayoutDashboard />, href: '/' },
     { label: 'Quick Create Service', icon: <IoFlashSharp />, href: '/quick-create', isSpecial: true },
+
+    // Business Operations
+    { label: 'Orders', icon: <IoCart />, href: '/orders' },
+    { label: 'Users', icon: <IoPeople />, href: '/users' },
+    { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
+    { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
+
+    // Service Configuration
     { label: 'Categories', icon: <MdCategory />, href: '/categories' },
     { label: 'Services', icon: <LuGamepad2 />, href: '/services' },
     { label: 'Pricing Methods', icon: <MdPriceCheck />, href: '/pricing/methods' },
+
+    // System & Reports
+    { label: 'Reports & Analytics', icon: <IoStatsChart />, href: '/reports' },
+    { label: 'Service Analytics', icon: <IoStatsChart />, href: '/service-analytics' },
+    { label: 'System Settings', icon: <IoSettings />, href: '/settings' },
   ]
 
 

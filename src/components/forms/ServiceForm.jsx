@@ -12,6 +12,7 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
   const [form, setForm] = useState({
     name: initial.name || '',
     emoji: normalizeIncomingEmoji(initial.emoji),
+    imageUrl: initial.imageUrl || '',
     description: initial.description || '',
     displayOrder: initial.displayOrder || 0,
     active: initial.active ?? true,
@@ -20,6 +21,7 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
   const lastInitialRef = useRef(JSON.stringify({
     name: initial.name,
     emoji: initial.emoji,
+    imageUrl: initial.imageUrl,
     description: initial.description,
     displayOrder: initial.displayOrder,
     active: initial.active,
@@ -51,6 +53,7 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
     const currentKey = JSON.stringify({
       name: initial.name,
       emoji: initial.emoji,
+      imageUrl: initial.imageUrl,
       description: initial.description,
       displayOrder: initial.displayOrder,
       active: initial.active,
@@ -64,13 +67,14 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
       setForm({
         name: initial.name || '',
         emoji: normalizeIncomingEmoji(initial.emoji),
+        imageUrl: initial.imageUrl || '',
         description: initial.description || '',
         displayOrder: initial.displayOrder || 0,
         active: initial.active ?? true,
         categoryId: initial.categoryId ? String(initial.categoryId) : ''
       })
     }
-  }, [initial.name, initial.emoji, initial.description, initial.displayOrder, initial.active, initial.categoryId])
+  }, [initial.name, initial.emoji, initial.imageUrl, initial.description, initial.displayOrder, initial.active, initial.categoryId])
 
   const update = (k, v) => {
     setForm(prev => ({ ...prev, [k]: v }))
@@ -95,7 +99,7 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
 
           {/* Row 2 */}
           <InputBox label="Priority" value={form.displayOrder} valueChange={(v) => update('displayOrder', parseInt(v) || 0)} placeholder="0" />
-          <div></div>
+          <InputBox label="Image URL" value={form.imageUrl} valueChange={(v) => update('imageUrl', v)} placeholder="https://oldschool.runescape.wiki/images/..." />
 
           {/* Row 3: Category spans 2 */}
           <div className={grid.span2}>

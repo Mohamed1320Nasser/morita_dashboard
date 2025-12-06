@@ -1,0 +1,125 @@
+@import '../../styles/var.scss';
+
+.transactions {
+  .statsCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .statCard {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem;
+      border: 1px solid #eaeef3;
+      transition: box-shadow 0.2s ease;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .statIcon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+
+        &.blue {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        }
+        &.green {
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+        &.red {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+        }
+      }
+
+      .statValue {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #12161c;
+        margin-bottom: 0.25rem;
+      }
+
+      .statLabel {
+        font-size: 0.85rem;
+        color: #7a7e85;
+        margin-bottom: 0.25rem;
+      }
+
+      .statSubtext {
+        font-size: 0.75rem;
+        color: #9ca3af;
+      }
+    }
+  }
+
+  .filters {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+
+    .filterBtn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #e0e4e8;
+      background: #fff;
+      color: #5a5d61;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: $main;
+        color: $main;
+      }
+
+      &.active {
+        background: $main;
+        border-color: $main;
+        color: #fff;
+      }
+    }
+  }
+
+  .table {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    overflow-x: visible;
+    border: 0;
+    box-shadow: none;
+
+    .tableHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .transactions {
+    .statsCards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .transactions {
+    .statsCards {
+      grid-template-columns: 1fr;
+    }
+  }
+}

@@ -1,0 +1,375 @@
+@import '../../styles/var.scss';
+
+.orders {
+  .statsCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .statCard {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem;
+      border: 1px solid #eaeef3;
+      transition: box-shadow 0.2s ease;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .statIcon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+
+        &.blue {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        }
+        &.green {
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+        &.purple {
+          background: rgba(168, 85, 247, 0.1);
+          color: #a855f7;
+        }
+        &.yellow {
+          background: rgba(249, 115, 22, 0.1);
+          color: #f97316;
+        }
+      }
+
+      .statValue {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #12161c;
+        margin-bottom: 0.25rem;
+      }
+
+      .statLabel {
+        font-size: 0.85rem;
+        color: #7a7e85;
+      }
+    }
+  }
+
+  .filterSection {
+    margin-bottom: 1.5rem;
+
+    .searchRow {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+
+      .searchInput {
+        flex: 1;
+        min-width: 280px;
+      }
+
+      .exportBtn {
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        border: 1px solid #e0e4e8;
+        background: #fff;
+        color: $main;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+
+        &:hover {
+          background: $main;
+          border-color: $main;
+          color: #fff;
+        }
+
+        svg {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .filters {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+
+      .filterBtn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #e0e4e8;
+        background: #fff;
+        color: #5a5d61;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: $main;
+          color: $main;
+        }
+
+        &.active {
+          background: $main;
+          border-color: $main;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .table {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    overflow-x: visible;
+    border: 0;
+    box-shadow: none;
+
+    .tableHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.orderDetail {
+  .backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #5a5d61;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $main;
+    }
+  }
+
+  .orderHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .orderInfo {
+      .orderId {
+        font-size: 0.8rem;
+        color: #7a7e85;
+        margin-bottom: 0.25rem;
+      }
+
+      .orderNumber {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #12161c;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .orderMeta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #7a7e85;
+      }
+    }
+
+    .valueCard {
+      background: linear-gradient(135deg, $main, darken($main, 10%));
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      color: #fff;
+      min-width: 250px;
+      text-align: center;
+
+      .valueLabel {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        margin-bottom: 0.5rem;
+      }
+
+      .valueAmount {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+
+    .infoCard {
+      background: #fff;
+      border: 1px solid #eaeef3;
+      border-radius: 12px;
+      padding: 1.25rem;
+
+      .infoTitle {
+        font-size: 0.85rem;
+        color: #7a7e85;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .infoContent {
+        .infoRow {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.5rem 0;
+          font-size: 0.9rem;
+
+          &:not(:last-child) {
+            border-bottom: 1px solid #f3f4f6;
+          }
+
+          .label {
+            color: #7a7e85;
+          }
+
+          .value {
+            font-weight: 600;
+            color: #12161c;
+          }
+        }
+      }
+    }
+  }
+
+  .timeline {
+    .timelineTitle {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #12161c;
+      margin-bottom: 1rem;
+    }
+
+    .timelineItem {
+      display: flex;
+      gap: 1rem;
+      padding: 0.75rem 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #eaeef3;
+      }
+
+      .timelineIcon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+
+        &.blue {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        }
+        &.green {
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+        &.orange {
+          background: rgba(249, 115, 22, 0.1);
+          color: #f97316;
+        }
+      }
+
+      .timelineContent {
+        flex: 1;
+
+        .timelineAction {
+          font-weight: 600;
+          color: #12161c;
+          margin-bottom: 0.25rem;
+        }
+
+        .timelineTime {
+          font-size: 0.8rem;
+          color: #7a7e85;
+        }
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .orders {
+    .statsCards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filterSection {
+      .searchRow {
+        flex-direction: column;
+        align-items: stretch;
+
+        .searchInput {
+          min-width: 100%;
+        }
+
+        .exportBtn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      .filters {
+        .filterBtn {
+          flex: 1;
+          min-width: calc(50% - 0.375rem);
+        }
+      }
+    }
+  }
+
+  .orderDetail {
+    .orderHeader {
+      flex-direction: column;
+
+      .valueCard {
+        width: 100%;
+        min-width: auto;
+      }
+    }
+
+    .infoGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

@@ -48,6 +48,7 @@
     "react-table": "^7.8.0",
     "react-timeago": "^8.3.0",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.5.1",
     "sass": "^1.93.2",
     "sweetalert2": "^11.26.3",
     "swiper": "^12.0.3",

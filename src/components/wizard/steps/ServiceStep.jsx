@@ -7,6 +7,7 @@ import styles from './Step.module.scss'
 const ServiceStep = ({ data, onChange }) => {
   const [name, setName] = useState(data?.name || '')
   const [emoji, setEmoji] = useState(normalizeIncomingEmoji(data?.emoji))
+  const [imageUrl, setImageUrl] = useState(data?.imageUrl || '')
   const [description, setDescription] = useState(data?.description || '')
   const [displayOrder, setDisplayOrder] = useState(data?.displayOrder || 0)
   const [active, setActive] = useState(data?.active ?? true)
@@ -15,11 +16,12 @@ const ServiceStep = ({ data, onChange }) => {
     onChange({
       name,
       emoji,
+      imageUrl,
       description,
       displayOrder: parseInt(displayOrder) || 0,
       active,
     })
-  }, [name, emoji, description, displayOrder, active])
+  }, [name, emoji, imageUrl, description, displayOrder, active])
 
   return (
     <div className={styles.stepContainer}>
@@ -50,7 +52,12 @@ const ServiceStep = ({ data, onChange }) => {
             valueChange={(v) => setDisplayOrder(parseInt(v) || 0)}
             type="number"
           />
-          <div></div>
+          <InputBox
+            label="Image URL"
+            placeholder="https://oldschool.runescape.wiki/images/..."
+            value={imageUrl}
+            valueChange={setImageUrl}
+          />
         </div>
 
         <div className={styles.formGroup}>

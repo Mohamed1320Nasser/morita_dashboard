@@ -36,6 +36,8 @@ const EditCategory = () => {
             description: cat?.description || '',
             emoji: cat?.emoji || '',
             active: Boolean(cat?.active),
+            // Include ticket settings from backend
+            ticketSettings: cat?.ticketSettings || null,
           })
         } else {
           notify(res?.error?.message || 'Failed to fetch category')

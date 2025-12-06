@@ -7,6 +7,7 @@ import categories from '@/controllers/categories'
 import { notify } from '@/config/error'
 import Loading from '@/components/atoms/loading'
 import ServiceForm from '@/components/forms/ServiceForm'
+import ServiceModifiers from '@/components/service/ServiceModifiers'
 import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
 import Head from '@/components/molecules/head/head'
@@ -38,6 +39,7 @@ const EditService = () => {
             name: s?.name || '',
             slug: s?.slug || '',
             emoji: s?.emoji || '',
+            imageUrl: s?.imageUrl || '',
             description: s?.description || '',
             displayOrder: s?.displayOrder || 0,
             active: Boolean(s?.active),
@@ -58,15 +60,21 @@ const EditService = () => {
   }, [id])
 
   const submit = async (payloadFromChild) => {
+    console.log('[EditService.submit] Called with payload:', payloadFromChild)
     const errors = []
     if (!(payloadFromChild.name || '').trim()) errors.push('Name is required')
-    if (!(payloadFromChild.slug || '').trim()) errors.push('Slug is required')
     if (!payloadFromChild.categoryId) errors.push('Category is required')
-    if (errors.length) { notify(errors[0]); return }
+    if (errors.length) {
+      console.log('[EditService.submit] Validation errors:', errors)
+      notify(errors[0])
+      return
+    }
 
     try {
       setSaving(true)
+      console.log('[EditService.submit] Calling updateService API...')
       const res = await services.updateService(id, payloadFromChild)
+      console.log('[EditService.submit] API response:', res)
       if (res && res.success) {
         notify('Service updated successfully', 'success')
         router.push('/services')
@@ -82,6 +90,12 @@ const EditService = () => {
     <div className={styles.serviceFormPage}>
       <PageHead current="Services">
         <Head title="Edit Service" back="/services">
+          <Button
+            style="outline"
+            onClick={() => router.push(`/services/${id}/modifiers`)}
+          >
+            ⚙️ Manage Service Modifiers
+          </Button>
           <Button
             style="outline"
             onClick={() => router.push(`/services/${id}/add-pricing-methods`)}
@@ -100,6 +114,10 @@ const EditService = () => {
             onSubmit={submit}
             categories={cats}
           />
+        </Card>
+
+        <Card>
+          <ServiceModifiers serviceId={id} />
         </Card>
       </Container>
     </div>

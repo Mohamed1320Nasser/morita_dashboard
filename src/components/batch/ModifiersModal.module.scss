@@ -1,0 +1,120 @@
+.hint {
+  background: #e3f2fd;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #1565c0;
+  border-left: 4px solid #1976d2;
+}
+
+.tableWrapper {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.modifiersTable {
+  margin: 0;
+  font-size: 14px;
+
+  thead {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    th {
+      font-weight: 600;
+      font-size: 13px;
+      padding: 12px 8px;
+      white-space: nowrap;
+      border-bottom: 2px solid #dee2e6;
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background-color 0.15s;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &.errorRow {
+        background-color: #fff3cd;
+      }
+    }
+
+    td {
+      padding: 8px;
+      vertical-align: middle;
+    }
+  }
+}
+
+.rowNumber {
+  text-align: center;
+  font-weight: 600;
+  color: #6c757d;
+  background-color: #f8f9fa;
+}
+
+.checkboxCell {
+  text-align: center;
+}
+
+.actionsCell {
+  text-align: center;
+  padding: 4px !important;
+}
+
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: #dc3545;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  transition: all 0.15s;
+
+  &:hover {
+    background-color: #dc354520;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.addRowBtn {
+  margin-top: 8px;
+}
+
+.summary {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.summaryText {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}

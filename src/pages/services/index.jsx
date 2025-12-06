@@ -189,6 +189,7 @@ return ( <div className={styles.services}> <PageHead current="Services"> <Head t
             { key: 'actions', header: 'Actions', className: 'actions', width: '120px', render: (svc) => (
               <KebabMenu actions={[
                 { label: 'Edit', onClick: () => handleEdit(svc.id) },
+                { label: 'Manage Modifiers', onClick: () => router.push(`/services/${svc.id}/modifiers`) },
                 { label: 'Manage Pricing', onClick: () => router.push(`/pricing/services/${svc.id}/methods`) },
                 { label: 'Delete', onClick: () => handleDeleteClick(svc) },
               ]} />

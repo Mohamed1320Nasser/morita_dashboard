@@ -1,0 +1,244 @@
+.batchTable {
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  margin-bottom: 24px;
+
+  h4 {
+    font-size: 22px;
+    margin-bottom: 0;
+    color: #2d3748;
+    font-weight: 600;
+
+    strong {
+      color: #4a5568;
+      font-weight: 700;
+    }
+  }
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.servicesTable {
+  margin: 0;
+  font-size: 14px;
+
+  thead {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    th {
+      font-weight: 600;
+      font-size: 13px;
+      padding: 12px 8px;
+      white-space: nowrap;
+      border-bottom: 2px solid #dee2e6;
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background-color 0.15s;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &.errorRow {
+        background-color: #fff3cd;
+      }
+    }
+
+    td {
+      padding: 8px;
+      vertical-align: middle;
+    }
+  }
+}
+
+.rowNumber {
+  text-align: center;
+  font-weight: 600;
+  color: #6c757d;
+  background-color: #f8f9fa;
+}
+
+.checkboxCell {
+  text-align: center;
+}
+
+.pricingCell {
+  text-align: center;
+  padding: 6px !important;
+}
+
+.pricingBtn {
+  font-size: 13px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 2px 6px;
+}
+
+.actionsCell {
+  text-align: center;
+  padding: 4px !important;
+}
+
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: #dc3545;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    background-color: #dc354520;
+    transform: scale(1.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.expandedCell {
+  padding: 0 !important;
+  background-color: #f8f9fa;
+  border: none !important;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 2px solid #e2e8f0;
+}
+
+.addRowBtn {
+  margin-right: auto;
+
+  &:global(.btn-outline-primary) {
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    background: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 6px;
+
+    &:hover:not(:disabled) {
+      background: #f7fafc;
+      border-color: #cbd5e0;
+      color: #2d3748;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.summary {
+  flex: 1;
+  text-align: center;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  margin: 0 16px;
+}
+
+.summaryText {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+.submitActions {
+  display: flex;
+  gap: 12px;
+
+  :global(.btn) {
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  :global(.btn-light) {
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+
+    &:hover:not(:disabled) {
+      background: #f7fafc;
+      border-color: #cbd5e0;
+      color: #2d3748;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  :global(.btn-primary) {
+    background: #4a5568;
+    border: 2px solid #4a5568;
+    color: white;
+    box-shadow: 0 2px 4px rgba(74, 85, 104, 0.2);
+
+    &:hover:not(:disabled) {
+      background: #2d3748;
+      border-color: #2d3748;
+      box-shadow: 0 4px 8px rgba(74, 85, 104, 0.3);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(74, 85, 104, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

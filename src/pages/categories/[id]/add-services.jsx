@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import BatchServiceTable from '@/components/batch/BatchServiceTable'
+import BatchServicesWithPricingTable from '@/components/batch/BatchServicesWithPricingTable'
 import batchServices from '@/controllers/batchServices'
 import categories from '@/controllers/categories'
 import { notify } from '@/config/error'
@@ -42,18 +42,27 @@ const AddBatchServices = () => {
 
   const handleSubmit = async (payload) => {
     try {
-      const res = await batchServices.batchCreateServices(payload)
+      const res = await batchServices.batchCreateServicesWithPricing(payload)
 
       if (res && !res.error) {
         // Global wrapper returns: {data: resultObject, error: false, msg: "ok", status: 200}
-        const { created, failed, errors } = res.data
+        const { created, failed, errors, services } = res.data
 
         if (failed === 0) {
           // All services created successfully
-          notify(`✅ Successfully created ${created} service${created !== 1 ? 's' : ''}!`, 'success')
+          const totalPricing = services.reduce((sum, s) => sum + s.pricingMethodsCount, 0)
+          const totalModifiers = services.reduce((sum, s) => sum + s.modifiersCount, 0)
+
+          notify(
+            `✅ Successfully created ${created} service${created !== 1 ? 's' : ''} with ${totalPricing} pricing method${totalPricing !== 1 ? 's' : ''} and ${totalModifiers} modifier${totalModifiers !== 1 ? 's' : ''}!`,
+            'success'
+          )
           router.push(`/categories/${categoryId}`)
         } else {
           // Partial success
+          const totalPricing = services.reduce((sum, s) => sum + s.pricingMethodsCount, 0)
+          const totalModifiers = services.reduce((sum, s) => sum + s.modifiersCount, 0)
+
           notify(
             `⚠️ Created ${created} service${created !== 1 ? 's' : ''}, but ${failed} failed. See details below.`,
             'warning'
@@ -61,12 +70,12 @@ const AddBatchServices = () => {
 
           // Show individual errors
           errors.forEach(err => {
-            notify(`❌ ${err.name}: ${err.error}`, 'error')
+            notify(`❌ ${err.serviceName}: ${err.error}`, 'error')
           })
 
           // Ask user what to do
           const goToCategory = window.confirm(
-            `${created} service${created !== 1 ? 's' : ''} created successfully.\n\nGo to category page to view them?`
+            `${created} service${created !== 1 ? 's' : ''} with ${totalPricing} pricing method${totalPricing !== 1 ? 's' : ''} and ${totalModifiers} modifier${totalModifiers !== 1 ? 's' : ''} created successfully.\n\nGo to category page to view them?`
           )
           if (goToCategory) {
             router.push(`/categories/${categoryId}`)
@@ -110,7 +119,7 @@ const AddBatchServices = () => {
           boxSizing: 'border-box'
         }}>
           <Card style={{ padding: '24px' }}>
-            <BatchServiceTable
+            <BatchServicesWithPricingTable
               categoryId={categoryId}
               categoryName={category.name}
               onSubmit={handleSubmit}
