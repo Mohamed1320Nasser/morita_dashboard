@@ -31,6 +31,30 @@ const CategoriesPage = () => {
   const [deleteModal, setDeleteModal] = useState(null)
   const [deleting, setDeleting] = useState(false)
 
+  // Helper to display emoji (extract name from Discord custom emoji)
+  const displayEmoji = (emoji) => {
+    if (!emoji) return <MdCategory />
+
+    // Trim whitespace
+    const trimmedEmoji = String(emoji).trim()
+
+    // Check if it's a Discord custom emoji with or without brackets
+    // Formats: <:name:id>, <a:name:id>, name:id, a:name:id
+    const discordEmojiMatch = trimmedEmoji.match(/^<?a?:?(.+?):(\d+)>?$/)
+    if (discordEmojiMatch) {
+      // Extract and display the emoji name
+      const emojiName = discordEmojiMatch[1]
+      return (
+        <span style={{ fontSize: 12, color: '#666', display: 'flex', alignItems: 'center', gap: 4 }}>
+          🎮 <span style={{ fontWeight: 500 }}>{emojiName}</span>
+        </span>
+      )
+    }
+
+    // It's a regular Unicode emoji, display as is
+    return <span style={{ fontSize: 18 }}>{trimmedEmoji}</span>
+  }
+
   const handleSearchChange = (event) => {
     setSearch(event)
     setPage(1)
@@ -131,7 +155,7 @@ const CategoriesPage = () => {
             <Table
             columns={[
               { key: 'index', header: '#', className: 'index', width: '48px', render: (_cat, idx) => (page - 1) * limit + idx + 1 },
-              { key: 'icon', header: 'Icon', className: 'icon', render: (cat) => (<span style={{ fontSize: 18 }}>{cat.emoji || <MdCategory />}</span>) },
+              { key: 'icon', header: 'Icon', className: 'icon', render: (cat) => displayEmoji(cat.emoji) },
               { key: 'name', header: 'Name', className: 'name', flex: 2, render: (cat) => cat.name },
               { key: 'status', header: 'Status', className: 'status', flex: 1, render: (cat) => (cat.active ? <Badge type="success">Active</Badge> : <Badge type="danger">Inactive</Badge>) },
               { key: 'createdAt', header: 'Created At', className: 'createdAt', flex: 1, render: (cat) => cat.createdAt ? moment(cat.createdAt).format('DD/MM/YYYY') : '-' },

@@ -8,6 +8,7 @@ import { MdCategory } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
 import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal } from "react-icons/io5";
+import { TbTicket } from "react-icons/tb";
 import { Collapse } from 'react-bootstrap';
 import { useRouter } from "next/router";
 
@@ -21,6 +22,14 @@ const SideBar = () => {
 
     // Business Operations
     { label: 'Orders', icon: <IoCart />, href: '/orders' },
+    {
+      label: 'Tickets',
+      groupKey: 'tickets',
+      links: [
+        { label: 'All Tickets', icon: <TbTicket />, href: '/tickets' },
+        { label: 'Ticket Types', icon: <IoSettings />, href: '/tickets/types' },
+      ]
+    },
     { label: 'Users', icon: <IoPeople />, href: '/users' },
     { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
     { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },

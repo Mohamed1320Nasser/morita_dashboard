@@ -7,7 +7,9 @@ import PageHead from '@/components/templates/pageHead'
 import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
 import { notify } from '@/config/error'
-import { IoSave, IoSettings, IoWallet, IoPeople, IoServer } from 'react-icons/io5'
+import { IoSave, IoSettings, IoWallet, IoPeople, IoServer, IoRefresh, IoTrash, IoCheckmarkCircle, IoCloseCircle } from 'react-icons/io5'
+import { FaDiscord } from 'react-icons/fa'
+import { API } from '@/const'
 
 const SettingsPage = () => {
   const [pageLoading, setPageLoading] = useState(true)
@@ -18,6 +20,12 @@ const SettingsPage = () => {
     supportPercentage: 5,
     systemPercentage: 15,
   })
+
+  // Discord Channel Management State
+  const [discordStatus, setDiscordStatus] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
+  const [clearing, setClearing] = useState(false)
+  const [loadingStatus, setLoadingStatus] = useState(false)
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -80,6 +88,78 @@ const SettingsPage = () => {
     return (
       payoutConfig.workerPercentage + payoutConfig.supportPercentage + payoutConfig.systemPercentage
     ).toFixed(1)
+  }
+
+  // Discord Channel Management Functions
+  const fetchDiscordStatus = async () => {
+    setLoadingStatus(true)
+    try {
+      const response = await fetch(`${API}/api/discord/pricing-channel/status`)
+      const data = await response.json()
+
+      if (data.success) {
+        setDiscordStatus(data.data)
+      } else {
+        notify('Failed to fetch Discord status')
+      }
+    } catch (error) {
+      console.error('Error fetching Discord status:', error)
+      notify('Failed to fetch Discord status')
+    } finally {
+      setLoadingStatus(false)
+    }
+  }
+
+  const handleRefreshChannel = async () => {
+    if (!confirm('This will clear and rebuild the Discord pricing channel. Continue?')) {
+      return
+    }
+
+    setRefreshing(true)
+    try {
+      const response = await fetch(`${API}/api/discord/pricing-channel/refresh`, {
+        method: 'POST',
+      })
+      const data = await response.json()
+
+      if (data.success) {
+        notify('Discord pricing channel refreshed successfully!', 'success')
+        await fetchDiscordStatus()
+      } else {
+        notify(data.error || 'Failed to refresh channel')
+      }
+    } catch (error) {
+      console.error('Error refreshing channel:', error)
+      notify('Failed to refresh Discord channel')
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  const handleClearChannel = async () => {
+    if (!confirm('This will clear all messages from the Discord pricing channel. Continue?')) {
+      return
+    }
+
+    setClearing(true)
+    try {
+      const response = await fetch(`${API}/api/discord/pricing-channel/clear`, {
+        method: 'POST',
+      })
+      const data = await response.json()
+
+      if (data.success) {
+        notify('Discord pricing channel cleared successfully!', 'success')
+        await fetchDiscordStatus()
+      } else {
+        notify(data.error || 'Failed to clear channel')
+      }
+    } catch (error) {
+      console.error('Error clearing channel:', error)
+      notify('Failed to clear Discord channel')
+    } finally {
+      setClearing(false)
+    }
   }
 
   if (pageLoading) return <Loading />
@@ -184,6 +264,110 @@ const SettingsPage = () => {
             >
               <IoSave /> {saving ? 'Saving...' : 'Save Payout Configuration'}
             </button>
+          </div>
+        </Card>
+
+        {/* Discord Channel Management */}
+        <Card>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionIcon}>
+              <FaDiscord />
+            </div>
+            <div>
+              <h3 className={styles.sectionTitle}>Discord Pricing Channel</h3>
+              <p className={styles.sectionDescription}>
+                Manage the Discord pricing channel - refresh to update with latest data
+              </p>
+            </div>
+          </div>
+
+          <div className={styles.discordActions}>
+            <button
+              className="btn btn-primary"
+              onClick={handleRefreshChannel}
+              disabled={refreshing || clearing}
+              style={{ minWidth: '200px' }}
+            >
+              <IoRefresh /> {refreshing ? 'Refreshing...' : 'Refresh Channel'}
+            </button>
+
+            <button
+              className="btn btn-secondary"
+              onClick={handleClearChannel}
+              disabled={refreshing || clearing}
+              style={{ minWidth: '200px' }}
+            >
+              <IoTrash /> {clearing ? 'Clearing...' : 'Clear Channel'}
+            </button>
+
+            <button
+              className="btn btn-secondary"
+              onClick={fetchDiscordStatus}
+              disabled={loadingStatus}
+              style={{ minWidth: '200px' }}
+            >
+              {loadingStatus ? 'Loading...' : 'Check Status'}
+            </button>
+          </div>
+
+          {discordStatus && (
+            <div className={styles.discordStatus}>
+              <div className={styles.statusGrid}>
+                <div className={styles.statusItem}>
+                  <div className={styles.statusLabel}>Bot Status</div>
+                  <div className={styles.statusValue}>
+                    {discordStatus.botConnected ? (
+                      <Badge type="success">
+                        <IoCheckmarkCircle /> Connected
+                      </Badge>
+                    ) : (
+                      <Badge type="danger">
+                        <IoCloseCircle /> Disconnected
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.statusItem}>
+                  <div className={styles.statusLabel}>Bot Username</div>
+                  <div className={styles.statusValue}>{discordStatus.botUsername || 'N/A'}</div>
+                </div>
+
+                <div className={styles.statusItem}>
+                  <div className={styles.statusLabel}>Channel Manager</div>
+                  <div className={styles.statusValue}>
+                    {discordStatus.channelManagerInitialized ? (
+                      <Badge type="success">Initialized</Badge>
+                    ) : (
+                      <Badge type="danger">Not Initialized</Badge>
+                    )}
+                  </div>
+                </div>
+
+                {discordStatus.channel && (
+                  <>
+                    <div className={styles.statusItem}>
+                      <div className={styles.statusLabel}>Channel Name</div>
+                      <div className={styles.statusValue}>{discordStatus.channel.name}</div>
+                    </div>
+
+                    <div className={styles.statusItem}>
+                      <div className={styles.statusLabel}>Cached Messages</div>
+                      <div className={styles.statusValue}>{discordStatus.channel.messageCount}</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className={styles.infoBox} style={{ marginTop: '20px' }}>
+            <h4>💡 Discord Channel Actions</h4>
+            <ul>
+              <li><strong>Refresh Channel:</strong> Clears all messages and rebuilds with latest pricing data (recommended when prices change)</li>
+              <li><strong>Clear Channel:</strong> Removes all messages without rebuilding (for manual cleanup)</li>
+              <li><strong>Check Status:</strong> View current Discord bot connection and channel information</li>
+            </ul>
           </div>
         </Card>
 

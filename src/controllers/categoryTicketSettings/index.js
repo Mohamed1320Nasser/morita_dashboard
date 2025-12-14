@@ -27,7 +27,6 @@ export default {
                 }
             }
         } catch (err) {
-            console.log('[categoryTicketSettings] getSettings error:', err)
             // Return default settings if API fails
             return {
                 success: true,
@@ -61,7 +60,6 @@ export default {
             }
             return { success: false, error: response?.error || { message: 'Failed to save settings' } }
         } catch (err) {
-            console.log('[categoryTicketSettings] upsertSettings error:', err)
             return { success: false, error: err }
         }
     },
@@ -80,7 +78,6 @@ export default {
             }
             return { success: false, error: { message: 'Failed to generate preview' } }
         } catch (err) {
-            console.log('[categoryTicketSettings] previewWelcomeMessage error:', err)
             return { success: false, error: err }
         }
     },

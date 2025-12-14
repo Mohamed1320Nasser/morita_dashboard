@@ -35,6 +35,47 @@ const [refreshKey, setRefreshKey] = useState(0)
 const [deleteModal, setDeleteModal] = useState(null)
 const [deleting, setDeleting] = useState(false)
 
+// Helper to display emoji (extract name from Discord custom emoji)
+const displayEmoji = (emoji) => {
+  if (!emoji) return <LuGamepad2 />
+
+  // Trim whitespace
+  const trimmedEmoji = String(emoji).trim()
+
+  // Check if it's a Discord custom emoji with or without brackets
+  // Formats: <:name:id>, <a:name:id>, name:id, a:name:id
+  const discordEmojiMatch = trimmedEmoji.match(/^<?a?:?(.+?):(\d+)>?$/)
+  if (discordEmojiMatch) {
+    // Extract and display the emoji name
+    const emojiName = discordEmojiMatch[1]
+    return (
+      <span style={{ fontSize: 12, color: '#666', display: 'flex', alignItems: 'center', gap: 4 }}>
+        🎮 <span style={{ fontWeight: 500 }}>{emojiName}</span>
+      </span>
+    )
+  }
+
+  // It's a regular Unicode emoji, display as is
+  return <span style={{ fontSize: 18 }}>{trimmedEmoji}</span>
+}
+
+// Helper to get emoji text for plain text contexts (like select options)
+const getEmojiText = (emoji) => {
+  if (!emoji) return '📦'
+
+  const trimmed = String(emoji).trim()
+
+  // Check if it's a Discord custom emoji
+  const discordEmojiMatch = trimmed.match(/^<?a?:?(.+?):(\d+)>?$/)
+  if (discordEmojiMatch) {
+    const emojiName = discordEmojiMatch[1]
+    return `🎮 ${emojiName}`
+  }
+
+  // It's a regular Unicode emoji, return as is
+  return trimmed
+}
+
 const handleSearchChange = (event) => {
 setSearch(event)
 setPage(1)
@@ -151,7 +192,7 @@ return ( <div className={styles.services}> <PageHead current="Services"> <Head t
             <option value="">All categories</option>
             {categories.map(c => (
               <option key={c.id} value={c.id}>
-                {c.emoji} {c.name}
+                {getEmojiText(c.emoji)} {c.name}
               </option>
             ))}
           </select>
@@ -160,7 +201,7 @@ return ( <div className={styles.services}> <PageHead current="Services"> <Head t
         <Table
           columns={[
             { key: 'index', header: '#', className: 'index', width: '48px', render: (_svc, idx) => (page - 1) * limit + idx + 1 },
-            { key: 'icon', header: 'Icon', className: 'icon', render: (svc) => (<span style={{ fontSize: 18 }}>{svc.emoji || <LuGamepad2 />}</span>) },
+            { key: 'icon', header: 'Icon', className: 'icon', render: (svc) => displayEmoji(svc.emoji) },
             { key: 'name', header: 'Name', className: 'name', flex: 2, render: (svc) => svc.name },
             { key: 'category', header: 'Category', className: 'category', render: (svc) => (svc.category?.name || categories.find(c => String(c.id) === String(svc.categoryId))?.name || '-') },
             { key: 'pricing', header: 'Pricing', className: 'pricing', flex: 1, render: (svc) => {

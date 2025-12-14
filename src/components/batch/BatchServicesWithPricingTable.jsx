@@ -370,7 +370,7 @@ const BatchServicesWithPricingTable = ({
                     )}
                   </td>
 
-                  <td>
+                  <td className={styles.emojiCell}>
                     <EmojiPickerPopover
                       value={service.emoji}
                       onChange={(emoji) =>

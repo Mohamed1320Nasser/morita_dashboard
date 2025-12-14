@@ -1,0 +1,358 @@
+.ticketTypeSettingsPage {
+    padding: 20px;
+
+    .settingsCard {
+        margin-bottom: 20px;
+        padding: 24px;
+
+        h3 {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            margin: 0 0 24px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .sectionHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        // Type tabs for custom fields
+        .typeTabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0;
+
+            .typeTab {
+                padding: 12px 20px;
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                color: #666;
+                border-bottom: 3px solid transparent;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: -2px;
+
+                &:hover {
+                    color: #333;
+                    background: #f8f9fa;
+                }
+
+                &.active {
+                    color: #fff;
+                    border-bottom-color: currentColor;
+
+                    &.green {
+                        background: #27ae60;
+                    }
+
+                    &.blue {
+                        background: #5865F2;
+                    }
+
+                    &.orange {
+                        background: #E67E22;
+                    }
+
+                    &.gray {
+                        background: #95A5A6;
+                    }
+
+                    &.red {
+                        background: #e74c3c;
+                    }
+                }
+
+                .fieldBadge {
+                    background: rgba(255, 255, 255, 0.3);
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+
+                &.active .fieldBadge {
+                    background: rgba(255, 255, 255, 0.25);
+                    color: #fff;
+                }
+            }
+        }
+    }
+
+    .formGroup {
+        margin-bottom: 24px;
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        small {
+            display: block;
+            margin-top: 6px;
+            color: #666;
+            font-size: 12px;
+        }
+    }
+
+    .variablesGrid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 8px;
+
+        .variableButton {
+            padding: 6px 12px;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: monospace;
+            transition: all 0.2s;
+
+            &:hover {
+                background: #dee2e6;
+                border-color: #ccc;
+            }
+        }
+    }
+
+    .textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 14px;
+        resize: vertical;
+        line-height: 1.5;
+
+        &:focus {
+            outline: none;
+            border-color: #5865F2;
+        }
+    }
+
+    .colorInput {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .colorTextInput {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+
+            &:focus {
+                outline: none;
+                border-color: #5865F2;
+            }
+        }
+
+        .colorPreview {
+            width: 50px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+    }
+
+    .checkboxGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+
+            input[type='checkbox'] {
+                cursor: pointer;
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
+
+    // Custom Fields Section
+    .fieldsList {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .fieldCard {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        background: #fafafa;
+
+        .fieldHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+
+            .fieldNumber {
+                font-weight: 600;
+                color: #333;
+            }
+        }
+
+        .fieldForm {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .fieldRow {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+
+                @media (max-width: 768px) {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .selectGroup {
+                label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: 500;
+                    font-size: 14px;
+                }
+
+                .select {
+                    width: 100%;
+                    padding: 10px 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    background: white;
+                    cursor: pointer;
+
+                    &:focus {
+                        outline: none;
+                        border-color: #5865F2;
+                    }
+                }
+            }
+        }
+    }
+
+    .emptyState {
+        padding: 40px 20px;
+        text-align: center;
+        color: #666;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    // Actions Bar
+    .actionsBar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        margin-top: 20px;
+
+        .rightActions {
+            display: flex;
+            gap: 12px;
+        }
+    }
+
+    // Preview Modal
+    .previewModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+
+        .previewContent {
+            background: #36393f;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: auto;
+
+            h4 {
+                color: #fff;
+                margin: 0 0 16px 0;
+                font-size: 18px;
+            }
+
+            .discordEmbed {
+                background: #2f3136;
+                padding: 16px;
+                border-radius: 4px;
+                border-left: 4px solid #5865f2;
+                margin-bottom: 20px;
+
+                .banner {
+                    width: 100%;
+                    border-radius: 4px;
+                    margin-bottom: 12px;
+                }
+
+                .embedTitle {
+                    color: #fff;
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin-bottom: 8px;
+                }
+
+                .embedDescription {
+                    color: #dcddde;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    white-space: pre-wrap;
+                    word-break: break-word;
+                    margin-bottom: 8px;
+                }
+
+                .embedFooter {
+                    color: #b9bbbe;
+                    font-size: 12px;
+                    padding-top: 8px;
+                    border-top: 1px solid #40444b;
+                }
+            }
+        }
+    }
+}

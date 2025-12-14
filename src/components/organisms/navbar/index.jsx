@@ -7,10 +7,10 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
 import styles from './navbar.module.scss'
 import { BiLogOut } from 'react-icons/bi'
-import { TbUsers } from 'react-icons/tb'
+import { TbUsers, TbTicket } from 'react-icons/tb'
 import { LuFilePlus2, LuGamepad2 } from 'react-icons/lu'
 import { MdCategory } from 'react-icons/md'
-import { IoFlashSharp } from 'react-icons/io5'
+import { IoFlashSharp, IoSettingsSharp } from 'react-icons/io5'
 
 const Navbar = () => {
   const router = useRouter()
@@ -31,6 +31,8 @@ const Navbar = () => {
     { title: "New Category", href: "/categories/new", icon: <LuFilePlus2 /> },
     { title: "Services", href: "/services", icon: <LuGamepad2 /> },
     { title: "New Service", href: "/services/new", icon: <LuFilePlus2 /> },
+    { title: "Ticket Types", href: "/tickets/types", icon: <IoSettingsSharp /> },
+    { title: "Manage Tickets", href: "/tickets", icon: <TbTicket /> },
   ])
   const [search, setSearch] = useState('')
 

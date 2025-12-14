@@ -2,7 +2,7 @@
 import { postPuplicData } from '../../constant/axiosClon'
 
 export default {
-    submitLogin: async (userName, password) => {
+    submitLogin: async (userName, password, remember = false) => {
         const data = {
             email: userName,
             password: password,
@@ -15,9 +15,19 @@ export default {
             const token = response?.data?.token;
 
             if (isOk && token) {
-                sessionStorage.setItem('token', token);
-                sessionStorage.setItem('isAuthed', 'true');
-                sessionStorage.setItem('user', JSON.stringify(response.data.user || {}));
+                // Choose storage based on "Remember me" checkbox
+                const storage = remember ? localStorage : sessionStorage;
+
+                storage.setItem('token', token);
+                storage.setItem('isAuthed', 'true');
+                storage.setItem('user', JSON.stringify(response.data.user || {}));
+
+                // Clear the other storage to avoid conflicts
+                const otherStorage = remember ? sessionStorage : localStorage;
+                otherStorage.removeItem('token');
+                otherStorage.removeItem('isAuthed');
+                otherStorage.removeItem('user');
+
                 return { success: true, data: response.data };
             }
 

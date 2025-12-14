@@ -5,6 +5,7 @@ import styles from './EmojiPickerPopover.module.scss'
 
 const EmojiPickerPopover = ({ value, onChange, disabled = false }) => {
   const [showPicker, setShowPicker] = useState(false)
+  const [mode, setMode] = useState('unicode') // 'unicode' or 'discord'
   const pickerRef = useRef(null)
 
   // Close picker when clicking outside
@@ -29,19 +30,47 @@ const EmojiPickerPopover = ({ value, onChange, disabled = false }) => {
     setShowPicker(false)
   }
 
+  const toggleMode = () => {
+    setMode(m => m === 'unicode' ? 'discord' : 'unicode')
+    setShowPicker(false)
+  }
+
   return (
     <div className={styles.emojiPickerWrapper} ref={pickerRef}>
-      <button
-        type="button"
-        className={styles.emojiButton}
-        onClick={() => !disabled && setShowPicker(!showPicker)}
-        disabled={disabled}
-        title="Select emoji"
-      >
-        {value || '😀'}
-      </button>
+      <div className={styles.emojiButtonGroup}>
+        {mode === 'unicode' ? (
+          <button
+            type="button"
+            className={styles.emojiButton}
+            onClick={() => !disabled && setShowPicker(!showPicker)}
+            disabled={disabled}
+            title="Select emoji"
+          >
+            {value || '😀'}
+          </button>
+        ) : (
+          <input
+            type="text"
+            className={styles.emojiInput}
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Type \:name: in chat"
+            disabled={disabled}
+            title="Type \:emoji_name: in Discord chat to get the code"
+          />
+        )}
+        <button
+          type="button"
+          className={styles.modeToggle}
+          onClick={toggleMode}
+          disabled={disabled}
+          title={mode === 'unicode' ? 'Switch to Discord Emoji' : 'Switch to Unicode Emoji'}
+        >
+          {mode === 'unicode' ? '🎮' : '😀'}
+        </button>
+      </div>
 
-      {showPicker && (
+      {showPicker && mode === 'unicode' && (
         <div className={styles.pickerPopover}>
           <Picker
             data={data}

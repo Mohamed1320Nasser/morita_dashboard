@@ -23,6 +23,7 @@
 
 .tableWrapper {
   overflow-x: auto;
+  overflow-y: visible;
   margin-bottom: 20px;
   border: 1px solid #dee2e6;
   border-radius: 8px;
@@ -73,6 +74,12 @@
   font-weight: 600;
   color: #6c757d;
   background-color: #f8f9fa;
+}
+
+.emojiCell {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
 }
 
 .checkboxCell {

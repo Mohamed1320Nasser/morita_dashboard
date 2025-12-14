@@ -1,0 +1,172 @@
+.ticketDetailPage {
+    padding: 20px;
+
+    .headerCard {
+        margin-bottom: 20px;
+        padding: 20px 24px;
+
+        .ticketHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .ticketTitle {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+
+                .ticketNumber {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #5865F2;
+                }
+
+                .ticketType {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #333;
+                }
+
+                .statusBadge {
+                    padding: 6px 16px;
+                    border-radius: 20px;
+                    color: white;
+                    font-size: 13px;
+                    font-weight: 600;
+                }
+            }
+
+            .headerActions {
+                display: flex;
+                gap: 12px;
+            }
+        }
+    }
+
+    .contentGrid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+
+        @media (max-width: 968px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .leftColumn,
+    .rightColumn {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .infoCard,
+    .notesCard,
+    .metadataCard,
+    .statusCard,
+    .channelCard {
+        padding: 24px;
+
+        h3 {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .infoRow {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .label {
+                font-size: 13px;
+                color: #666;
+                font-weight: 500;
+            }
+
+            .value {
+                font-size: 13px;
+                color: #333;
+                font-weight: 400;
+                text-align: right;
+            }
+        }
+    }
+
+    .notesCard {
+        .notesContent {
+            p {
+                margin: 0 0 12px 0;
+                line-height: 1.6;
+                color: #333;
+                font-size: 14px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+
+    .statusCard {
+        .statusSelect {
+            margin-bottom: 16px;
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .select {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+                background: white;
+                cursor: pointer;
+
+                &:focus {
+                    outline: none;
+                    border-color: #5865F2;
+                }
+            }
+        }
+    }
+
+    .channelCard {
+        .channelInfo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .channelIcon {
+                font-size: 32px;
+            }
+
+            .channelLabel {
+                font-size: 12px;
+                color: #666;
+                margin-bottom: 4px;
+            }
+
+            .channelId {
+                font-size: 13px;
+                font-family: monospace;
+                color: #333;
+                font-weight: 500;
+            }
+        }
+    }
+}

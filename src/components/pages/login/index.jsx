@@ -33,7 +33,7 @@ const LoginPage = () => {
       notify(errors[0]);
     } else {
       setLoading(true)
-      const response = await login.submitLogin(userName, password)
+      const response = await login.submitLogin(userName, password, remember)
       if (response && response.success) {
         notify('Login successful!', 'success')
         router.push('/')
