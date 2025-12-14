@@ -5,6 +5,7 @@ import styles from './login.module.scss'
 import { notify } from '@/config/error'
 import toast, { Toaster } from "react-hot-toast";
 import login from '@/controllers/login'
+import authService from '@/controllers/login/authService'
 import { useRouter } from 'next/router'
 import PulseLoader from "react-spinners/PulseLoader";
 
@@ -14,6 +15,13 @@ const LoginPage = () => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
+
+  // Check if user is already logged in
+  useEffect(() => {
+    if (authService.checkIfAuthorized()) {
+      router.push('/');
+    }
+  }, []);
   const handleUserNameChange = (event) => {
     setUserName(event);
   };

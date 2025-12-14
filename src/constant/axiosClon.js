@@ -2,6 +2,7 @@ import axios from 'axios'
 // import customAlert from '@/components/tmp/alert'
 import { API } from '@/const'
 import { ForberidenAlert } from '@/components/atoms/alerts'
+import { getToken } from '@/utils/storage'
 
 const instance = axios.create({
   baseURL: API,
@@ -17,7 +18,7 @@ export const getData = async (url, token) => {
   try {
     const res = await axios.get(`${API}${url}`, {
       headers: {
-        Authorization: `${sessionStorage.getItem('token')}`,
+        Authorization: `${getToken()}`,
         "Accept-Language": "*",
       },
     })
@@ -79,7 +80,7 @@ export const postData = async (url, data) => {
   try {
     const res = await axios.post(`${API}${url}`, data, {
       headers: {
-        Authorization: `${sessionStorage.getItem('token')}`,
+        Authorization: `${getToken()}`,
       },
     })
     if (res && res.status === 200) {
@@ -100,7 +101,7 @@ export const putData = async (url, data) => {
   try {
     const res = await axios.put(`${API}${url}`, data, {
       headers: {
-        Authorization: `${sessionStorage.getItem('token')}`,
+        Authorization: `${getToken()}`,
       },
     })
 
@@ -122,7 +123,7 @@ export const patchData = async (url, data) => {
   try {
     const res = await axios.patch(encodeURI(`${API}${url}`), data, {
       headers: {
-        Authorization: `${sessionStorage.getItem('token')}`,
+        Authorization: `${getToken()}`,
       },
     })
 
@@ -145,7 +146,7 @@ export const deleteData = async (url) => {
 
     const res = await axios.delete(`${API}${url}`, {
       headers: {
-        Authorization: `${sessionStorage.getItem('token')}`,
+        Authorization: `${getToken()}`,
       },
     })
     if (res && res.status === 200) {

@@ -1,15 +1,16 @@
+import { getToken, getIsAuthed, getUser, clearAuth } from '../../utils/storage';
 
 const authService = {
   checkIfAuthorized() {
     try {
-      const token = sessionStorage.getItem('token');
-      const isAuthed = sessionStorage.getItem('isAuthed');
-      
+      const token = getToken();
+      const isAuthed = getIsAuthed();
+
       // Check if both token and isAuthed exist and are valid
       if (token && isAuthed === 'true') {
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('Error checking authorization:', error);
@@ -19,11 +20,7 @@ const authService = {
 
   getUser() {
     try {
-      const userStr = sessionStorage.getItem('user');
-      if (userStr) {
-        return JSON.parse(userStr);
-      }
-      return null;
+      return getUser();
     } catch (error) {
       console.error('Error getting user:', error);
       return null;
@@ -32,9 +29,7 @@ const authService = {
 
   logout() {
     try {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('isAuthed');
-      sessionStorage.removeItem('user');
+      clearAuth();
     } catch (error) {
       console.error('Error during logout:', error);
     }
