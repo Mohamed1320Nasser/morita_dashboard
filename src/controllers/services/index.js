@@ -67,4 +67,22 @@ export default {
             return { success: false, error: err }
         }
     },
+    getServicesByCategory: async (categoryId) => {
+        try {
+            const response = await getData(`/services/by-category/${categoryId}`);
+            console.log('[getServicesByCategory] Raw response:', JSON.stringify(response));
+            // Backend returns { success: true, data: { list: [...], total, page, limit, totalPages } }
+            const payload = response?.data || response
+            const data = payload?.data || payload
+            const services = data?.list || data?.List || (Array.isArray(data) ? data : [])
+            console.log('[getServicesByCategory] Extracted services:', services);
+            return {
+                success: true,
+                data: services
+            }
+        } catch (err) {
+            console.error('[getServicesByCategory] Error:', err)
+            return { success: false, data: [], error: err }
+        }
+    },
 }

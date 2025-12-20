@@ -8,6 +8,7 @@ import ModifiersStep from './steps/ModifiersStep'
 import ReviewStep from './steps/ReviewStep'
 import Button from '@/components/atoms/buttons/button'
 import { valueForSubmit } from '@/utils/emoji'
+import servicesController from '@/controllers/services'
 import styles from './QuickCreateWizard.module.scss'
 
 const STEPS = [
@@ -21,9 +22,10 @@ const STEPS = [
 const QuickCreateWizard = ({ categories, onSubmit, submitting, prefilled }) => {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
+  const [services, setServices] = useState([])
   const [wizardData, setWizardData] = useState({
     category: { mode: 'existing', existingId: categories[0]?.id || '' },
-    service: {},
+    service: { mode: 'new' },
     methods: [],
     modifiers: {},
   })
@@ -62,6 +64,30 @@ const QuickCreateWizard = ({ categories, onSubmit, submitting, prefilled }) => {
     localStorage.setItem('quickCreateWizard', JSON.stringify(wizardData))
   }, [wizardData])
 
+  // Fetch services when category changes
+  useEffect(() => {
+    const fetchServices = async () => {
+      const categoryId = wizardData.category.existingId
+      if (categoryId && wizardData.category.mode === 'existing') {
+        try {
+          const response = await servicesController.getServicesByCategory(categoryId)
+          if (response.success) {
+            setServices(response.data || [])
+          } else {
+            setServices([])
+          }
+        } catch (error) {
+          console.error('Failed to fetch services:', error)
+          setServices([])
+        }
+      } else {
+        setServices([])
+      }
+    }
+
+    fetchServices()
+  }, [wizardData.category.existingId, wizardData.category.mode])
+
   const updateWizardData = (step, data) => {
     setWizardData((prev) => ({ ...prev, [step]: data }))
   }
@@ -88,7 +114,11 @@ const QuickCreateWizard = ({ categories, onSubmit, submitting, prefilled }) => {
           return !!wizardData.category.name
         }
       case 2: // Service
-        return !!wizardData.service.name
+        if (wizardData.service.mode === 'existing') {
+          return !!wizardData.service.existingId
+        } else {
+          return !!wizardData.service.name
+        }
       case 3: // Methods
         return wizardData.methods && wizardData.methods.length > 0 && wizardData.methods.every(m => m.name && m.basePrice >= 0)
       case 4: // Modifiers (optional)
@@ -112,13 +142,17 @@ const QuickCreateWizard = ({ categories, onSubmit, submitting, prefilled }) => {
             description: wizardData.category.description,
             active: wizardData.category.active,
           },
-      service: {
-        name: wizardData.service.name,
-        emoji: valueForSubmit(wizardData.service.emoji),
-        description: wizardData.service.description,
-        displayOrder: wizardData.service.displayOrder,
-        active: wizardData.service.active,
-      },
+      service: wizardData.service.mode === 'existing'
+        ? { mode: 'existing', existingId: wizardData.service.existingId }
+        : {
+            mode: 'new',
+            name: wizardData.service.name,
+            emoji: valueForSubmit(wizardData.service.emoji),
+            description: wizardData.service.description,
+            displayOrder: wizardData.service.displayOrder,
+            active: wizardData.service.active,
+            imageUrl: wizardData.service.imageUrl,
+          },
       methods: wizardData.methods.map((method, index) => ({
         name: method.name,
         pricingUnit: method.pricingUnit,
@@ -161,6 +195,7 @@ const QuickCreateWizard = ({ categories, onSubmit, submitting, prefilled }) => {
         return (
           <ServiceStep
             data={wizardData.service}
+            services={services}
             onChange={(data) => updateWizardData('service', data)}
           />
         )
