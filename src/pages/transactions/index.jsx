@@ -270,10 +270,10 @@ const TransactionsPage = () => {
                   render: (t) => (
                     <div>
                       <div style={{ fontWeight: 500, color: '#12161c' }}>
-                        {t.wallet?.user?.fullname || t.wallet?.user?.username || 'Unknown'}
+                        {t.wallet?.user?.discordDisplayName || t.wallet?.user?.fullname || t.wallet?.user?.username || 'Unknown'}
                       </div>
                       <div style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
-                        {t.wallet?.user?.username || t.wallet?.walletType || '-'}
+                        {t.wallet?.user?.discordId ? `Discord: ${t.wallet.user.discordId}` : (t.wallet?.user?.username || t.wallet?.walletType || '-')}
                       </div>
                     </div>
                   ),

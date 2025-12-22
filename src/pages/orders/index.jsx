@@ -353,10 +353,10 @@ const OrdersPage = () => {
                   render: (o) => (
                     <div>
                       <div style={{ fontWeight: 500, color: '#12161c' }}>
-                        {o.customer?.fullname || o.customer?.username || 'Unknown'}
+                        {o.customer?.discordDisplayName || o.customer?.fullname || o.customer?.username || 'Unknown'}
                       </div>
                       <div style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
-                        {o.customer?.username || o.customer?.discordId || '-'}
+                        {o.customer?.discordId ? `Discord: ${o.customer.discordId}` : (o.customer?.username || '-')}
                       </div>
                     </div>
                   ),
@@ -370,10 +370,10 @@ const OrdersPage = () => {
                     o.worker ? (
                       <div>
                         <div style={{ fontWeight: 500, color: '#12161c' }}>
-                          {o.worker?.fullname || o.worker?.username}
+                          {o.worker?.discordDisplayName || o.worker?.fullname || o.worker?.username}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
-                          {o.worker?.username || o.worker?.discordId || '-'}
+                          {o.worker?.discordId ? `Discord: ${o.worker.discordId}` : (o.worker?.username || '-')}
                         </div>
                       </div>
                     ) : (

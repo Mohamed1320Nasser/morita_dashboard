@@ -231,6 +231,7 @@ const BatchServicesWithPricingTable = ({
           s.pricingMethods && s.pricingMethods.length > 0
             ? s.pricingMethods.map((m) => ({
                 name: m.name.trim(),
+                groupName: m.groupName?.trim() || undefined,
                 pricingUnit: m.pricingUnit,
                 basePrice: parseFloat(m.basePrice),
                 startLevel: m.startLevel ? parseInt(m.startLevel) : undefined,

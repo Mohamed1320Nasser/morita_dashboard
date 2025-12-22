@@ -407,6 +407,7 @@ const ModifierFormModal = ({ show, modifier, pricingMethod, onHide, onSubmit }) 
                 >
                   <option value="NORMAL">Normal</option>
                   <option value="UPCHARGE">Upcharge (highlighted in red)</option>
+                  <option value="DISCOUNT">Discount (highlighted in green)</option>
                   <option value="NOTE">Note (highlighted in green)</option>
                   <option value="WARNING">Warning (highlighted in yellow)</option>
                 </select>

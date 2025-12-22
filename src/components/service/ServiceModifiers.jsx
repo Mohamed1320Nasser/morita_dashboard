@@ -242,6 +242,7 @@ const ServiceModifiers = ({ serviceId }) => {
               >
                 <option value="NORMAL">Normal</option>
                 <option value="UPCHARGE">Upcharge (Red)</option>
+                <option value="DISCOUNT">Discount (Green)</option>
                 <option value="NOTE">Note (Green)</option>
                 <option value="WARNING">Warning (Yellow)</option>
               </select>

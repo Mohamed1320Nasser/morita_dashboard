@@ -48,9 +48,12 @@ const EditPricingMethod = () => {
           setInitialData({
             id: methodData.id,
             name: methodData.name || '',
+            groupName: methodData.groupName || '',
             description: methodData.description || '',
             basePrice: basePriceValue,
             pricingUnit: methodData.pricingUnit || methodData.unit || 'FIXED',
+            startLevel: methodData.startLevel || '',
+            endLevel: methodData.endLevel || '',
             displayOrder: methodData.displayOrder || 0,
             active: methodData.active ?? true,
             serviceId: methodData.serviceId || serviceId,

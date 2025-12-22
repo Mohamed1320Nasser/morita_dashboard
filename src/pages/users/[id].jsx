@@ -90,27 +90,27 @@ const UserDetailPage = () => {
 
   return (
     <div className={styles.userDetail}>
-      <PageHead current={user.username}>
-        <Head title={user.username} noButton>
-          User profile and management
-        </Head>
-      </PageHead>
-      <Container>
+      <PageHead current="User Details">
         <div className={styles.backLink} onClick={handleBack}>
           <IoArrowBack /> Back to Users
         </div>
-
-        {/* User Header */}
-        <div className={styles.userHeader}>
+      </PageHead>
+      <Container>
+        <Card>
+          {/* User Header */}
+          <div className={styles.userHeader}>
           <div className={styles.userInfo}>
             <div className={styles.userId}>User ID: {user.id}</div>
             <div className={styles.userName}>
-              {user.username || user.fullname || 'Unknown User'}
+              {user.discordDisplayName || user.fullname || user.username || 'Unknown User'}
               {getRoleBadge(user.role)}
             </div>
             <div className={styles.userMeta}>
               <span>Joined {moment(user.createdAt).format('DD/MM/YYYY')}</span>
               {user.discordId && <span>• Discord: {user.discordId}</span>}
+              {user.discordUsername && user.discordDisplayName && (
+                <span>• @{user.discordUsername}</span>
+              )}
             </div>
           </div>
           {user.wallet ? (
@@ -129,15 +129,15 @@ const UserDetailPage = () => {
           )}
         </div>
 
-        {/* User Information Grid */}
-        <div className={styles.infoGrid}>
+          {/* User Information Grid */}
+          <div className={styles.infoGrid}>
           {/* Personal Info */}
           <div className={styles.infoCard}>
             <div className={styles.infoTitle}>Personal Information</div>
             <div className={styles.infoContent}>
               <div className={styles.infoRow}>
-                <span className={styles.label}>Full Name</span>
-                <span className={styles.value}>{user.fullname || '-'}</span>
+                <span className={styles.label}>Display Name</span>
+                <span className={styles.value}>{user.discordDisplayName || user.fullname || '-'}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Username</span>
@@ -168,6 +168,14 @@ const UserDetailPage = () => {
                   {user.discordId || '-'}
                 </span>
               </div>
+              {user.discordUsername && (
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>Discord Username</span>
+                  <span className={styles.value} style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                    @{user.discordUsername}
+                  </span>
+                </div>
+              )}
               <div className={styles.infoRow}>
                 <span className={styles.label}>Joined</span>
                 <span className={styles.value}>
@@ -211,7 +219,8 @@ const UserDetailPage = () => {
               </div>
             </div>
           )}
-        </div>
+          </div>
+        </Card>
 
         {/* Orders Sections */}
         <div className={styles.ordersSection}>

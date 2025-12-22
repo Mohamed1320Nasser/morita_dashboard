@@ -119,8 +119,16 @@ const WalletDetailPage = () => {
   }
 
   const getTransactionTypeBadge = (type) => {
-    const typeClass = styles[type.toLowerCase()] || ''
-    return <span className={`${styles.transactionType} ${typeClass}`}>{type}</span>
+    const badges = {
+      'DEPOSIT': <Badge type="success">Deposit</Badge>,
+      'WORKER_DEPOSIT': <Badge type="info">Worker Deposit</Badge>,
+      'WITHDRAWAL': <Badge type="warning">Withdrawal</Badge>,
+      'PAYMENT': <Badge type="danger">Payment</Badge>,
+      'REFUND': <Badge type="primary">Refund</Badge>,
+      'EARNING': <Badge type="success">Earning</Badge>,
+      'ADJUSTMENT': <Badge type="warning">Adjustment</Badge>,
+    }
+    return badges[type] || <Badge>{type}</Badge>
   }
 
   const handleAddBalance = async () => {
@@ -215,13 +223,18 @@ const WalletDetailPage = () => {
               <div className={styles.walletId}>Wallet ID: {wallet.id}</div>
               <div className={styles.userName}>
                 <IoWallet />
-                {wallet.user?.username || 'Unknown User'}
+                {wallet.user?.discordDisplayName || wallet.user?.username || 'Unknown User'}
                 <span className={`${styles.walletType} ${getWalletTypeClass(wallet.walletType)}`}>
                   {wallet.walletType}
                 </span>
               </div>
               <div style={{ color: '#7a7e85', fontSize: '0.9rem' }}>
                 Discord ID: {wallet.user?.discordId || '-'}
+                {wallet.user?.discordUsername && wallet.user?.discordDisplayName && (
+                  <span style={{ marginLeft: '1rem', fontSize: '0.85rem' }}>
+                    Username: {wallet.user.discordUsername}
+                  </span>
+                )}
               </div>
               <div style={{ marginTop: '0.5rem' }}>
                 {wallet.isActive ? (
@@ -237,6 +250,10 @@ const WalletDetailPage = () => {
               <div className={styles.balanceValue}>{formatBalance(wallet.balance)} {wallet.currency}</div>
               <div className={styles.balanceDetails}>
                 <div className={styles.detailItem}>
+                  <div className={styles.label}>Deposit</div>
+                  <div className={styles.value}>{formatBalance(wallet.deposit)}</div>
+                </div>
+                <div className={styles.detailItem}>
                   <div className={styles.label}>Pending</div>
                   <div className={styles.value}>{formatBalance(wallet.pendingBalance)}</div>
                 </div>
@@ -249,15 +266,24 @@ const WalletDetailPage = () => {
           </div>
 
           <div className={styles.actions}>
-            <Button type="success" onClick={() => setShowAddModal(true)}>
-              <FaPlus style={{ marginRight: 8 }} /> Add Balance
-            </Button>
-            <Button type="warning" onClick={() => setShowAdjustModal(true)}>
-              <FaExchangeAlt style={{ marginRight: 8 }} /> Adjust Balance
-            </Button>
-            <Button type={wallet.isActive ? 'danger' : 'success'} onClick={handleToggleStatus}>
+            <button
+              className="btn btn-success d-flex align-items-center gap-2"
+              onClick={() => setShowAddModal(true)}
+            >
+              <FaPlus /> Add Balance
+            </button>
+            <button
+              className="btn btn-warning d-flex align-items-center gap-2"
+              onClick={() => setShowAdjustModal(true)}
+            >
+              <FaExchangeAlt /> Adjust Balance
+            </button>
+            <button
+              className={`btn ${wallet.isActive ? 'btn-danger' : 'btn-success'}`}
+              onClick={handleToggleStatus}
+            >
               {wallet.isActive ? 'Deactivate Wallet' : 'Activate Wallet'}
-            </Button>
+            </button>
           </div>
         </Card>
 
@@ -280,7 +306,19 @@ const WalletDetailPage = () => {
                       </span>
                     )
                   }},
-                  { key: 'balanceAfter', header: 'Balance After', flex: 1, render: (t) => formatBalance(t.balanceAfter) },
+                  { key: 'balanceAfter', header: 'After', flex: 1, render: (t) => {
+                    // For WORKER_DEPOSIT, show depositAfter instead
+                    const value = t.type === 'WORKER_DEPOSIT' && t.depositAfter !== null && t.depositAfter !== undefined
+                      ? t.depositAfter
+                      : t.balanceAfter;
+                    const label = t.type === 'WORKER_DEPOSIT' ? 'Deposit' : 'Balance';
+                    return (
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{formatBalance(value)}</div>
+                        <div style={{ fontSize: '0.7rem', color: '#999' }}>{label}</div>
+                      </div>
+                    );
+                  }},
                   { key: 'reference', header: 'Reference', flex: 1.5, render: (t) => t.reference || '-' },
                   { key: 'notes', header: 'Notes', flex: 2, render: (t) => (
                     <span style={{ fontSize: '0.85rem', color: '#5a5d61' }}>
@@ -322,108 +360,139 @@ const WalletDetailPage = () => {
       </Container>
 
       {/* Add Balance Modal */}
-      <Modal show={showAddModal} onHide={() => !modalLoading && setShowAddModal(false)} centered>
-        <div className={styles.modal}>
-          <div className={styles.modalHeader}>
-            <h3>Add Balance</h3>
-            <button className={styles.closeBtn} onClick={() => !modalLoading && setShowAddModal(false)}>&times;</button>
-          </div>
-          <div className={styles.modalBody}>
-            <div className={styles.formGroup}>
-              <label>Amount (USD)</label>
+      <Modal show={showAddModal} onHide={() => !modalLoading && setShowAddModal(false)} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Add Balance</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <label className="form-label">Amount (USD)</label>
               <input
                 type="number"
+                className="form-control"
                 step="0.01"
                 min="0.01"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 placeholder="Enter amount"
+                disabled={modalLoading}
               />
             </div>
-            <div className={styles.formGroup}>
-              <label>Transaction Type</label>
+            <div className="col-md-6">
+              <label className="form-label">Transaction Type</label>
               <select
+                className="form-select"
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                disabled={modalLoading}
               >
-                <option value="DEPOSIT">Deposit</option>
+                <option value="DEPOSIT">Deposit (Balance)</option>
+                <option value="WORKER_DEPOSIT">Worker Deposit</option>
+                <option value="EARNING">Earning</option>
                 <option value="ADJUSTMENT">Adjustment</option>
               </select>
             </div>
-            <div className={styles.formGroup}>
-              <label>Reference (Optional)</label>
-              <input
-                type="text"
-                value={formData.reference}
-                onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                placeholder="Transaction reference"
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Notes (Optional)</label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Additional notes"
-              />
-            </div>
           </div>
-          <div className={styles.modalFooter}>
-            <Button type="secondary" onClick={() => setShowAddModal(false)} disabled={modalLoading}>
-              Cancel
-            </Button>
-            <Button type="success" onClick={handleAddBalance} disabled={modalLoading}>
-              {modalLoading ? 'Adding...' : 'Add Balance'}
-            </Button>
+          <div className="mb-3">
+            <label className="form-label">Reference (Optional)</label>
+            <input
+              type="text"
+              className="form-control"
+              value={formData.reference}
+              onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+              placeholder="Transaction reference"
+              disabled={modalLoading}
+            />
           </div>
-        </div>
+          <div className="mb-3">
+            <label className="form-label">Notes (Optional)</label>
+            <textarea
+              className="form-control"
+              rows={3}
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Additional notes"
+              disabled={modalLoading}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowAddModal(false)}
+            disabled={modalLoading}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-success"
+            onClick={handleAddBalance}
+            disabled={modalLoading}
+          >
+            {modalLoading ? 'Adding...' : 'Add Balance'}
+          </button>
+        </Modal.Footer>
       </Modal>
 
       {/* Adjust Balance Modal */}
-      <Modal show={showAdjustModal} onHide={() => !modalLoading && setShowAdjustModal(false)} centered>
-        <div className={styles.modal}>
-          <div className={styles.modalHeader}>
-            <h3>Adjust Balance</h3>
-            <button className={styles.closeBtn} onClick={() => !modalLoading && setShowAdjustModal(false)}>&times;</button>
+      <Modal show={showAdjustModal} onHide={() => !modalLoading && setShowAdjustModal(false)} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Adjust Balance</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <div className="mb-3">
+            <label className="form-label">Amount (USD)</label>
+            <input
+              type="number"
+              className="form-control"
+              step="0.01"
+              value={formData.amount}
+              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              placeholder="e.g., 50 or -25"
+              disabled={modalLoading}
+            />
+            <div className="form-text">Use negative values for deductions (e.g., -25.00)</div>
           </div>
-          <div className={styles.modalBody}>
-            <div className={styles.formGroup}>
-              <label>Amount (USD) - Use negative for deduction</label>
-              <input
-                type="number"
-                step="0.01"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                placeholder="e.g., 50 or -25"
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Reference (Optional)</label>
-              <input
-                type="text"
-                value={formData.reference}
-                onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                placeholder="Transaction reference"
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Notes (Optional)</label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Reason for adjustment"
-              />
-            </div>
+          <div className="mb-3">
+            <label className="form-label">Reference (Optional)</label>
+            <input
+              type="text"
+              className="form-control"
+              value={formData.reference}
+              onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+              placeholder="Transaction reference"
+              disabled={modalLoading}
+            />
           </div>
-          <div className={styles.modalFooter}>
-            <Button type="secondary" onClick={() => setShowAdjustModal(false)} disabled={modalLoading}>
-              Cancel
-            </Button>
-            <Button type="warning" onClick={handleAdjustBalance} disabled={modalLoading}>
-              {modalLoading ? 'Adjusting...' : 'Adjust Balance'}
-            </Button>
+          <div className="mb-3">
+            <label className="form-label">Notes (Optional)</label>
+            <textarea
+              className="form-control"
+              rows={3}
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Reason for adjustment"
+              disabled={modalLoading}
+            />
           </div>
-        </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowAdjustModal(false)}
+            disabled={modalLoading}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-warning"
+            onClick={handleAdjustBalance}
+            disabled={modalLoading}
+          >
+            {modalLoading ? 'Adjusting...' : 'Adjust Balance'}
+          </button>
+        </Modal.Footer>
       </Modal>
     </div>
   )

@@ -48,26 +48,35 @@ export default {
 
     getWalletTransactions: async (walletId, query) => {
         try {
+            console.log('[getWalletTransactions] Fetching for wallet:', walletId, 'query:', query);
             const response = await getData(`/api/admin/wallets/${walletId}/transactions${query ? `?${query}` : ''}`);
-            const data = response?.data || response
-            const list = data?.list || data?.transactions || (Array.isArray(data) ? data : [])
+            console.log('[getWalletTransactions] Raw response:', response);
+
+            // Handle triple-nested response
+            const payload = response?.data?.data || response?.data || response;
+            console.log('[getWalletTransactions] Payload:', payload);
+
+            const list = payload?.list || payload?.transactions || (Array.isArray(payload) ? payload : []);
+            console.log('[getWalletTransactions] List:', list, 'Length:', list?.length);
+
             if (Array.isArray(list)) {
                 return {
                     success: true,
                     data: {
                         transactions: list,
                         items: list,
-                        total: data?.total || list.length,
-                        filterCount: data?.total || list.length,
-                        page: data?.page || 1,
-                        limit: data?.limit || 10,
-                        totalPages: data?.totalPages || Math.ceil((data?.total || list.length) / (data?.limit || 10))
+                        total: payload?.total || list.length,
+                        filterCount: payload?.total || list.length,
+                        page: payload?.page || 1,
+                        limit: payload?.limit || 10,
+                        totalPages: payload?.totalPages || Math.ceil((payload?.total || list.length) / (payload?.limit || 10))
                     }
                 }
             }
+            console.error('[getWalletTransactions] List is not an array:', list);
             return { success: false, error: { message: 'Unexpected transactions response' } }
         } catch (err) {
-            console.log(err)
+            console.error('[getWalletTransactions] Error:', err)
             return { success: false, error: err }
         }
     },

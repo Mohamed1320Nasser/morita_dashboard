@@ -10,6 +10,7 @@ const MODIFIER_TYPES = [
 const DISPLAY_TYPES = [
   { value: 'NORMAL', label: 'Normal', color: '#666' },
   { value: 'UPCHARGE', label: 'Upcharge (Red)', color: '#EF4444' },
+  { value: 'DISCOUNT', label: 'Discount (Green)', color: '#10B981' },
   { value: 'NOTE', label: 'Note (Green)', color: '#10B981' },
   { value: 'WARNING', label: 'Warning (Yellow)', color: '#F59E0B' },
 ]

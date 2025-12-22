@@ -217,14 +217,22 @@ const WalletsPage = () => {
                 { key: 'user', header: 'User', className: 'user', flex: 2, render: (w) => (
                   <div>
                     <div style={{ fontWeight: 600, color: '#12161c' }}>
-                      {w.user?.username || w.user?.fullname || w.user?.email || 'Unknown User'}
+                      {w.user?.discordDisplayName || w.user?.fullname || w.user?.username || w.user?.email || 'Unknown User'}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: '#7a7e85' }}>{w.user?.discordId || '-'}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#7a7e85' }}>
+                      {w.user?.discordId ? `Discord: ${w.user.discordId}` : '-'}
+                      {w.user?.discordUsername && w.user?.discordDisplayName && (
+                        <span style={{ marginLeft: '0.5rem' }}>({w.user.discordUsername})</span>
+                      )}
+                    </div>
                   </div>
                 ) },
                 { key: 'type', header: 'Type', className: 'type', flex: 1, render: (w) => getWalletTypeBadge(w.walletType) },
                 { key: 'balance', header: 'Balance', className: 'balance', flex: 1, render: (w) => (
                   <span style={{ fontWeight: 600, color: '#22c55e' }}>{formatBalance(w.balance)}</span>
+                ) },
+                { key: 'deposit', header: 'Deposit', className: 'deposit', flex: 1, render: (w) => (
+                  <span style={{ fontWeight: 600, color: '#3b82f6' }}>{formatBalance(w.deposit)}</span>
                 ) },
                 { key: 'pending', header: 'Pending', className: 'pending', flex: 1, render: (w) => (
                   <span style={{ color: '#f97316' }}>{formatBalance(w.pendingBalance)}</span>

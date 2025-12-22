@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Table, Form } from 'react-bootstrap'
+import { Table, Form, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import Button from '@/components/atoms/buttons/button'
 import { notify } from '@/config/error'
 import styles from './BatchPricingMethodsTable.module.scss'
@@ -17,6 +17,7 @@ const BatchPricingMethodsTable = ({ serviceId, serviceName, onSubmit, onCancel }
     {
       id: 1,
       name: '',
+      groupName: '',
       pricingUnit: 'FIXED',
       basePrice: '',
       startLevel: '',
@@ -36,6 +37,7 @@ const BatchPricingMethodsTable = ({ serviceId, serviceName, onSubmit, onCancel }
       {
         id: newId,
         name: '',
+        groupName: '',
         pricingUnit: 'FIXED',
         basePrice: '',
         startLevel: '',
@@ -123,6 +125,7 @@ const BatchPricingMethodsTable = ({ serviceId, serviceName, onSubmit, onCancel }
       serviceId,
       pricingMethods: pricingMethods.map(m => ({
         name: m.name.trim(),
+        groupName: m.groupName?.trim() || undefined,
         pricingUnit: m.pricingUnit,
         basePrice: parseFloat(m.basePrice),
         startLevel: m.startLevel ? parseInt(m.startLevel) : undefined,
@@ -170,16 +173,45 @@ const BatchPricingMethodsTable = ({ serviceId, serviceName, onSubmit, onCancel }
         <Table bordered hover responsive className={styles.pricingTable}>
           <thead>
             <tr>
-              <th style={{ width: '4%' }}>#</th>
-              <th style={{ width: '18%' }}>Method Name *</th>
-              <th style={{ width: '12%' }}>Pricing Unit *</th>
-              <th style={{ width: '10%' }}>Base Price *</th>
-              <th style={{ width: '10%' }}>Start Level</th>
-              <th style={{ width: '10%' }}>End Level</th>
-              <th style={{ width: '20%' }}>Description</th>
-              <th style={{ width: '8%' }}>Priority</th>
-              <th style={{ width: '6%' }}>Active</th>
-              <th style={{ width: '4%' }}></th>
+              <th style={{ width: '3%' }}>#</th>
+              <th style={{ width: '15%' }}>Method Name *</th>
+              <th style={{ width: '12%' }}>
+                Group Name{' '}
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip>
+                      Group related pricing methods together (e.g., all ARMA methods, all BANDOS methods). Methods with the same group name will be displayed together in Discord.
+                    </Tooltip>
+                  }
+                >
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '14px',
+                    height: '14px',
+                    borderRadius: '50%',
+                    backgroundColor: '#e0e0e0',
+                    color: '#666',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    cursor: 'help',
+                    userSelect: 'none',
+                    marginLeft: '4px'
+                  }}>
+                    i
+                  </span>
+                </OverlayTrigger>
+              </th>
+              <th style={{ width: '10%' }}>Pricing Unit *</th>
+              <th style={{ width: '9%' }}>Base Price *</th>
+              <th style={{ width: '8%' }}>Start Level</th>
+              <th style={{ width: '8%' }}>End Level</th>
+              <th style={{ width: '16%' }}>Description</th>
+              <th style={{ width: '7%' }}>Priority</th>
+              <th style={{ width: '5%' }}>Active</th>
+              <th style={{ width: '3%' }}></th>
             </tr>
           </thead>
           <tbody>
@@ -204,6 +236,18 @@ const BatchPricingMethodsTable = ({ serviceId, serviceName, onSubmit, onCancel }
                       {validationErrors[`${method.id}-name`]}
                     </div>
                   )}
+                </td>
+
+                <td>
+                  <Form.Control
+                    type="text"
+                    value={method.groupName}
+                    onChange={(e) => updateRow(method.id, 'groupName', e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, method.id, 'groupName')}
+                    placeholder="e.g., ARMA - Armadyl"
+                    disabled={submitting}
+                    size="sm"
+                  />
                 </td>
 
                 <td>

@@ -123,16 +123,18 @@ const OrderDetailPage = () => {
             <div className={styles.infoContent}>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Name</span>
-                <span className={styles.value}>{order.customer?.fullname || order.customer?.username || 'Unknown'}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Username</span>
-                <span className={styles.value}>{order.customer?.username || '-'}</span>
+                <span className={styles.value}>{order.customer?.discordDisplayName || order.customer?.fullname || order.customer?.username || 'Unknown'}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Discord ID</span>
                 <span className={styles.value}>{order.customer?.discordId || '-'}</span>
               </div>
+              {order.customer?.discordUsername && (
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>Discord Username</span>
+                  <span className={styles.value}>@{order.customer.discordUsername}</span>
+                </div>
+              )}
               <div className={styles.infoRow}>
                 <span className={styles.label}>Email</span>
                 <span className={styles.value}>{order.customer?.email || '-'}</span>
@@ -148,16 +150,18 @@ const OrderDetailPage = () => {
                 <>
                   <div className={styles.infoRow}>
                     <span className={styles.label}>Name</span>
-                    <span className={styles.value}>{order.worker.fullname || order.worker.username}</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>Username</span>
-                    <span className={styles.value}>{order.worker.username || '-'}</span>
+                    <span className={styles.value}>{order.worker.discordDisplayName || order.worker.fullname || order.worker.username}</span>
                   </div>
                   <div className={styles.infoRow}>
                     <span className={styles.label}>Discord ID</span>
                     <span className={styles.value}>{order.worker.discordId || '-'}</span>
                   </div>
+                  {order.worker.discordUsername && (
+                    <div className={styles.infoRow}>
+                      <span className={styles.label}>Discord Username</span>
+                      <span className={styles.value}>@{order.worker.discordUsername}</span>
+                    </div>
+                  )}
                   <div className={styles.infoRow}>
                     <span className={styles.label}>Assigned</span>
                     <span className={styles.value}>

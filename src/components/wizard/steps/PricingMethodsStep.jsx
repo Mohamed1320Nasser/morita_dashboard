@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import InputBox from '@/components/molecules/inputBox/inputBox'
+import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styles from './Step.module.scss'
 
 const PRICING_UNITS = [
@@ -13,6 +14,7 @@ const PRICING_UNITS = [
 const PricingMethodsStep = ({ data, onChange }) => {
   const [methods, setMethods] = useState(data && data.length > 0 ? data : [{
     name: 'Standard',
+    groupName: '',
     pricingUnit: 'FIXED',
     basePrice: 0,
     description: '',
@@ -29,6 +31,7 @@ const PricingMethodsStep = ({ data, onChange }) => {
   const addMethod = () => {
     setMethods([...methods, {
       name: '',
+      groupName: '',
       pricingUnit: 'FIXED',
       basePrice: 0,
       description: '',
@@ -84,6 +87,44 @@ const PricingMethodsStep = ({ data, onChange }) => {
                   value={method.name}
                   valueChange={(v) => updateMethod(index, 'name', v)}
                 />
+                <InputBox
+                  label={
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>Group Name (Optional)</span>
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip>
+                            Group related pricing methods together (e.g., all ARMA methods, all BANDOS methods). Methods with the same group name will be displayed together in Discord.
+                          </Tooltip>
+                        }
+                      >
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '16px',
+                          height: '16px',
+                          borderRadius: '50%',
+                          backgroundColor: '#e0e0e0',
+                          color: '#666',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          cursor: 'help',
+                          userSelect: 'none'
+                        }}>
+                          i
+                        </span>
+                      </OverlayTrigger>
+                    </span>
+                  }
+                  placeholder="e.g., ARMA - Armadyl"
+                  value={method.groupName || ''}
+                  valueChange={(v) => updateMethod(index, 'groupName', v)}
+                />
+              </div>
+
+              <div className={styles.row}>
                 <div className={styles.formGroup}>
                   <label>Pricing Unit *</label>
                   <select
@@ -101,6 +142,7 @@ const PricingMethodsStep = ({ data, onChange }) => {
                     {PRICING_UNITS.find(u => u.value === method.pricingUnit)?.description}
                   </small>
                 </div>
+                <div className={styles.formGroup}></div>
               </div>
 
               <div className={styles.row}>

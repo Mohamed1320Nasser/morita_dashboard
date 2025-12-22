@@ -242,12 +242,12 @@ const UsersPage = () => {
                     >
                       <div className={styles.userMain}>
                         <div className={styles.userAvatar}>
-                          {(user.username || user.fullname || 'U')[0].toUpperCase()}
+                          {(user.discordDisplayName || user.fullname || user.username || 'U')[0].toUpperCase()}
                         </div>
 
                         <div className={styles.userInfo}>
                           <div className={styles.userName}>
-                            {user.username || user.fullname || 'Unknown User'}
+                            {user.discordDisplayName || user.fullname || user.username || 'Unknown User'}
                             {roleInfo && (
                               <span
                                 className={styles.roleBadge}
@@ -258,7 +258,18 @@ const UsersPage = () => {
                             )}
                           </div>
                           <div className={styles.userEmail}>
-                            {user.email || 'No email'}
+                            {user.discordId ? (
+                              <span>
+                                Discord: {user.discordId}
+                                {user.discordUsername && user.discordDisplayName && (
+                                  <span style={{ marginLeft: '0.5rem', opacity: 0.7 }}>
+                                    (@{user.discordUsername})
+                                  </span>
+                                )}
+                              </span>
+                            ) : (
+                              user.email || 'No email'
+                            )}
                           </div>
                         </div>
                       </div>

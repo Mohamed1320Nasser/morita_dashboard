@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import PageTitle from '@/components/atoms/labels/pageTitle'
 import InputBox from '@/components/molecules/inputBox/inputBox'
 import Button from '@/components/atoms/buttons/button'
+import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import grid from './forms.module.scss'
 
 const PRICING_UNITS = [
@@ -23,6 +24,7 @@ const PricingMethodForm = ({
 }) => {
   const [form, setForm] = useState({
     name: initial.name || '',
+    groupName: initial.groupName || '',
     description: initial.description || '',
     basePrice: initial.basePrice || '',
     pricingUnit: initial.pricingUnit || initial.unit || 'FIXED',
@@ -35,6 +37,7 @@ const PricingMethodForm = ({
 
   const lastInitialRef = useRef(JSON.stringify({
     name: initial.name,
+    groupName: initial.groupName,
     description: initial.description,
     basePrice: initial.basePrice,
     pricingUnit: initial.pricingUnit || initial.unit,
@@ -57,6 +60,7 @@ const PricingMethodForm = ({
     
     const currentKey = JSON.stringify({
       name: initial.name,
+      groupName: initial.groupName,
       description: initial.description,
       basePrice: initial.basePrice,
       pricingUnit: initial.pricingUnit || initial.unit,
@@ -80,6 +84,7 @@ const PricingMethodForm = ({
       
       setForm({
         name: initial.name || '',
+        groupName: initial.groupName || '',
         description: initial.description || '',
         basePrice: basePriceStr,
         pricingUnit: initial.pricingUnit || initial.unit || 'FIXED',
@@ -96,7 +101,7 @@ const PricingMethodForm = ({
         pricingUnit: initial.pricingUnit || initial.unit || 'FIXED',
       })
     }
-  }, [initial.name, initial.description, initial.basePrice, initial.pricingUnit, initial.unit, initial.startLevel, initial.endLevel, initial.displayOrder, initial.active, initial.serviceId, initial.id, serviceIdProp])
+  }, [initial.name, initial.groupName, initial.description, initial.basePrice, initial.pricingUnit, initial.unit, initial.startLevel, initial.endLevel, initial.displayOrder, initial.active, initial.serviceId, initial.id, serviceIdProp])
 
   const update = (key) => (value) => {
     setForm(prev => ({ ...prev, [key]: value }))
@@ -165,16 +170,55 @@ const PricingMethodForm = ({
             type="text"
           />
 
+          <InputBox
+            label={
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>Group Name (Optional)</span>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip>
+                      Group related pricing methods together (e.g., all ARMA methods, all BANDOS methods). Methods with the same group name will be displayed together in Discord.
+                    </Tooltip>
+                  }
+                >
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    backgroundColor: '#e0e0e0',
+                    color: '#666',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    cursor: 'help',
+                    userSelect: 'none'
+                  }}>
+                    i
+                  </span>
+                </OverlayTrigger>
+              </span>
+            }
+            value={form.groupName}
+            valueChange={update('groupName')}
+            placeholder="e.g., ARMA - Armadyl, BANDOS - Bandos"
+            type="text"
+          />
+
+          {/* Row 2 */}
           <div>
             <label style={{ display: 'block', marginBottom: 6 }}>Pricing Unit *</label>
             <select
               value={form.pricingUnit}
               onChange={(e) => update('pricingUnit')(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '8px 12px', 
-                borderRadius: 8, 
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: 8,
                 border: '1px solid #f6f6f6',
+                backgroundColor: '#f6f6f6',
                 fontSize: '14px',
                 fontFamily: 'inherit'
               }}
@@ -192,7 +236,6 @@ const PricingMethodForm = ({
             </div>
           </div>
 
-          {/* Row 2 */}
           <InputBox
             label="Base Price *"
             value={String(form.basePrice)}
@@ -201,15 +244,7 @@ const PricingMethodForm = ({
             type="number"
           />
 
-          <InputBox
-            label="Priority"
-            value={String(form.displayOrder)}
-            valueChange={(val) => update('displayOrder')(parseInt(val) || 0)}
-            placeholder="0"
-            type="number"
-          />
-
-          {/* Row 3: Level Range (Optional) */}
+          {/* Row 3 */}
           <InputBox
             label="Start Level (Optional)"
             value={String(form.startLevel || '')}
@@ -226,7 +261,18 @@ const PricingMethodForm = ({
             type="number"
           />
 
-          {/* Row 3: Description spans 2 */}
+          {/* Row 4 */}
+          <InputBox
+            label="Priority"
+            value={String(form.displayOrder)}
+            valueChange={(val) => update('displayOrder')(parseInt(val) || 0)}
+            placeholder="0"
+            type="number"
+          />
+
+          <div></div>
+
+          {/* Row 5: Description spans 2 */}
           <div className={grid.span2}>
             <label style={{ display: 'block', marginBottom: 6 }}>Description</label>
             <textarea 
@@ -245,7 +291,7 @@ const PricingMethodForm = ({
             />
           </div>
 
-          {/* Row 4: actions */}
+          {/* Row 6: actions */}
           <div className={grid.actionsRow + ' ' + grid.span2}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input 

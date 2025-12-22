@@ -50,6 +50,7 @@ const ServiceModifiersPanel = ({
   const getDisplayTypeIcon = (type) => {
     switch (type) {
       case 'UPCHARGE': return '🔺'
+      case 'DISCOUNT': return '💰'
       case 'NOTE': return '📝'
       case 'WARNING': return '⚠️'
       default: return '⚙️'
@@ -167,6 +168,7 @@ const ServiceModifiersPanel = ({
                   >
                     <option value="NORMAL">Normal</option>
                     <option value="UPCHARGE">🔺 Upcharge</option>
+                    <option value="DISCOUNT">💰 Discount</option>
                     <option value="NOTE">📝 Note</option>
                     <option value="WARNING">⚠️ Warning</option>
                   </Form.Select>
