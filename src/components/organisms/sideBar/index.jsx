@@ -9,6 +9,7 @@ import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
 import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal } from "react-icons/io5";
 import { TbTicket } from "react-icons/tb";
+import { FaScroll, FaQuestion, FaUsers } from "react-icons/fa";
 import { Collapse } from 'react-bootstrap';
 import { useRouter } from "next/router";
 
@@ -31,6 +32,15 @@ const SideBar = () => {
       ]
     },
     { label: 'Users', icon: <IoPeople />, href: '/users' },
+    {
+      label: 'Onboarding',
+      groupKey: 'onboarding',
+      links: [
+        { label: 'Terms of Service', icon: <FaScroll />, href: '/onboarding/terms-of-service' },
+        { label: 'Questions', icon: <FaQuestion />, href: '/onboarding/questions' },
+        { label: 'User Answers', icon: <FaUsers />, href: '/onboarding/user-answers' },
+      ]
+    },
     { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
     { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
 
