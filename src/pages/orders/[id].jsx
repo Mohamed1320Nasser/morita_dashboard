@@ -244,6 +244,48 @@ const OrderDetailPage = () => {
           </Card>
         )}
 
+        {/* Customer Review */}
+        {(order.rating || order.review) && (
+          <Card>
+            <h3 className={styles.timelineTitle}>⭐ Customer Feedback</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {order.rating && (
+                <div>
+                  <strong style={{ color: '#64748b', fontSize: '0.875rem' }}>Rating:</strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '0.5rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>{'⭐'.repeat(order.rating)}{'☆'.repeat(5 - order.rating)}</span>
+                    <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#22c55e' }}>
+                      {order.rating}/5
+                    </span>
+                  </div>
+                </div>
+              )}
+              {order.review && (
+                <div>
+                  <strong style={{ color: '#64748b', fontSize: '0.875rem' }}>Review:</strong>
+                  <div
+                    style={{
+                      marginTop: '0.5rem',
+                      padding: '1rem',
+                      background: '#f9fafb',
+                      borderRadius: '8px',
+                      whiteSpace: 'pre-wrap',
+                      borderLeft: '4px solid #22c55e',
+                    }}
+                  >
+                    {order.review}
+                  </div>
+                </div>
+              )}
+              {order.reviewedAt && (
+                <div style={{ fontSize: '0.875rem', color: '#7a7e85' }}>
+                  Reviewed on {moment(order.reviewedAt).format('DD/MM/YYYY HH:mm')}
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
         {/* Timeline */}
         <Card>
           <div className={styles.timeline}>
@@ -312,6 +354,22 @@ const OrderDetailPage = () => {
                   <div className={styles.timelineAction}>Completion Confirmed</div>
                   <div className={styles.timelineTime}>
                     {moment(order.confirmedAt).format('DD/MM/YYYY HH:mm')}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {order.reviewedAt && (
+              <div className={styles.timelineItem}>
+                <div className={`${styles.timelineIcon} ${styles.green}`}>
+                  ⭐
+                </div>
+                <div className={styles.timelineContent}>
+                  <div className={styles.timelineAction}>
+                    Customer Review - {order.rating ? `${order.rating}/5 Stars` : 'No Rating'}
+                  </div>
+                  <div className={styles.timelineTime}>
+                    {moment(order.reviewedAt).format('DD/MM/YYYY HH:mm')}
                   </div>
                 </div>
               </div>

@@ -155,6 +155,7 @@ const QuickCreateWizard = ({ categories, onSubmit, submitting, prefilled }) => {
           },
       methods: wizardData.methods.map((method, index) => ({
         name: method.name,
+        groupName: method.groupName,
         pricingUnit: method.pricingUnit,
         basePrice: parseFloat(method.basePrice),
         description: method.description,

@@ -99,6 +99,11 @@ const OrdersPage = () => {
           completedAt: order.completedAt
             ? moment(order.completedAt).format('YYYY-MM-DD HH:mm:ss')
             : '',
+          rating: order.rating || '',
+          review: order.review || '',
+          reviewedAt: order.reviewedAt
+            ? moment(order.reviewedAt).format('YYYY-MM-DD HH:mm:ss')
+            : '',
         }))
 
         exportToCSV(exportData, getTimestampFilename('orders'), ExportConfigs.orders.headers)
@@ -397,6 +402,24 @@ const OrdersPage = () => {
                   className: 'status',
                   flex: 1.5,
                   render: (o) => getStatusBadge(o.status),
+                },
+                {
+                  key: 'rating',
+                  header: 'Rating',
+                  className: 'rating',
+                  flex: 1,
+                  render: (o) => {
+                    if (!o.rating) return <span style={{ color: '#9ca3af' }}>-</span>
+                    const stars = '⭐'.repeat(o.rating)
+                    return (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span>{stars}</span>
+                        <span style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
+                          ({o.rating}/5)
+                        </span>
+                      </div>
+                    )
+                  },
                 },
                 {
                   key: 'createdAt',
