@@ -94,7 +94,7 @@ const SettingsPage = () => {
   const fetchDiscordStatus = async () => {
     setLoadingStatus(true)
     try {
-      const response = await fetch(`${API}/api/discord/pricing-channel/status`)
+      const response = await fetch(`${API}/discord/pricing-channel/status`)
       const data = await response.json()
 
       if (data.success) {
@@ -117,7 +117,7 @@ const SettingsPage = () => {
 
     setRefreshing(true)
     try {
-      const response = await fetch(`${API}/api/discord/pricing-channel/refresh`, {
+      const response = await fetch(`${API}/discord/pricing-channel/refresh`, {
         method: 'POST',
       })
       const data = await response.json()
@@ -143,7 +143,7 @@ const SettingsPage = () => {
 
     setClearing(true)
     try {
-      const response = await fetch(`${API}/api/discord/pricing-channel/clear`, {
+      const response = await fetch(`${API}/discord/pricing-channel/clear`, {
         method: 'POST',
       })
       const data = await response.json()
