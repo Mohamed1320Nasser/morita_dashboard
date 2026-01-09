@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './buttons.module.scss'
 
-const Button = ({ children, noClick, success, successLight, primaryLight, dangerLight, disabled, primary, danger, secondary, cancel, fullWidth, active, onClick, fullActive, underline }) => {
+const Button = ({ children, noClick, success, successLight, successPrimary, warningPrimary, primaryLight, dangerLight, disabled, primary, danger, secondary, cancel, fullWidth, active, onClick, fullActive, underline }) => {
   return (
     <button
       onClick={onClick}
@@ -10,6 +10,8 @@ const Button = ({ children, noClick, success, successLight, primaryLight, danger
         ${styles.button} 
         ${success && styles.success}
         ${successLight && styles.successLight} 
+        ${successPrimary && styles.successPrimary}
+        ${warningPrimary && styles.warningPrimary}
         ${primaryLight && styles.primaryLight}
         ${dangerLight && styles.dangerLight}
         ${secondary && styles.buttonSecondary} 

@@ -143,6 +143,32 @@
     color: $success;
 }
 
+.successPrimary {
+    padding: 8px 25px;
+    background-color: $success;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba($success, 0.3);
+
+    &:hover {
+        background-color: darken($success, 5%);
+        transform: translateY(-1px);
+    }
+}
+
+.warningPrimary {
+    padding: 8px 25px;
+    background-color: $warning;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba($warning, 0.3);
+
+    &:hover {
+        background-color: darken($warning, 5%);
+        transform: translateY(-1px);
+    }
+}
+
 
 .fullActive {
     background: #B0C0D0 !important;

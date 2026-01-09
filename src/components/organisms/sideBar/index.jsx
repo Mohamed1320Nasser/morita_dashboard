@@ -9,7 +9,7 @@ import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
 import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal } from "react-icons/io5";
 import { TbTicket } from "react-icons/tb";
-import { FaScroll, FaQuestion, FaUsers } from "react-icons/fa";
+import { FaScroll, FaQuestion, FaUsers, FaClipboardList } from "react-icons/fa";
 import { Collapse } from 'react-bootstrap';
 import { useRouter } from "next/router";
 
@@ -26,28 +26,32 @@ const SideBar = () => {
     {
       label: 'Tickets',
       groupKey: 'tickets',
+      icon: <TbTicket />,
       links: [
         { label: 'All Tickets', icon: <TbTicket />, href: '/tickets' },
         { label: 'Ticket Types', icon: <IoSettings />, href: '/tickets/types' },
       ]
     },
     { label: 'Users', icon: <IoPeople />, href: '/users' },
+
+    // Financials
+    { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
+    { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
+
+    // Catalog Management
+    { label: 'Services', icon: <LuGamepad2 />, href: '/services' },
+    { label: 'Categories', icon: <MdCategory />, href: '/categories' },
+    { label: 'Pricing Methods', icon: <MdPriceCheck />, href: '/pricing/methods' },
     {
       label: 'Onboarding',
       groupKey: 'onboarding',
+      icon: <FaClipboardList />,
       links: [
         { label: 'Terms of Service', icon: <FaScroll />, href: '/onboarding/terms-of-service' },
         { label: 'Questions', icon: <FaQuestion />, href: '/onboarding/questions' },
         { label: 'User Answers', icon: <FaUsers />, href: '/onboarding/user-answers' },
       ]
     },
-    { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
-    { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
-
-    // Service Configuration
-    { label: 'Categories', icon: <MdCategory />, href: '/categories' },
-    { label: 'Services', icon: <LuGamepad2 />, href: '/services' },
-    { label: 'Pricing Methods', icon: <MdPriceCheck />, href: '/pricing/methods' },
 
     // System & Reports
     { label: 'Reports & Analytics', icon: <IoStatsChart />, href: '/reports' },
@@ -106,9 +110,17 @@ const SideBar = () => {
                 ref={el => (groupRefs.current[link.groupKey] = el)}
                 className={styles.group}
               >
-                <button onClick={() => toggleGroup(link.groupKey)}>
-                  <span>{link.label}</span>
-                  {isExpanded ? <LuChevronUp /> : <LuChevronDown />}
+                <button
+                  onClick={() => toggleGroup(link.groupKey)}
+                  className={`${styles.groupBtn} ${isExpanded ? styles.open : ''}`}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {link.icon}
+                    <span>{link.label}</span>
+                  </div>
+                  <div className={styles.arrow}>
+                    <LuChevronDown />
+                  </div>
                 </button>
                 <Collapse in={isExpanded}>
                   <div className={styles.sublinks}>
@@ -120,6 +132,7 @@ const SideBar = () => {
                           className={`${styles.tab} ${router.pathname === sublink.href ? styles.active : ''}`}
                         // onClick={toggle}
                         >
+                          {/* {sublink.icon} - Optional: Hide sub-icons if too cluttered, but user might like them */}
                           {sublink.icon}
                           <span>{sublink.label}</span>
                         </Link>

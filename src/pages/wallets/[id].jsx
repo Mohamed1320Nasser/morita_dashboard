@@ -4,7 +4,7 @@ import Card from '@/components/atoms/cards'
 import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
 import { IoWallet, IoArrowBack } from 'react-icons/io5'
-import { FaPlus, FaMinus, FaExchangeAlt } from 'react-icons/fa'
+import { FaPlus, FaMinus, FaExchangeAlt, FaPowerOff } from 'react-icons/fa'
 import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
 import Button from '@/components/atoms/buttons/button'
@@ -31,6 +31,7 @@ const WalletDetailPage = () => {
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false)
   const [showAdjustModal, setShowAdjustModal] = useState(false)
+  const [showStatusModal, setShowStatusModal] = useState(false)
   const [modalLoading, setModalLoading] = useState(false)
   const [formData, setFormData] = useState({
     amount: '',
@@ -190,17 +191,25 @@ const WalletDetailPage = () => {
     }
   }
 
-  const handleToggleStatus = async () => {
+  const handleToggleStatus = () => {
+    setShowStatusModal(true)
+  }
+
+  const confirmToggleStatus = async () => {
+    setModalLoading(true)
     try {
       const res = await walletsController.toggleWalletStatus(id, !wallet.isActive)
       if (res && res.success) {
         notify(`Wallet ${wallet.isActive ? 'deactivated' : 'activated'} successfully`, 'success')
+        setShowStatusModal(false)
         setRefreshKey(v => v + 1)
       } else {
         notify(res?.error?.message || 'Failed to update status')
       }
     } catch (e) {
       notify('Error updating wallet status')
+    } finally {
+      setModalLoading(false)
     }
   }
 
@@ -220,10 +229,10 @@ const WalletDetailPage = () => {
         <Card>
           <div className={styles.walletHeader}>
             <div className={styles.walletInfo}>
-              <div className={styles.walletId}>Wallet ID: {wallet.id}</div>
+
               <div className={styles.userName}>
                 <IoWallet />
-                {wallet.user?.discordDisplayName || wallet.user?.username || 'Unknown User'}
+                {wallet.user?.discordDisplayName || wallet.user?.fullname || wallet.user?.username || wallet.user?.email || 'Unknown User'}
                 <span className={`${styles.walletType} ${getWalletTypeClass(wallet.walletType)}`}>
                   {wallet.walletType}
                 </span>
@@ -266,24 +275,25 @@ const WalletDetailPage = () => {
           </div>
 
           <div className={styles.actions}>
-            <button
-              className="btn btn-success d-flex align-items-center gap-2"
+            <Button
+              successPrimary
               onClick={() => setShowAddModal(true)}
             >
               <FaPlus /> Add Balance
-            </button>
-            <button
-              className="btn btn-warning d-flex align-items-center gap-2"
+            </Button>
+            <Button
+              warningPrimary
               onClick={() => setShowAdjustModal(true)}
             >
               <FaExchangeAlt /> Adjust Balance
-            </button>
-            <button
-              className={`btn ${wallet.isActive ? 'btn-danger' : 'btn-success'}`}
+            </Button>
+            <Button
+              danger={wallet.isActive}
+              successPrimary={!wallet.isActive}
               onClick={handleToggleStatus}
             >
-              {wallet.isActive ? 'Deactivate Wallet' : 'Activate Wallet'}
-            </button>
+              <FaPowerOff /> {wallet.isActive ? 'Deactivate Wallet' : 'Activate Wallet'}
+            </Button>
           </div>
         </Card>
 
@@ -297,34 +307,40 @@ const WalletDetailPage = () => {
                   { key: 'index', header: '#', width: '48px', render: (_t, idx) => (page - 1) * limit + idx + 1 },
                   { key: 'date', header: 'Date', flex: 1, render: (t) => moment(t.createdAt).format('DD/MM/YYYY HH:mm') },
                   { key: 'type', header: 'Type', flex: 1, render: (t) => getTransactionTypeBadge(t.type) },
-                  { key: 'amount', header: 'Amount', flex: 1, render: (t) => {
-                    const amount = parseFloat(t.amount)
-                    const isPositive = amount >= 0
-                    return (
-                      <span className={`${styles.amount} ${isPositive ? styles.positive : styles.negative}`}>
-                        {isPositive ? '+' : ''}{formatBalance(amount)}
+                  {
+                    key: 'amount', header: 'Amount', flex: 1, render: (t) => {
+                      const amount = parseFloat(t.amount)
+                      const isPositive = amount >= 0
+                      return (
+                        <span className={`${styles.amount} ${isPositive ? styles.positive : styles.negative}`}>
+                          {isPositive ? '+' : ''}{formatBalance(amount)}
+                        </span>
+                      )
+                    }
+                  },
+                  {
+                    key: 'balanceAfter', header: 'After', flex: 1, render: (t) => {
+                      // For WORKER_DEPOSIT, show depositAfter instead
+                      const value = t.type === 'WORKER_DEPOSIT' && t.depositAfter !== null && t.depositAfter !== undefined
+                        ? t.depositAfter
+                        : t.balanceAfter;
+                      const label = t.type === 'WORKER_DEPOSIT' ? 'Deposit' : 'Balance';
+                      return (
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{formatBalance(value)}</div>
+                          <div style={{ fontSize: '0.7rem', color: '#999' }}>{label}</div>
+                        </div>
+                      );
+                    }
+                  },
+                  { key: 'reference', header: 'Reference', flex: 1.5, render: (t) => t.reference || '-' },
+                  {
+                    key: 'notes', header: 'Notes', flex: 2, render: (t) => (
+                      <span style={{ fontSize: '0.85rem', color: '#5a5d61' }}>
+                        {t.notes ? (t.notes.length > 50 ? t.notes.substring(0, 50) + '...' : t.notes) : '-'}
                       </span>
                     )
-                  }},
-                  { key: 'balanceAfter', header: 'After', flex: 1, render: (t) => {
-                    // For WORKER_DEPOSIT, show depositAfter instead
-                    const value = t.type === 'WORKER_DEPOSIT' && t.depositAfter !== null && t.depositAfter !== undefined
-                      ? t.depositAfter
-                      : t.balanceAfter;
-                    const label = t.type === 'WORKER_DEPOSIT' ? 'Deposit' : 'Balance';
-                    return (
-                      <div>
-                        <div style={{ fontWeight: 600 }}>{formatBalance(value)}</div>
-                        <div style={{ fontSize: '0.7rem', color: '#999' }}>{label}</div>
-                      </div>
-                    );
-                  }},
-                  { key: 'reference', header: 'Reference', flex: 1.5, render: (t) => t.reference || '-' },
-                  { key: 'notes', header: 'Notes', flex: 2, render: (t) => (
-                    <span style={{ fontSize: '0.85rem', color: '#5a5d61' }}>
-                      {t.notes ? (t.notes.length > 50 ? t.notes.substring(0, 50) + '...' : t.notes) : '-'}
-                    </span>
-                  )},
+                  },
                 ]}
                 data={transactions}
               />
@@ -431,6 +447,39 @@ const WalletDetailPage = () => {
             disabled={modalLoading}
           >
             {modalLoading ? 'Adding...' : 'Add Balance'}
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Status Confirmation Modal */}
+      <Modal show={showStatusModal} onHide={() => !modalLoading && setShowStatusModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{wallet.isActive ? 'Deactivate Wallet' : 'Activate Wallet'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <p>
+            Are you sure you want to <strong>{wallet.isActive ? 'deactivate' : 'activate'}</strong> this wallet?
+          </p>
+          <p className="text-muted mb-0">
+            {wallet.isActive
+              ? 'The user will not be able to use their balance until the wallet is reactivated.'
+              : 'The user will regain access to their balance and wallet features.'}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowStatusModal(false)}
+            disabled={modalLoading}
+          >
+            Cancel
+          </button>
+          <button
+            className={`btn ${wallet.isActive ? 'btn-danger' : 'btn-success'}`}
+            onClick={confirmToggleStatus}
+            disabled={modalLoading}
+          >
+            {modalLoading ? 'Processing...' : (wallet.isActive ? 'Deactivate' : 'Activate')}
           </button>
         </Modal.Footer>
       </Modal>
