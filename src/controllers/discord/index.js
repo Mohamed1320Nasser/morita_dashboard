@@ -1,9 +1,9 @@
-// Discord Bot API runs on a separate port (3002)
-const BOT_API_URL = process.env.NEXT_PUBLIC_BOT_API_URL || 'http://localhost:3002'
+import { getData, postData } from '../../constant/axiosClon'
 
 export default {
     // ============================================
     // DISCORD CHANNELS STATUS & PUBLISHING
+    // Routes through main API which proxies to bot API
     // ============================================
 
     /**
@@ -12,9 +12,8 @@ export default {
      */
     getChannelsStatus: async () => {
         try {
-            const response = await fetch(`${BOT_API_URL}/discord/channels/status`)
-            const data = await response.json()
-            return { success: true, data: data?.data || data }
+            const response = await getData('/discord/channels/status')
+            return { success: true, data: response?.data || response }
         } catch (err) {
             console.log(err)
             return { success: false, error: err }
@@ -26,12 +25,8 @@ export default {
      */
     publishAllChannels: async () => {
         try {
-            const response = await fetch(`${BOT_API_URL}/discord/channels/publish/all`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            const data = await response.json()
-            return { success: data.success, data: data?.data || data, error: data.error }
+            const response = await postData('/discord/channels/publish/all', {})
+            return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
             return { success: false, error: err }
@@ -43,12 +38,8 @@ export default {
      */
     publishPricingChannel: async () => {
         try {
-            const response = await fetch(`${BOT_API_URL}/discord/channels/publish/pricing`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            const data = await response.json()
-            return { success: data.success, data: data?.data || data, error: data.error }
+            const response = await postData('/discord/channels/publish/pricing', {})
+            return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
             return { success: false, error: err }
@@ -60,12 +51,8 @@ export default {
      */
     publishTosChannel: async () => {
         try {
-            const response = await fetch(`${BOT_API_URL}/discord/channels/publish/tos`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            const data = await response.json()
-            return { success: data.success, data: data?.data || data, error: data.error }
+            const response = await postData('/discord/channels/publish/tos', {})
+            return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
             return { success: false, error: err }
@@ -77,12 +64,8 @@ export default {
      */
     publishTicketChannels: async () => {
         try {
-            const response = await fetch(`${BOT_API_URL}/discord/channels/publish/tickets`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            const data = await response.json()
-            return { success: data.success, data: data?.data || data, error: data.error }
+            const response = await postData('/discord/channels/publish/tickets', {})
+            return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
             return { success: false, error: err }
