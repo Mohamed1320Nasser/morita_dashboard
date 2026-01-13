@@ -100,13 +100,16 @@ const SettingsPage = () => {
     setLoadingStatus(true)
     try {
       const result = await discordController.getChannelsStatus()
+      // API response: { msg, status, data: { botConnected, botUsername, channels }, error }
+      // Controller returns: { success, data: <api response> }
+      const data = result.data?.data || result.data
 
-      if (result.success && result.data) {
+      if (result.success && data) {
         setDiscordStatus({
-          botConnected: result.data.botConnected,
-          botUsername: result.data.botUsername,
+          botConnected: data.botConnected,
+          botUsername: data.botUsername,
         })
-        setDiscordChannels(result.data.channels || [])
+        setDiscordChannels(data.channels || [])
       } else {
         notify('Failed to fetch Discord channels status')
       }
