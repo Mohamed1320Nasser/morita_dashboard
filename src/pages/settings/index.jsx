@@ -7,9 +7,10 @@ import PageHead from '@/components/templates/pageHead'
 import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
 import { notify } from '@/config/error'
-import { IoSave, IoSettings, IoWallet, IoPeople, IoServer, IoRefresh, IoTrash, IoCheckmarkCircle, IoCloseCircle } from 'react-icons/io5'
+import { IoSave, IoSettings, IoWallet, IoPeople, IoServer, IoRefresh, IoTrash, IoCheckmarkCircle, IoCloseCircle, IoCloudUpload, IoTime, IoAlert } from 'react-icons/io5'
 import { FaDiscord } from 'react-icons/fa'
 import { API } from '@/const'
+import discordController from '@/controllers/discord'
 
 const SettingsPage = () => {
   const [pageLoading, setPageLoading] = useState(true)
@@ -23,9 +24,12 @@ const SettingsPage = () => {
 
   // Discord Channel Management State
   const [discordStatus, setDiscordStatus] = useState(null)
+  const [discordChannels, setDiscordChannels] = useState([])
   const [refreshing, setRefreshing] = useState(false)
   const [clearing, setClearing] = useState(false)
   const [loadingStatus, setLoadingStatus] = useState(false)
+  const [publishingChannel, setPublishingChannel] = useState(null) // Track which channel is being published
+  const [publishingAll, setPublishingAll] = useState(false)
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -47,6 +51,7 @@ const SettingsPage = () => {
     }
 
     fetchConfig()
+    fetchDiscordChannelsStatus() // Load Discord channels status on page load
   }, [])
 
   const handlePayoutChange = (field, value) => {
@@ -91,75 +96,138 @@ const SettingsPage = () => {
   }
 
   // Discord Channel Management Functions
-  const fetchDiscordStatus = async () => {
+  const fetchDiscordChannelsStatus = async () => {
     setLoadingStatus(true)
     try {
-      const response = await fetch(`${API}/discord/pricing-channel/status`)
-      const data = await response.json()
+      const result = await discordController.getChannelsStatus()
 
-      if (data.success) {
-        setDiscordStatus(data.data)
+      if (result.success && result.data) {
+        setDiscordStatus({
+          botConnected: result.data.botConnected,
+          botUsername: result.data.botUsername,
+        })
+        setDiscordChannels(result.data.channels || [])
       } else {
-        notify('Failed to fetch Discord status')
+        notify('Failed to fetch Discord channels status')
       }
     } catch (error) {
-      console.error('Error fetching Discord status:', error)
-      notify('Failed to fetch Discord status')
+      console.error('Error fetching Discord channels status:', error)
+      notify('Failed to fetch Discord channels status')
     } finally {
       setLoadingStatus(false)
     }
   }
 
-  const handleRefreshChannel = async () => {
-    if (!confirm('This will clear and rebuild the Discord pricing channel. Continue?')) {
-      return
-    }
-
-    setRefreshing(true)
+  const handlePublishChannel = async (channelType) => {
+    setPublishingChannel(channelType)
     try {
-      const response = await fetch(`${API}/discord/pricing-channel/refresh`, {
-        method: 'POST',
-      })
-      const data = await response.json()
+      let result
+      switch (channelType) {
+        case 'PRICING':
+          result = await discordController.publishPricingChannel()
+          break
+        case 'TOS':
+          result = await discordController.publishTosChannel()
+          break
+        case 'TICKETS':
+          result = await discordController.publishTicketChannels()
+          break
+        default:
+          throw new Error('Unknown channel type')
+      }
 
-      if (data.success) {
-        notify('Discord pricing channel refreshed successfully!', 'success')
-        await fetchDiscordStatus()
+      if (result.success) {
+        notify(`${getChannelDisplayName(channelType)} published successfully!`, 'success')
+        await fetchDiscordChannelsStatus()
       } else {
-        notify(data.error || 'Failed to refresh channel')
+        notify(result.error?.message || `Failed to publish ${getChannelDisplayName(channelType)}`)
       }
     } catch (error) {
-      console.error('Error refreshing channel:', error)
-      notify('Failed to refresh Discord channel')
+      console.error(`Error publishing ${channelType}:`, error)
+      notify(`Failed to publish ${getChannelDisplayName(channelType)}`)
     } finally {
-      setRefreshing(false)
+      setPublishingChannel(null)
     }
   }
 
-  const handleClearChannel = async () => {
-    if (!confirm('This will clear all messages from the Discord pricing channel. Continue?')) {
+  const handlePublishAllChannels = async () => {
+    if (!confirm('This will publish all Discord channels. Continue?')) {
       return
     }
 
-    setClearing(true)
+    setPublishingAll(true)
     try {
-      const response = await fetch(`${API}/discord/pricing-channel/clear`, {
-        method: 'POST',
-      })
-      const data = await response.json()
+      const result = await discordController.publishAllChannels()
 
-      if (data.success) {
-        notify('Discord pricing channel cleared successfully!', 'success')
-        await fetchDiscordStatus()
+      if (result.success) {
+        notify('All channels published successfully!', 'success')
+        await fetchDiscordChannelsStatus()
       } else {
-        notify(data.error || 'Failed to clear channel')
+        // Show individual results
+        const failedChannels = result.data?.results?.filter(r => !r.success) || []
+        if (failedChannels.length > 0) {
+          notify(`Some channels failed to publish: ${failedChannels.map(r => r.channel).join(', ')}`, 'warning')
+        }
+        await fetchDiscordChannelsStatus()
       }
     } catch (error) {
-      console.error('Error clearing channel:', error)
-      notify('Failed to clear Discord channel')
+      console.error('Error publishing all channels:', error)
+      notify('Failed to publish all channels')
     } finally {
-      setClearing(false)
+      setPublishingAll(false)
     }
+  }
+
+  const getChannelDisplayName = (channelType) => {
+    switch (channelType) {
+      case 'PRICING':
+        return 'Pricing Channel'
+      case 'TOS':
+        return 'Terms of Service'
+      case 'TICKETS':
+        return 'Ticket Channels'
+      default:
+        return channelType
+    }
+  }
+
+  const getChannelDescription = (channelType) => {
+    switch (channelType) {
+      case 'PRICING':
+        return 'Services and pricing information'
+      case 'TOS':
+        return 'Terms of service with accept button'
+      case 'TICKETS':
+        return '4 ticket creation channels'
+      default:
+        return ''
+    }
+  }
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'published':
+        return <Badge type="success"><IoCheckmarkCircle /> Published</Badge>
+      case 'needs_update':
+        return <Badge type="warning"><IoAlert /> Needs Update</Badge>
+      case 'error':
+        return <Badge type="danger"><IoCloseCircle /> Error</Badge>
+      case 'never_published':
+      default:
+        return <Badge type="secondary"><IoTime /> Never Published</Badge>
+    }
+  }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Never'
+    const date = new Date(dateString)
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   if (pageLoading) return <Loading />
@@ -267,106 +335,142 @@ const SettingsPage = () => {
           </div>
         </Card>
 
-        {/* Discord Channel Management */}
+        {/* Discord Channels Management */}
         <Card>
           <div className={styles.sectionHeader}>
             <div className={styles.sectionIcon}>
               <FaDiscord />
             </div>
             <div>
-              <h3 className={styles.sectionTitle}>Discord Pricing Channel</h3>
+              <h3 className={styles.sectionTitle}>Discord Channels</h3>
               <p className={styles.sectionDescription}>
-                Manage the Discord pricing channel - refresh to update with latest data
+                Manually publish content to Discord channels. Changes won't appear until you publish.
               </p>
             </div>
           </div>
 
-          <div className={styles.discordActions}>
+          {/* Bot Connection Status */}
+          <div className={styles.discordStatus} style={{ marginBottom: '1.5rem' }}>
+            <div className={styles.statusGrid}>
+              <div className={styles.statusItem}>
+                <div className={styles.statusLabel}>Bot Status</div>
+                <div className={styles.statusValue}>
+                  {discordStatus?.botConnected ? (
+                    <Badge type="success">
+                      <IoCheckmarkCircle /> Connected
+                    </Badge>
+                  ) : (
+                    <Badge type="danger">
+                      <IoCloseCircle /> Disconnected
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.statusItem}>
+                <div className={styles.statusLabel}>Bot Username</div>
+                <div className={styles.statusValue}>{discordStatus?.botUsername || 'N/A'}</div>
+              </div>
+
+              <div className={styles.statusItem}>
+                <div className={styles.statusLabel}>Actions</div>
+                <div className={styles.statusValue}>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={fetchDiscordChannelsStatus}
+                    disabled={loadingStatus}
+                    style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
+                  >
+                    <IoRefresh /> {loadingStatus ? 'Loading...' : 'Refresh Status'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Publish All Button */}
+          <div className={styles.discordActions} style={{ marginBottom: '1.5rem' }}>
             <button
               className="btn btn-primary"
-              onClick={handleRefreshChannel}
-              disabled={refreshing || clearing}
+              onClick={handlePublishAllChannels}
+              disabled={publishingAll || publishingChannel || !discordStatus?.botConnected}
               style={{ minWidth: '200px' }}
             >
-              <IoRefresh /> {refreshing ? 'Refreshing...' : 'Refresh Channel'}
-            </button>
-
-            <button
-              className="btn btn-secondary"
-              onClick={handleClearChannel}
-              disabled={refreshing || clearing}
-              style={{ minWidth: '200px' }}
-            >
-              <IoTrash /> {clearing ? 'Clearing...' : 'Clear Channel'}
-            </button>
-
-            <button
-              className="btn btn-secondary"
-              onClick={fetchDiscordStatus}
-              disabled={loadingStatus}
-              style={{ minWidth: '200px' }}
-            >
-              {loadingStatus ? 'Loading...' : 'Check Status'}
+              <IoCloudUpload /> {publishingAll ? 'Publishing All...' : 'Publish All Channels'}
             </button>
           </div>
 
-          {discordStatus && (
-            <div className={styles.discordStatus}>
-              <div className={styles.statusGrid}>
-                <div className={styles.statusItem}>
-                  <div className={styles.statusLabel}>Bot Status</div>
-                  <div className={styles.statusValue}>
-                    {discordStatus.botConnected ? (
-                      <Badge type="success">
-                        <IoCheckmarkCircle /> Connected
-                      </Badge>
-                    ) : (
-                      <Badge type="danger">
-                        <IoCloseCircle /> Disconnected
-                      </Badge>
-                    )}
+          {/* Channel Cards */}
+          <div className={styles.channelsList}>
+            {discordChannels.map((channel) => (
+              <div key={channel.channelType} className={styles.channelCard}>
+                <div className={styles.channelHeader}>
+                  <div className={styles.channelInfo}>
+                    <h4 className={styles.channelName}>{getChannelDisplayName(channel.channelType)}</h4>
+                    <p className={styles.channelDesc}>{getChannelDescription(channel.channelType)}</p>
+                  </div>
+                  <div className={styles.channelStatus}>
+                    {getStatusBadge(channel.status)}
                   </div>
                 </div>
 
-                <div className={styles.statusItem}>
-                  <div className={styles.statusLabel}>Bot Username</div>
-                  <div className={styles.statusValue}>{discordStatus.botUsername || 'N/A'}</div>
-                </div>
-
-                <div className={styles.statusItem}>
-                  <div className={styles.statusLabel}>Channel Manager</div>
-                  <div className={styles.statusValue}>
-                    {discordStatus.channelManagerInitialized ? (
-                      <Badge type="success">Initialized</Badge>
-                    ) : (
-                      <Badge type="danger">Not Initialized</Badge>
-                    )}
+                <div className={styles.channelDetails}>
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>Channel ID:</span>
+                    <span className={styles.detailValue}>{channel.channelId || 'Not configured'}</span>
                   </div>
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>Channel Name:</span>
+                    <span className={styles.detailValue}>{channel.channelName || 'N/A'}</span>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>Last Published:</span>
+                    <span className={styles.detailValue}>{formatDate(channel.lastPublishedAt)}</span>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>Messages:</span>
+                    <span className={styles.detailValue}>{channel.messageCount || 0}</span>
+                  </div>
+                  {channel.lastError && (
+                    <div className={styles.detailItem} style={{ gridColumn: '1 / -1' }}>
+                      <span className={styles.detailLabel}>Last Error:</span>
+                      <span className={styles.detailValue} style={{ color: '#ef4444' }}>{channel.lastError}</span>
+                    </div>
+                  )}
                 </div>
 
-                {discordStatus.channel && (
-                  <>
-                    <div className={styles.statusItem}>
-                      <div className={styles.statusLabel}>Channel Name</div>
-                      <div className={styles.statusValue}>{discordStatus.channel.name}</div>
-                    </div>
-
-                    <div className={styles.statusItem}>
-                      <div className={styles.statusLabel}>Cached Messages</div>
-                      <div className={styles.statusValue}>{discordStatus.channel.messageCount}</div>
-                    </div>
-                  </>
-                )}
+                <div className={styles.channelActions}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handlePublishChannel(channel.channelType)}
+                    disabled={publishingChannel === channel.channelType || publishingAll || !discordStatus?.botConnected}
+                  >
+                    <IoCloudUpload /> {publishingChannel === channel.channelType ? 'Publishing...' : 'Publish to Discord'}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            ))}
+
+            {discordChannels.length === 0 && !loadingStatus && (
+              <div className={styles.emptyState}>
+                No channels configured. Make sure the Discord bot is running.
+              </div>
+            )}
+
+            {loadingStatus && discordChannels.length === 0 && (
+              <div className={styles.emptyState}>
+                Loading channels status...
+              </div>
+            )}
+          </div>
 
           <div className={styles.infoBox} style={{ marginTop: '20px' }}>
-            <h4>💡 Discord Channel Actions</h4>
+            <h4>Discord Channel Publishing</h4>
             <ul>
-              <li><strong>Refresh Channel:</strong> Clears all messages and rebuilds with latest pricing data (recommended when prices change)</li>
-              <li><strong>Clear Channel:</strong> Removes all messages without rebuilding (for manual cleanup)</li>
-              <li><strong>Check Status:</strong> View current Discord bot connection and channel information</li>
+              <li><strong>Pricing Channel:</strong> Shows all services with pricing. Publish after updating prices or adding services.</li>
+              <li><strong>Terms of Service:</strong> Shows TOS with accept button. Publish after updating TOS content.</li>
+              <li><strong>Ticket Channels:</strong> Creates 4 ticket channels (Purchase Services, Purchase Gold, Sell Gold, Swap Crypto).</li>
+              <li><strong>Status Colors:</strong> Green = Published, Yellow = Needs Update, Gray = Never Published, Red = Error</li>
             </ul>
           </div>
         </Card>
