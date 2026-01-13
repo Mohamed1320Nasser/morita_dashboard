@@ -13,7 +13,8 @@ export default {
     getChannelsStatus: async () => {
         try {
             const response = await getData('/discord/channels/status')
-            return { success: true, data: response?.data || response }
+            // Response structure: { msg, status, data: { botConnected, botUsername, channels }, error }
+            return { success: true, data: response }
         } catch (err) {
             console.log(err)
             return { success: false, error: err }
