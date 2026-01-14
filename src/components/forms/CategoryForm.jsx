@@ -32,6 +32,7 @@ const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSub
   const [description, setDescription] = useState(initial.description || '')
   const [emoji, setEmoji] = useState(normalizeIncomingEmoji(initial.emoji))
   const [active, setActive] = useState(initial.active ?? true)
+  const [displayOrder, setDisplayOrder] = useState(initial.displayOrder ?? 0)
 
   // Ticket Settings
   const [welcomeTitle, setWelcomeTitle] = useState(initial.ticketSettings?.welcomeTitle || 'Welcome to Your Ticket!')
@@ -41,11 +42,11 @@ const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSub
   const [footerText, setFooterText] = useState(initial.ticketSettings?.footerText || '')
 
   const welcomeMessageRef = useRef(null)
-  const lastInitialRef = useRef(JSON.stringify({ name: initial.name, description: initial.description, emoji: initial.emoji, active: initial.active }))
+  const lastInitialRef = useRef(JSON.stringify({ name: initial.name, description: initial.description, emoji: initial.emoji, active: initial.active, displayOrder: initial.displayOrder }))
 
   // Sync when initial prop changes (edit mode) - only when values actually change
   useEffect(() => {
-    const currentKey = JSON.stringify({ name: initial.name, description: initial.description, emoji: initial.emoji, active: initial.active })
+    const currentKey = JSON.stringify({ name: initial.name, description: initial.description, emoji: initial.emoji, active: initial.active, displayOrder: initial.displayOrder })
 
     // Only sync if the initial data actually changed
     if (currentKey !== lastInitialRef.current) {
@@ -55,6 +56,7 @@ const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSub
       setDescription(initial.description || '')
       setEmoji(normalizeIncomingEmoji(initial.emoji))
       setActive(initial.active ?? true)
+      setDisplayOrder(initial.displayOrder ?? 0)
     }
 
     // Sync ticket settings
@@ -65,7 +67,7 @@ const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSub
       setBannerUrl(initial.ticketSettings.bannerUrl || '')
       setFooterText(initial.ticketSettings.footerText || '')
     }
-  }, [initial.name, initial.description, initial.emoji, initial.active, initial.ticketSettings])
+  }, [initial.name, initial.description, initial.emoji, initial.active, initial.displayOrder, initial.ticketSettings])
 
   const handleSubmit = () => {
     const payload = {
@@ -73,6 +75,7 @@ const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSub
       description,
       emoji: valueForSubmit(emoji),
       active,
+      displayOrder: parseInt(displayOrder) || 0,
       // Include ticket settings
       ticketSettings: {
         welcomeTitle,
@@ -112,7 +115,17 @@ const CategoryForm = ({ title, initial = {}, submitting = false, onCancel, onSub
         <InputBox label="Category Name" placeholder="Enter category name" value={name} valueChange={setName} />
         <EmojiField label="Emoji" value={emoji} onChange={setEmoji} placeholder="Pick an emoji (e.g., 🎮)" />
 
-        {/* Row 2 */}
+        {/* Row 2 - Display Order */}
+        <InputBox
+          label="Display Order"
+          placeholder="0"
+          value={displayOrder}
+          valueChange={setDisplayOrder}
+          type="number"
+        />
+        <div></div>
+
+        {/* Row 3 */}
         <div className={grid.span2}>
           <label style={{ display: 'block', marginBottom: 6 }}>Description</label>
           <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #ddd' }} placeholder="Enter category description" />
