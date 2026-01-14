@@ -11,18 +11,24 @@ import { TbUsers, TbTicket } from 'react-icons/tb'
 import { LuFilePlus2, LuGamepad2 } from 'react-icons/lu'
 import { MdCategory } from 'react-icons/md'
 import { IoFlashSharp, IoSettingsSharp } from 'react-icons/io5'
+import { clearAuth, getUser } from '@/utils/storage'
+import { postData } from '@/constant/axiosClon'
 
 const Navbar = () => {
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [menu, setMenu] = useState(false)
   useEffect(() => {
-    const user = JSON.parse(sessionStorage?.getItem('user'))
-    setUser(user)
+    const userData = getUser()
+    setUser(userData)
   }, [])
-  const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("isAuthed");
+  const handleLogout = async () => {
+    try {
+      await postData('/auth/logout', {})
+    } catch (err) {
+      console.log('Logout API error:', err)
+    }
+    clearAuth()
     router.push('/login')
   }
   const [dashPages, setDashPages] = useState([
