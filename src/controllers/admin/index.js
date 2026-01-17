@@ -38,7 +38,7 @@ export default {
     // Order Management
     getAllOrders: async (query) => {
         try {
-            const response = await getData(`/api/admin/orders${query ? `?${query}` : ''}`);
+            const response = await getData(`/admin/orders${query ? `?${query}` : ''}`);
             // Triple-nested unwrapping for admin endpoints
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             const list = payload?.list || payload?.orders || (Array.isArray(payload) ? payload : [])
@@ -65,7 +65,7 @@ export default {
 
     getOrderStats: async () => {
         try {
-            const response = await getData('/api/admin/orders/stats');
+            const response = await getData('/admin/orders/stats');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -85,7 +85,7 @@ export default {
                 queryString = `?days=${days}`;
             }
 
-            const response = await getData(`/api/admin/orders/stats/volume${queryString}`);
+            const response = await getData(`/admin/orders/stats/volume${queryString}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -96,7 +96,7 @@ export default {
 
     getOrderById: async (orderId) => {
         try {
-            const response = await getData(`/api/admin/orders/${orderId}`);
+            const response = await getData(`/admin/orders/${orderId}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: { order: payload } }
         } catch (err) {
@@ -107,7 +107,7 @@ export default {
 
     updateOrderStatus: async (orderId, data) => {
         try {
-            const response = await putData(`/api/admin/orders/${orderId}/status`, data);
+            const response = await putData(`/admin/orders/${orderId}/status`, data);
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -117,7 +117,7 @@ export default {
 
     cancelOrder: async (orderId, data) => {
         try {
-            const response = await putData(`/api/admin/orders/${orderId}/cancel`, data);
+            const response = await putData(`/admin/orders/${orderId}/cancel`, data);
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -127,7 +127,7 @@ export default {
 
     reassignWorker: async (orderId, data) => {
         try {
-            const response = await putData(`/api/admin/orders/${orderId}/reassign`, data);
+            const response = await putData(`/admin/orders/${orderId}/reassign`, data);
             return { success: true, data: response }
         } catch (err) {
             console.log(err)

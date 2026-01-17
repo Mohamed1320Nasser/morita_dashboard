@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styles from './orders.module.scss'
 import Card from '@/components/atoms/cards'
-import Head from '@/components/molecules/head/head'
 import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
 import Loading from '@/components/atoms/loading'
@@ -10,32 +9,36 @@ import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
 import moment from 'moment'
-import { IoArrowBack, IoCheckmark, IoTime, IoAlert } from 'react-icons/io5'
+import { IoArrowBack, IoCheckmark, IoTime, IoAlert, IoPersonOutline } from 'react-icons/io5'
+import { ORDER_STATUS, STATUS_LABELS, STATUS_BADGE_TYPES, getNextStatuses } from '@/constants/orderStatus'
 
 const OrderDetailPage = () => {
   const router = useRouter()
   const { id } = router.query
   const [pageLoading, setPageLoading] = useState(true)
   const [order, setOrder] = useState(null)
+  const [showStatusModal, setShowStatusModal] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState('')
+  const [statusReason, setStatusReason] = useState('')
+  const [updatingStatus, setUpdatingStatus] = useState(false)
+
+  const fetchOrder = async () => {
+    try {
+      const res = await adminController.getOrderById(id)
+      if (res && res.success && res.data.order) {
+        setOrder(res.data.order)
+      } else {
+        notify(res?.error?.message || 'Failed to load order')
+      }
+    } catch (e) {
+      notify('Error loading order')
+    } finally {
+      setPageLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (!id) return
-
-    const fetchOrder = async () => {
-      try {
-        const res = await adminController.getOrderById(id)
-        if (res && res.success && res.data.order) {
-          setOrder(res.data.order)
-        } else {
-          notify(res?.error?.message || 'Failed to load order')
-        }
-      } catch (e) {
-        notify('Error loading order')
-      } finally {
-        setPageLoading(false)
-      }
-    }
-
     fetchOrder()
   }, [id])
 
@@ -45,28 +48,58 @@ const OrderDetailPage = () => {
   }
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case 'PENDING':
-        return <Badge type="secondary">Pending</Badge>
-      case 'ASSIGNED':
-        return <Badge type="info">Assigned</Badge>
-      case 'IN_PROGRESS':
-        return <Badge type="warning">In Progress</Badge>
-      case 'AWAITING_CONFIRMATION':
-      case 'AWAITING_CONFIRM':
-        return <Badge type="warning">Awaiting Confirmation</Badge>
-      case 'COMPLETED':
-        return <Badge type="success">Completed</Badge>
-      case 'CANCELLED':
-        return <Badge type="danger">Cancelled</Badge>
-      case 'DISPUTED':
-        return <Badge type="danger">Disputed</Badge>
-      default:
-        return <Badge>{status}</Badge>
-    }
+    const badgeType = STATUS_BADGE_TYPES[status] || 'secondary'
+    const label = STATUS_LABELS[status] || status
+    return <Badge type={badgeType}>{label}</Badge>
   }
 
   const handleBack = () => router.push('/orders')
+
+  const handleOpenStatusModal = () => {
+    setSelectedStatus('')
+    setStatusReason('')
+    setShowStatusModal(true)
+  }
+
+  const handleCloseStatusModal = () => {
+    setShowStatusModal(false)
+    setSelectedStatus('')
+    setStatusReason('')
+  }
+
+  const handleUpdateStatus = async () => {
+    if (!selectedStatus) {
+      notify('Please select a status', 'error')
+      return
+    }
+    if (!statusReason.trim()) {
+      notify('Please provide a reason', 'error')
+      return
+    }
+
+    setUpdatingStatus(true)
+    try {
+      const res = await adminController.updateOrderStatus(id, {
+        status: selectedStatus,
+        adminId: '1', // TODO: Get from auth context
+        reason: statusReason,
+      })
+
+      if (res && res.success) {
+        notify('Status updated successfully', 'success')
+        handleCloseStatusModal()
+        fetchOrder() // Refresh order data
+      } else {
+        notify(res?.error?.message || 'Failed to update status', 'error')
+      }
+    } catch (e) {
+      notify(e?.response?.data?.message || 'Error updating status', 'error')
+    } finally {
+      setUpdatingStatus(false)
+    }
+  }
+
+  const availableStatuses = order ? getNextStatuses(order.status) : []
 
   if (pageLoading) return <Loading />
   if (!order) {
@@ -84,36 +117,42 @@ const OrderDetailPage = () => {
 
   return (
     <div className={styles.orderDetail}>
-      <PageHead current={`Order ${order.orderNumber}`}>
-        <Head title={`Order ${order.orderNumber}`} noButton>
-          Order details and management
-        </Head>
-      </PageHead>
-      <Container>
+      <PageHead current="Order Details">
         <div className={styles.backLink} onClick={handleBack}>
           <IoArrowBack /> Back to Orders
         </div>
-
+      </PageHead>
+      <Container>
         {/* Order Header */}
         <div className={styles.orderHeader}>
-          <div className={styles.orderInfo}>
-            <div className={styles.orderId}>Order ID: {order.id}</div>
-            <div className={styles.orderNumber}>
-              Order {order.orderNumber}
-              {getStatusBadge(order.status)}
-            </div>
-            <div className={styles.orderMeta}>
-              <span>Created {moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</span>
-              {order.completedAt && (
-                <span>• Completed {moment(order.completedAt).format('DD/MM/YYYY HH:mm')}</span>
-              )}
-            </div>
+          <div className={styles.orderTitleRow}>
+            <h2 className={styles.orderTitle}>Order #{order.orderNumber}</h2>
+            {getStatusBadge(order.status)}
           </div>
           <div className={styles.valueCard}>
             <div className={styles.valueLabel}>Order Value</div>
             <div className={styles.valueAmount}>{formatCurrency(order.orderValue)}</div>
           </div>
         </div>
+
+        {/* Admin Actions */}
+        <Card>
+          <div className={styles.adminActions}>
+            <h3 className={styles.sectionTitle}>Admin Actions</h3>
+            <div className={styles.actionButtons}>
+              <button
+                className={styles.actionBtn}
+                onClick={handleOpenStatusModal}
+                disabled={availableStatuses.length === 0}
+              >
+                Update Status
+              </button>
+            </div>
+            {availableStatuses.length === 0 && (
+              <p className={styles.noActions}>No status changes available for this order.</p>
+            )}
+          </div>
+        </Card>
 
         {/* Order Information Grid */}
         <div className={styles.infoGrid}>
@@ -123,7 +162,7 @@ const OrderDetailPage = () => {
             <div className={styles.infoContent}>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Name</span>
-                <span className={styles.value}>{order.customer?.discordDisplayName || order.customer?.fullname || order.customer?.username || 'Unknown'}</span>
+                <span className={`${styles.value} ${styles.highlight}`}>{order.customer?.discordDisplayName || order.customer?.fullname || order.customer?.username || 'Unknown'}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Discord ID</span>
@@ -131,7 +170,7 @@ const OrderDetailPage = () => {
               </div>
               {order.customer?.discordUsername && (
                 <div className={styles.infoRow}>
-                  <span className={styles.label}>Discord Username</span>
+                  <span className={styles.label}>Username</span>
                   <span className={styles.value}>@{order.customer.discordUsername}</span>
                 </div>
               )}
@@ -150,7 +189,7 @@ const OrderDetailPage = () => {
                 <>
                   <div className={styles.infoRow}>
                     <span className={styles.label}>Name</span>
-                    <span className={styles.value}>{order.worker.discordDisplayName || order.worker.fullname || order.worker.username}</span>
+                    <span className={`${styles.value} ${styles.highlight}`}>{order.worker.discordDisplayName || order.worker.fullname || order.worker.username}</span>
                   </div>
                   <div className={styles.infoRow}>
                     <span className={styles.label}>Discord ID</span>
@@ -158,7 +197,7 @@ const OrderDetailPage = () => {
                   </div>
                   {order.worker.discordUsername && (
                     <div className={styles.infoRow}>
-                      <span className={styles.label}>Discord Username</span>
+                      <span className={styles.label}>Username</span>
                       <span className={styles.value}>@{order.worker.discordUsername}</span>
                     </div>
                   )}
@@ -170,8 +209,9 @@ const OrderDetailPage = () => {
                   </div>
                 </>
               ) : (
-                <div style={{ textAlign: 'center', padding: '1rem', color: '#9ca3af' }}>
-                  No worker assigned
+                <div className={styles.emptyState}>
+                  <IoPersonOutline className={styles.emptyIcon} />
+                  <span>Unassigned</span>
                 </div>
               )}
             </div>
@@ -183,7 +223,7 @@ const OrderDetailPage = () => {
             <div className={styles.infoContent}>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Order Value</span>
-                <span className={styles.value}>{formatCurrency(order.orderValue)}</span>
+                <span className={`${styles.value} ${styles.highlight}`}>{formatCurrency(order.orderValue)}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Deposit</span>
@@ -200,7 +240,7 @@ const OrderDetailPage = () => {
         {/* Service & Job Details */}
         {(order.service || order.jobDetails) && (
           <Card>
-            <h3 className={styles.timelineTitle}>Service & Job Details</h3>
+            <h3 className={styles.sectionTitle}>Service & Job Details</h3>
             {order.service && (
               <div style={{ marginBottom: '1rem' }}>
                 <strong>Service:</strong> {order.service.name}
@@ -230,7 +270,7 @@ const OrderDetailPage = () => {
         {/* Completion Notes */}
         {order.completionNotes && (
           <Card>
-            <h3 className={styles.timelineTitle}>Completion Notes</h3>
+            <h3 className={styles.sectionTitle}>Completion Notes</h3>
             <div
               style={{
                 padding: '1rem',
@@ -247,7 +287,7 @@ const OrderDetailPage = () => {
         {/* Customer Review */}
         {(order.rating || order.review) && (
           <Card>
-            <h3 className={styles.timelineTitle}>⭐ Customer Feedback</h3>
+            <h3 className={styles.sectionTitle}>Customer Feedback</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {order.rating && (
                 <div>
@@ -289,7 +329,7 @@ const OrderDetailPage = () => {
         {/* Timeline */}
         <Card>
           <div className={styles.timeline}>
-            <h3 className={styles.timelineTitle}>Order Timeline</h3>
+            <h3 className={styles.sectionTitle}>Order Timeline</h3>
 
             <div className={styles.timelineItem}>
               <div className={`${styles.timelineIcon} ${styles.blue}`}>
@@ -377,9 +417,64 @@ const OrderDetailPage = () => {
           </div>
         </Card>
       </Container>
+
+      {/* Status Update Modal */}
+      {showStatusModal && (
+        <div className={styles.modalOverlay} onClick={handleCloseStatusModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>Update Order Status</h3>
+            <p className={styles.modalSubtitle}>
+              Current status: <strong>{STATUS_LABELS[order.status]}</strong>
+            </p>
+
+            <div className={styles.formGroup}>
+              <label>New Status</label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className={styles.select}
+              >
+                <option value="">Select status...</option>
+                {availableStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {STATUS_LABELS[status]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Reason for change</label>
+              <textarea
+                value={statusReason}
+                onChange={(e) => setStatusReason(e.target.value)}
+                placeholder="Enter reason for status change..."
+                className={styles.textarea}
+                rows={3}
+              />
+            </div>
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.cancelBtn}
+                onClick={handleCloseStatusModal}
+                disabled={updatingStatus}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.confirmBtn}
+                onClick={handleUpdateStatus}
+                disabled={updatingStatus || !selectedStatus || !statusReason.trim()}
+              >
+                {updatingStatus ? 'Updating...' : 'Update Status'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
-
 
 export default OrderDetailPage

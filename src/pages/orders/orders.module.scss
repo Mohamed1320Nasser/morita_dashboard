@@ -146,6 +146,28 @@
       margin-bottom: 0.5rem;
     }
   }
+
+  .viewBtn {
+    padding: 0.375rem 0.875rem;
+    border-radius: 6px;
+    border: 1px solid $main;
+    background: transparent;
+    color: $main;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $main;
+      color: #fff;
+    }
+  }
+
+  .ratingStars {
+    cursor: default;
+    font-size: 0.875rem;
+  }
 }
 
 .orderDetail {
@@ -168,33 +190,22 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     gap: 1rem;
     flex-wrap: wrap;
 
-    .orderInfo {
-      .orderId {
-        font-size: 0.8rem;
-        color: #7a7e85;
-        margin-bottom: 0.25rem;
-      }
+    .orderTitleRow {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
 
-      .orderNumber {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #12161c;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-
-      .orderMeta {
-        display: flex;
-        gap: 1rem;
-        font-size: 0.85rem;
-        color: #7a7e85;
-      }
+    .orderTitle {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #12161c;
+      margin: 0;
     }
 
     .valueCard {
@@ -229,6 +240,8 @@
       border: 1px solid #eaeef3;
       border-radius: 12px;
       padding: 1.25rem;
+      overflow: hidden;
+      min-width: 0;
 
       .infoTitle {
         font-size: 0.85rem;
@@ -244,7 +257,8 @@
           display: flex;
           justify-content: space-between;
           padding: 0.5rem 0;
-          font-size: 0.9rem;
+          font-size: 0.875rem;
+          gap: 1rem;
 
           &:not(:last-child) {
             border-bottom: 1px solid #f3f4f6;
@@ -252,11 +266,40 @@
 
           .label {
             color: #7a7e85;
+            flex-shrink: 0;
+            min-width: 80px;
           }
 
           .value {
-            font-weight: 600;
+            font-weight: 400;
             color: #12161c;
+            text-align: right;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            max-width: 100%;
+
+            &.highlight {
+              font-weight: 600;
+            }
+          }
+        }
+
+        .emptyState {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 1.5rem 1rem;
+          color: #9ca3af;
+          gap: 0.5rem;
+
+          .emptyIcon {
+            font-size: 2rem;
+            opacity: 0.5;
+          }
+
+          span {
+            font-size: 0.875rem;
           }
         }
       }
@@ -325,6 +368,184 @@
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #12161c;
+    margin: 0 0 1rem 0;
+  }
+
+  .adminActions {
+    .actionButtons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    .actionBtn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid $main;
+      background: $main;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: darken($main, 8%);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .noActions {
+      margin-top: 0.75rem;
+      font-size: 0.875rem;
+      color: #7a7e85;
+    }
+  }
+
+  // Modal styles
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    .modalTitle {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #12161c;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .modalSubtitle {
+      font-size: 0.875rem;
+      color: #7a7e85;
+      margin: 0 0 1.5rem 0;
+    }
+
+    .formGroup {
+      margin-bottom: 1rem;
+
+      label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #12161c;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #e0e4e8;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #12161c;
+      background: #fff;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: $main;
+      }
+    }
+
+    .textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #e0e4e8;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #12161c;
+      resize: vertical;
+      font-family: inherit;
+
+      &:focus {
+        outline: none;
+        border-color: $main;
+      }
+
+      &::placeholder {
+        color: #9ca3af;
+      }
+    }
+
+    .modalActions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .cancelBtn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid #e0e4e8;
+      background: #fff;
+      color: #5a5d61;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: #f3f4f6;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .confirmBtn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid $main;
+      background: $main;
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: darken($main, 8%);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
   }
 }
 

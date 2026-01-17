@@ -15,6 +15,7 @@ import moment from 'moment'
 import Pagination from '@mui/material/Pagination'
 import { IoCart, IoTrendingUp, IoCheckmark, IoClose, IoDownload } from 'react-icons/io5'
 import { exportToCSV, getTimestampFilename, ExportConfigs } from '@/utils/csvExport'
+import { ORDER_STATUS, STATUS_LABELS, STATUS_BADGE_TYPES } from '@/constants/orderStatus'
 
 const OrdersPage = () => {
   const router = useRouter()
@@ -146,29 +147,9 @@ const OrdersPage = () => {
   }
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case 'PENDING':
-        return <Badge type="secondary">Pending</Badge>
-      case 'CLAIMING':
-        return <Badge type="info">Claiming</Badge>
-      case 'ASSIGNED':
-        return <Badge type="info">Assigned</Badge>
-      case 'IN_PROGRESS':
-        return <Badge type="warning">In Progress</Badge>
-      case 'AWAITING_CONFIRMATION':
-      case 'AWAITING_CONFIRM':
-        return <Badge type="warning">Awaiting Confirmation</Badge>
-      case 'COMPLETED':
-        return <Badge type="success">Completed</Badge>
-      case 'CANCELLED':
-        return <Badge type="danger">Cancelled</Badge>
-      case 'DISPUTED':
-        return <Badge type="danger">Disputed</Badge>
-      case 'REFUNDED':
-        return <Badge type="secondary">Refunded</Badge>
-      default:
-        return <Badge>{status}</Badge>
-    }
+    const badgeType = STATUS_BADGE_TYPES[status] || 'secondary'
+    const label = STATUS_LABELS[status] || status
+    return <Badge type={badgeType}>{label}</Badge>
   }
 
   if (pageLoading) return <Loading />
@@ -239,87 +220,18 @@ const OrdersPage = () => {
               >
                 All
               </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'PENDING' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('PENDING')
-                  setPage(1)
-                }}
-              >
-                Pending
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'CLAIMING' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('CLAIMING')
-                  setPage(1)
-                }}
-              >
-                Claiming
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'ASSIGNED' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('ASSIGNED')
-                  setPage(1)
-                }}
-              >
-                Assigned
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'IN_PROGRESS' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('IN_PROGRESS')
-                  setPage(1)
-                }}
-              >
-                In Progress
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'AWAITING_CONFIRM' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('AWAITING_CONFIRM')
-                  setPage(1)
-                }}
-              >
-                Awaiting Confirm
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'COMPLETED' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('COMPLETED')
-                  setPage(1)
-                }}
-              >
-                Completed
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'CANCELLED' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('CANCELLED')
-                  setPage(1)
-                }}
-              >
-                Cancelled
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'DISPUTED' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('DISPUTED')
-                  setPage(1)
-                }}
-              >
-                Disputed
-              </button>
-              <button
-                className={`${styles.filterBtn} ${statusFilter === 'REFUNDED' ? styles.active : ''}`}
-                onClick={() => {
-                  setStatusFilter('REFUNDED')
-                  setPage(1)
-                }}
-              >
-                Refunded
-              </button>
+              {Object.entries(ORDER_STATUS).map(([key, value]) => (
+                <button
+                  key={key}
+                  className={`${styles.filterBtn} ${statusFilter === value ? styles.active : ''}`}
+                  onClick={() => {
+                    setStatusFilter(value)
+                    setPage(1)
+                  }}
+                >
+                  {STATUS_LABELS[value]}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -338,49 +250,34 @@ const OrdersPage = () => {
                   key: 'orderNumber',
                   header: 'Order #',
                   className: 'orderNumber',
-                  flex: 1,
+                  flex: 0.8,
                   render: (o) => (
-                    <div>
-                      <div style={{ fontWeight: 600, color: '#12161c' }}>
-                        {o.orderNumber}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
-                        {o.id}
-                      </div>
-                    </div>
+                    <span style={{ fontWeight: 600, color: '#12161c' }}>
+                      #{o.orderNumber}
+                    </span>
                   ),
                 },
                 {
                   key: 'customer',
                   header: 'Customer',
                   className: 'customer',
-                  flex: 1.5,
+                  flex: 1,
                   render: (o) => (
-                    <div>
-                      <div style={{ fontWeight: 500, color: '#12161c' }}>
-                        {o.customer?.discordDisplayName || o.customer?.fullname || o.customer?.username || 'Unknown'}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
-                        {o.customer?.discordId ? `Discord: ${o.customer.discordId}` : (o.customer?.username || '-')}
-                      </div>
-                    </div>
+                    <span style={{ fontWeight: 500, color: '#12161c' }}>
+                      {o.customer?.discordDisplayName || o.customer?.fullname || o.customer?.username || 'Unknown'}
+                    </span>
                   ),
                 },
                 {
                   key: 'worker',
                   header: 'Worker',
                   className: 'worker',
-                  flex: 1.5,
+                  flex: 1,
                   render: (o) =>
                     o.worker ? (
-                      <div>
-                        <div style={{ fontWeight: 500, color: '#12161c' }}>
-                          {o.worker?.discordDisplayName || o.worker?.fullname || o.worker?.username}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
-                          {o.worker?.discordId ? `Discord: ${o.worker.discordId}` : (o.worker?.username || '-')}
-                        </div>
-                      </div>
+                      <span style={{ fontWeight: 500, color: '#12161c' }}>
+                        {o.worker?.discordDisplayName || o.worker?.fullname || o.worker?.username}
+                      </span>
                     ) : (
                       <span style={{ color: '#9ca3af' }}>Unassigned</span>
                     ),
@@ -407,17 +304,17 @@ const OrdersPage = () => {
                   key: 'rating',
                   header: 'Rating',
                   className: 'rating',
-                  flex: 1,
+                  flex: 0.8,
                   render: (o) => {
                     if (!o.rating) return <span style={{ color: '#9ca3af' }}>-</span>
                     const stars = '⭐'.repeat(o.rating)
                     return (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span>{stars}</span>
-                        <span style={{ fontSize: '0.75rem', color: '#7a7e85' }}>
-                          ({o.rating}/5)
-                        </span>
-                      </div>
+                      <span
+                        className={styles.ratingStars}
+                        title={`${o.rating}/5`}
+                      >
+                        {stars}
+                      </span>
                     )
                   },
                 },
@@ -436,7 +333,7 @@ const OrdersPage = () => {
                   width: '100px',
                   render: (o) => (
                     <button
-                      className="btn btn-sm btn-outline-primary"
+                      className={styles.viewBtn}
                       onClick={() => handleView(o.id)}
                     >
                       View
