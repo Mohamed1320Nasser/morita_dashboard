@@ -23,7 +23,7 @@ const EditPricingMethod = () => {
 
   useEffect(() => {
     if (!serviceId || !methodId) return
-    
+
     const fetchData = async () => {
       try {
         // Fetch service
@@ -34,17 +34,17 @@ const EditPricingMethod = () => {
 
         const methodRes = await pricingController.getPricingMethodById(methodId)
         console.log('[EditPricingMethod] methodRes:', methodRes)
-        
+
         if (methodRes.success && methodRes.data?.pricingMethod) {
           const methodData = methodRes.data.pricingMethod
           console.log('[EditPricingMethod] Setting initialData:', methodData)
-          
+
           // Map backend response to form initial data
           // Ensure basePrice is properly converted (may be Decimal type from Prisma)
           const basePriceValue = methodData.basePrice !== undefined && methodData.basePrice !== null
             ? (typeof methodData.basePrice === 'string' ? parseFloat(methodData.basePrice) : Number(methodData.basePrice))
             : ''
-          
+
           setInitialData({
             id: methodData.id,
             name: methodData.name || '',
@@ -57,8 +57,9 @@ const EditPricingMethod = () => {
             displayOrder: methodData.displayOrder || 0,
             active: methodData.active ?? true,
             serviceId: methodData.serviceId || serviceId,
+            shortcuts: methodData.shortcuts,
           })
-          
+
           console.log('[EditPricingMethod] Initial data set:', {
             ...methodData,
             basePrice: basePriceValue
@@ -85,7 +86,7 @@ const EditPricingMethod = () => {
     if (!payload.basePrice || payload.basePrice <= 0) {
       errors.push('Base price must be greater than 0')
     }
-    
+
     if (errors.length) {
       notify(errors[0])
       return
@@ -94,7 +95,7 @@ const EditPricingMethod = () => {
     try {
       setSubmitting(true)
       const response = await pricingController.updatePricingMethod(methodId, payload)
-      
+
       if (response && response.success) {
         toast.success('Pricing method updated successfully!')
         router.push(`/pricing/services/${serviceId}/methods`)
@@ -123,7 +124,7 @@ const EditPricingMethod = () => {
   return (
     <div className={styles.pricingMethodForm}>
       <PageHead current="Pricing">
-        <Head 
+        <Head
           title={`Edit Pricing Method${service ? ` - ${service.name}` : ''}`}
           back={`/pricing/services/${serviceId}/methods`}
         />

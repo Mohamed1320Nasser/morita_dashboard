@@ -16,7 +16,8 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
     description: initial.description || '',
     displayOrder: initial.displayOrder || 0,
     active: initial.active ?? true,
-    categoryId: initial.categoryId ? String(initial.categoryId) : ''
+    categoryId: initial.categoryId ? String(initial.categoryId) : '',
+    shortcuts: initial.shortcuts ? (Array.isArray(initial.shortcuts) ? initial.shortcuts.join(', ') : initial.shortcuts) : ''
   })
   const lastInitialRef = useRef(JSON.stringify({
     name: initial.name,
@@ -25,7 +26,8 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
     description: initial.description,
     displayOrder: initial.displayOrder,
     active: initial.active,
-    categoryId: initial.categoryId
+    categoryId: initial.categoryId,
+    shortcuts: initial.shortcuts
   }))
 
   useEffect(() => {
@@ -57,7 +59,8 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
       description: initial.description,
       displayOrder: initial.displayOrder,
       active: initial.active,
-      categoryId: initial.categoryId
+      categoryId: initial.categoryId,
+      shortcuts: initial.shortcuts
     })
 
     // Only sync if the initial data actually changed
@@ -71,10 +74,11 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
         description: initial.description || '',
         displayOrder: initial.displayOrder || 0,
         active: initial.active ?? true,
-        categoryId: initial.categoryId ? String(initial.categoryId) : ''
+        categoryId: initial.categoryId ? String(initial.categoryId) : '',
+        shortcuts: initial.shortcuts ? (Array.isArray(initial.shortcuts) ? initial.shortcuts.join(', ') : initial.shortcuts) : ''
       })
     }
-  }, [initial.name, initial.emoji, initial.imageUrl, initial.description, initial.displayOrder, initial.active, initial.categoryId])
+  }, [initial.name, initial.emoji, initial.imageUrl, initial.description, initial.displayOrder, initial.active, initial.categoryId, initial.shortcuts])
 
   const update = (k, v) => {
     setForm(prev => ({ ...prev, [k]: v }))
@@ -84,6 +88,9 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
     const payload = {
       ...form,
       emoji: valueForSubmit(form.emoji),
+      shortcuts: Array.isArray(form.shortcuts)
+        ? form.shortcuts
+        : (form.shortcuts || '').split(',').map(s => s.trim()).filter(Boolean)
     }
     onSubmit?.(payload)
   }
@@ -100,6 +107,9 @@ const ServiceForm = ({ title, initial = {}, submitting = false, onCancel, onSubm
           {/* Row 2 */}
           <InputBox label="Priority" value={form.displayOrder} valueChange={(v) => update('displayOrder', parseInt(v) || 0)} placeholder="0" />
           <InputBox label="Image URL" value={form.imageUrl} valueChange={(v) => update('imageUrl', v)} placeholder="https://oldschool.runescape.wiki/images/..." />
+          <div className={grid.span2}>
+            <InputBox label="Shortcuts (comma separated)" value={form.shortcuts} valueChange={(v) => update('shortcuts', v)} placeholder="e.g. cox, raids1" />
+          </div>
 
           {/* Row 3: Category spans 2 */}
           <div className={grid.span2}>

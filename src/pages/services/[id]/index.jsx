@@ -44,6 +44,7 @@ const EditService = () => {
             displayOrder: s?.displayOrder || 0,
             active: Boolean(s?.active),
             categoryId: s?.categoryId ? String(s.categoryId) : '',
+            shortcuts: s?.shortcuts,
           })
         } else {
           notify(svcRes?.error?.message || 'Failed to load service')
