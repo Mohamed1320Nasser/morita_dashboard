@@ -6,8 +6,9 @@ import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
 import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
+import Modal from '@/components/atoms/modal'
 import { notify } from '@/config/error'
-import { IoSave, IoSettings, IoWallet, IoPeople, IoServer, IoRefresh, IoTrash, IoCheckmarkCircle, IoCloseCircle, IoCloudUpload, IoTime, IoAlert } from 'react-icons/io5'
+import { IoSave, IoSettings, IoWallet, IoPeople, IoServer, IoRefresh, IoTrash, IoCheckmarkCircle, IoCloseCircle, IoCloudUpload, IoTime, IoAlert, IoWarning } from 'react-icons/io5'
 import { FaDiscord } from 'react-icons/fa'
 import { API } from '@/const'
 import discordController from '@/controllers/discord'
@@ -30,6 +31,10 @@ const SettingsPage = () => {
   const [loadingStatus, setLoadingStatus] = useState(false)
   const [publishingChannel, setPublishingChannel] = useState(null) // Track which channel is being published
   const [publishingAll, setPublishingAll] = useState(false)
+
+  // Modal state
+  const [showPublishModal, setShowPublishModal] = useState(false)
+  const [pendingPublish, setPendingPublish] = useState(null) // { type: 'all' | 'PRICING' | 'TOS' | 'TICKETS', clearAll: boolean }
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -121,63 +126,83 @@ const SettingsPage = () => {
     }
   }
 
-  const handlePublishChannel = async (channelType) => {
-    setPublishingChannel(channelType)
-    try {
-      let result
-      switch (channelType) {
-        case 'PRICING':
-          result = await discordController.publishPricingChannel()
-          break
-        case 'TOS':
-          result = await discordController.publishTosChannel()
-          break
-        case 'TICKETS':
-          result = await discordController.publishTicketChannels()
-          break
-        default:
-          throw new Error('Unknown channel type')
-      }
+  // Show confirmation modal before publishing
+  const handlePublishChannel = (channelType) => {
+    setPendingPublish({ type: channelType, clearAll: false })
+    setShowPublishModal(true)
+  }
 
-      if (result.success) {
-        notify(`${getChannelDisplayName(channelType)} published successfully!`, 'success')
-        await fetchDiscordChannelsStatus()
-      } else {
-        notify(result.error?.message || `Failed to publish ${getChannelDisplayName(channelType)}`)
+  // Execute publish after confirmation
+  const executePublish = async () => {
+    if (!pendingPublish) return
+
+    const { type, clearAll } = pendingPublish
+    setShowPublishModal(false)
+
+    if (type === 'all') {
+      setPublishingAll(true)
+      try {
+        const result = await discordController.publishAllChannels(clearAll)
+
+        if (result.success) {
+          notify('All channels published successfully!', 'success')
+          await fetchDiscordChannelsStatus()
+        } else {
+          const failedChannels = result.data?.results?.filter(r => !r.success) || []
+          if (failedChannels.length > 0) {
+            notify(`Some channels failed to publish: ${failedChannels.map(r => r.channel).join(', ')}`, 'warning')
+          }
+          await fetchDiscordChannelsStatus()
+        }
+      } catch (error) {
+        console.error('Error publishing all channels:', error)
+        notify('Failed to publish all channels')
+      } finally {
+        setPublishingAll(false)
+        setPendingPublish(null)
       }
-    } catch (error) {
-      console.error(`Error publishing ${channelType}:`, error)
-      notify(`Failed to publish ${getChannelDisplayName(channelType)}`)
-    } finally {
-      setPublishingChannel(null)
+    } else {
+      setPublishingChannel(type)
+      try {
+        let result
+        switch (type) {
+          case 'PRICING':
+            result = await discordController.publishPricingChannel(clearAll)
+            break
+          case 'TOS':
+            result = await discordController.publishTosChannel(clearAll)
+            break
+          case 'TICKETS':
+            result = await discordController.publishTicketChannels(clearAll)
+            break
+          default:
+            throw new Error('Unknown channel type')
+        }
+
+        if (result.success) {
+          notify(`${getChannelDisplayName(type)} published successfully!`, 'success')
+          await fetchDiscordChannelsStatus()
+        } else {
+          notify(result.error?.message || `Failed to publish ${getChannelDisplayName(type)}`)
+        }
+      } catch (error) {
+        console.error(`Error publishing ${type}:`, error)
+        notify(`Failed to publish ${getChannelDisplayName(type)}`)
+      } finally {
+        setPublishingChannel(null)
+        setPendingPublish(null)
+      }
     }
   }
 
-  const handlePublishAllChannels = async () => {
-    if (!confirm('This will publish all Discord channels. Continue?')) {
-      return
-    }
+  const handlePublishAllChannels = () => {
+    setPendingPublish({ type: 'all', clearAll: false })
+    setShowPublishModal(true)
+  }
 
-    setPublishingAll(true)
-    try {
-      const result = await discordController.publishAllChannels()
-
-      if (result.success) {
-        notify('All channels published successfully!', 'success')
-        await fetchDiscordChannelsStatus()
-      } else {
-        // Show individual results
-        const failedChannels = result.data?.results?.filter(r => !r.success) || []
-        if (failedChannels.length > 0) {
-          notify(`Some channels failed to publish: ${failedChannels.map(r => r.channel).join(', ')}`, 'warning')
-        }
-        await fetchDiscordChannelsStatus()
-      }
-    } catch (error) {
-      console.error('Error publishing all channels:', error)
-      notify('Failed to publish all channels')
-    } finally {
-      setPublishingAll(false)
+  const toggleClearAll = () => {
+    if (pendingPublish) {
+      setPendingPublish({ ...pendingPublish, clearAll: !pendingPublish.clearAll })
     }
   }
 
@@ -584,6 +609,62 @@ const SettingsPage = () => {
           </div>
         </Card>
       </Container>
+
+      {/* Publish Confirmation Modal */}
+      <Modal
+        isOpen={showPublishModal}
+        onClose={() => setShowPublishModal(false)}
+        title="Confirm Publish"
+        size="medium"
+        footer={
+          <>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setShowPublishModal(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={executePublish}
+            >
+              Publish
+            </button>
+          </>
+        }
+      >
+        <div>
+          <p style={{ marginBottom: '1.5rem', fontSize: '1rem' }}>
+            {pendingPublish?.type === 'all'
+              ? 'You are about to publish all Discord channels.'
+              : `You are about to publish ${getChannelDisplayName(pendingPublish?.type)}.`
+            }
+          </p>
+
+          {/* Clear All Messages Checkbox */}
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '8px',
+              border: '1px solid #dee2e6'
+            }}
+          >
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={pendingPublish?.clearAll || false}
+                onChange={toggleClearAll}
+                style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+              />
+              <div style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <IoWarning style={{ color: '#dc3545' }} />
+                Clear ALL messages before publishing
+              </div>
+            </label>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

@@ -23,10 +23,11 @@ export default {
 
     /**
      * Publish all channels to Discord
+     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
      */
-    publishAllChannels: async () => {
+    publishAllChannels: async (clearAllMessages = false) => {
         try {
-            const response = await postData('/discord/channels/publish/all', {})
+            const response = await postData('/discord/channels/publish/all', { clearAllMessages })
             return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
@@ -36,10 +37,11 @@ export default {
 
     /**
      * Publish pricing/services channel to Discord
+     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
      */
-    publishPricingChannel: async () => {
+    publishPricingChannel: async (clearAllMessages = false) => {
         try {
-            const response = await postData('/discord/channels/publish/pricing', {})
+            const response = await postData('/discord/channels/publish/pricing', { clearAllMessages })
             return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
@@ -49,10 +51,11 @@ export default {
 
     /**
      * Publish TOS channel to Discord
+     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
      */
-    publishTosChannel: async () => {
+    publishTosChannel: async (clearAllMessages = false) => {
         try {
-            const response = await postData('/discord/channels/publish/tos', {})
+            const response = await postData('/discord/channels/publish/tos', { clearAllMessages })
             return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
@@ -62,10 +65,11 @@ export default {
 
     /**
      * Publish ticket channels to Discord
+     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
      */
-    publishTicketChannels: async () => {
+    publishTicketChannels: async (clearAllMessages = false) => {
         try {
-            const response = await postData('/discord/channels/publish/tickets', {})
+            const response = await postData('/discord/channels/publish/tickets', { clearAllMessages })
             return { success: response?.success !== false, data: response?.data || response, error: response?.error }
         } catch (err) {
             console.log(err)
