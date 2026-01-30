@@ -36,6 +36,12 @@ const GROUP_INFO = {
         color: '#E67E22',
         description: 'Cryptocurrency swapping',
     },
+    'account-purchase': {
+        label: 'Account Purchase',
+        icon: '🎮',
+        color: '#C9A961',
+        description: 'OSRS account purchase tickets',
+    },
     'general': {
         label: 'General Support',
         icon: '💬',

@@ -226,7 +226,7 @@ const SettingsPage = () => {
       case 'TOS':
         return 'Terms of service with accept button'
       case 'TICKETS':
-        return '4 ticket creation channels'
+        return '5 ticket creation channels'
       default:
         return ''
     }
@@ -497,7 +497,7 @@ const SettingsPage = () => {
             <ul>
               <li><strong>Pricing Channel:</strong> Shows all services with pricing. Publish after updating prices or adding services.</li>
               <li><strong>Terms of Service:</strong> Shows TOS with accept button. Publish after updating TOS content.</li>
-              <li><strong>Ticket Channels:</strong> Creates 4 ticket channels (Purchase Services, Purchase Gold, Sell Gold, Swap Crypto).</li>
+              <li><strong>Ticket Channels:</strong> Creates 5 ticket channels (Purchase Services, Purchase Gold, Sell Gold, Swap Crypto, Account Shop).</li>
               <li><strong>Status Colors:</strong> Green = Published, Yellow = Needs Update, Gray = Never Published, Red = Error</li>
             </ul>
           </div>

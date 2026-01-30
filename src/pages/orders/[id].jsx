@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import styles from './orders.module.scss'
+import styles from './orderView.module.scss'
 import Card from '@/components/atoms/cards'
 import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
+import Head from '@/components/molecules/head/head'
 import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
+import Button from '@/components/atoms/buttons/button'
 import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
 import moment from 'moment'
-import { IoArrowBack, IoCheckmark, IoTime, IoAlert, IoPersonOutline } from 'react-icons/io5'
 import { ORDER_STATUS, STATUS_LABELS, STATUS_BADGE_TYPES, getNextStatuses } from '@/constants/orderStatus'
 
 const OrderDetailPage = () => {
@@ -53,8 +54,6 @@ const OrderDetailPage = () => {
     return <Badge type={badgeType}>{label}</Badge>
   }
 
-  const handleBack = () => router.push('/orders')
-
   const handleOpenStatusModal = () => {
     setSelectedStatus('')
     setStatusReason('')
@@ -81,14 +80,14 @@ const OrderDetailPage = () => {
     try {
       const res = await adminController.updateOrderStatus(id, {
         status: selectedStatus,
-        adminId: '1', // TODO: Get from auth context
+        adminId: '1',
         reason: statusReason,
       })
 
       if (res && res.success) {
         notify('Status updated successfully', 'success')
         handleCloseStatusModal()
-        fetchOrder() // Refresh order data
+        fetchOrder()
       } else {
         notify(res?.error?.message || 'Failed to update status', 'error')
       }
@@ -102,32 +101,29 @@ const OrderDetailPage = () => {
   const availableStatuses = order ? getNextStatuses(order.status) : []
 
   if (pageLoading) return <Loading />
-  if (!order) {
-    return (
-      <Container>
-        <div className="text-center p-5">
-          <h3>Order not found</h3>
-          <button className="btn btn-primary mt-3" onClick={handleBack}>
-            Back to Orders
-          </button>
-        </div>
-      </Container>
-    )
-  }
+  if (!order) return null
 
   return (
-    <div className={styles.orderDetail}>
-      <PageHead current="Order Details">
-        <div className={styles.backLink} onClick={handleBack}>
-          <IoArrowBack /> Back to Orders
-        </div>
+    <div className={styles.viewPage}>
+      <PageHead current="Orders">
+        <Head title={`Order #${order.orderNumber}`} back="/orders" btns>
+          {availableStatuses.length > 0 && (
+            <Button primary onClick={handleOpenStatusModal}>
+              Update Status
+            </Button>
+          )}
+        </Head>
       </PageHead>
+
       <Container>
-        {/* Order Header */}
-        <div className={styles.orderHeader}>
-          <div className={styles.orderTitleRow}>
-            <h2 className={styles.orderTitle}>Order #{order.orderNumber}</h2>
-            {getStatusBadge(order.status)}
+        {/* Header Section */}
+        <div className={styles.header}>
+          <div className={styles.headerInfo}>
+            <div className={styles.orderId}>Order #{order.orderNumber}</div>
+            <div className={styles.headerMeta}>
+              {getStatusBadge(order.status)}
+              <span className={styles.date}>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</span>
+            </div>
           </div>
           <div className={styles.valueCard}>
             <div className={styles.valueLabel}>Order Value</div>
@@ -135,282 +131,218 @@ const OrderDetailPage = () => {
           </div>
         </div>
 
-        {/* Admin Actions */}
-        <Card>
-          <div className={styles.adminActions}>
-            <h3 className={styles.sectionTitle}>Admin Actions</h3>
-            <div className={styles.actionButtons}>
-              <button
-                className={styles.actionBtn}
-                onClick={handleOpenStatusModal}
-                disabled={availableStatuses.length === 0}
-              >
-                Update Status
-              </button>
-            </div>
-            {availableStatuses.length === 0 && (
-              <p className={styles.noActions}>No status changes available for this order.</p>
-            )}
-          </div>
-        </Card>
-
-        {/* Order Information Grid */}
+        {/* Info Grid - 3 columns */}
         <div className={styles.infoGrid}>
-          {/* Customer Info */}
-          <div className={styles.infoCard}>
-            <div className={styles.infoTitle}>Customer</div>
-            <div className={styles.infoContent}>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Name</span>
-                <span className={`${styles.value} ${styles.highlight}`}>{order.customer?.discordDisplayName || order.customer?.fullname || order.customer?.username || 'Unknown'}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Discord ID</span>
-                <span className={styles.value}>{order.customer?.discordId || '-'}</span>
-              </div>
-              {order.customer?.discordUsername && (
-                <div className={styles.infoRow}>
-                  <span className={styles.label}>Username</span>
-                  <span className={styles.value}>@{order.customer.discordUsername}</span>
-                </div>
-              )}
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Email</span>
-                <span className={styles.value}>{order.customer?.email || '-'}</span>
-              </div>
+          {/* Customer Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Customer</h3>
+            <div className={styles.row}>
+              <span className={styles.label}>Name</span>
+              <span className={styles.value}>
+                {order.customer?.discordDisplayName || order.customer?.fullname || order.customer?.username || '-'}
+              </span>
             </div>
-          </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Discord</span>
+              <span className={styles.value}>
+                {order.customer?.discordUsername ? `@${order.customer.discordUsername}` : '-'}
+              </span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Discord ID</span>
+              <span className={styles.value}>{order.customer?.discordId || '-'}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Email</span>
+              <span className={styles.value}>{order.customer?.email || '-'}</span>
+            </div>
+          </Card>
 
-          {/* Worker Info */}
-          <div className={styles.infoCard}>
-            <div className={styles.infoTitle}>Worker</div>
-            <div className={styles.infoContent}>
-              {order.worker ? (
-                <>
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>Name</span>
-                    <span className={`${styles.value} ${styles.highlight}`}>{order.worker.discordDisplayName || order.worker.fullname || order.worker.username}</span>
-                  </div>
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>Discord ID</span>
-                    <span className={styles.value}>{order.worker.discordId || '-'}</span>
-                  </div>
-                  {order.worker.discordUsername && (
-                    <div className={styles.infoRow}>
-                      <span className={styles.label}>Username</span>
-                      <span className={styles.value}>@{order.worker.discordUsername}</span>
-                    </div>
-                  )}
-                  <div className={styles.infoRow}>
-                    <span className={styles.label}>Assigned</span>
-                    <span className={styles.value}>
-                      {order.assignedAt ? moment(order.assignedAt).format('DD/MM/YYYY') : '-'}
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <div className={styles.emptyState}>
-                  <IoPersonOutline className={styles.emptyIcon} />
-                  <span>Unassigned</span>
+          {/* Worker Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Worker</h3>
+            {order.worker ? (
+              <>
+                <div className={styles.row}>
+                  <span className={styles.label}>Name</span>
+                  <span className={styles.value}>
+                    {order.worker.discordDisplayName || order.worker.fullname || order.worker.username}
+                  </span>
                 </div>
-              )}
-            </div>
-          </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>Discord</span>
+                  <span className={styles.value}>
+                    {order.worker.discordUsername ? `@${order.worker.discordUsername}` : '-'}
+                  </span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>Discord ID</span>
+                  <span className={styles.value}>{order.worker.discordId || '-'}</span>
+                </div>
+                <div className={styles.row}>
+                  <span className={styles.label}>Assigned</span>
+                  <span className={styles.value}>
+                    {order.assignedAt ? moment(order.assignedAt).format('DD/MM/YYYY') : '-'}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className={styles.emptyText}>No worker assigned</div>
+            )}
+          </Card>
 
-          {/* Payment Info */}
-          <div className={styles.infoCard}>
-            <div className={styles.infoTitle}>Payment</div>
-            <div className={styles.infoContent}>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Order Value</span>
-                <span className={`${styles.value} ${styles.highlight}`}>{formatCurrency(order.orderValue)}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Deposit</span>
-                <span className={styles.value}>{formatCurrency(order.depositAmount)}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Currency</span>
-                <span className={styles.value}>{order.currency}</span>
-              </div>
+          {/* Payment Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Payment</h3>
+            <div className={styles.row}>
+              <span className={styles.label}>Order Value</span>
+              <span className={styles.value}>{formatCurrency(order.orderValue)}</span>
             </div>
-          </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Deposit</span>
+              <span className={styles.value}>{formatCurrency(order.depositAmount)}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Currency</span>
+              <span className={styles.value}>{order.currency}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Service</span>
+              <span className={styles.value}>{order.service?.name || '-'}</span>
+            </div>
+          </Card>
         </div>
 
         {/* Service & Job Details */}
-        {(order.service || order.jobDetails) && (
-          <Card>
-            <h3 className={styles.sectionTitle}>Service & Job Details</h3>
-            {order.service && (
-              <div style={{ marginBottom: '1rem' }}>
-                <strong>Service:</strong> {order.service.name}
-              </div>
-            )}
-            {order.jobDetails && (
-              <div>
-                <strong>Job Details:</strong>
-                <div
-                  style={{
-                    marginTop: '0.5rem',
-                    padding: '1rem',
-                    background: '#f9fafb',
-                    borderRadius: '8px',
-                    whiteSpace: 'pre-wrap',
-                  }}
-                >
-                  {typeof order.jobDetails === 'object'
-                    ? order.jobDetails.description || JSON.stringify(order.jobDetails, null, 2)
-                    : order.jobDetails}
-                </div>
-              </div>
-            )}
-          </Card>
-        )}
+        <Card>
+          <h3 className={styles.cardTitle}>Service & Job Details</h3>
+          <div className={styles.row}>
+            <span className={styles.label}>Service</span>
+            <span className={styles.value}>{order.service?.name || '-'}</span>
+          </div>
+          {order.jobDetails && (
+            <div className={styles.jobDetailsBlock}>
+              <span className={styles.label}>Job Details</span>
+              <pre className={styles.jsonContent}>
+                {typeof order.jobDetails === 'object'
+                  ? JSON.stringify(order.jobDetails, null, 2)
+                  : order.jobDetails}
+              </pre>
+            </div>
+          )}
+        </Card>
 
         {/* Completion Notes */}
         {order.completionNotes && (
           <Card>
-            <h3 className={styles.sectionTitle}>Completion Notes</h3>
-            <div
-              style={{
-                padding: '1rem',
-                background: '#f9fafb',
-                borderRadius: '8px',
-                whiteSpace: 'pre-wrap',
-              }}
-            >
-              {order.completionNotes}
-            </div>
+            <h3 className={styles.cardTitle}>Completion Notes</h3>
+            <div className={styles.notesContent}>{order.completionNotes}</div>
           </Card>
         )}
 
-        {/* Customer Review */}
+        {/* Customer Feedback */}
         {(order.rating || order.review) && (
           <Card>
-            <h3 className={styles.sectionTitle}>Customer Feedback</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {order.rating && (
-                <div>
-                  <strong style={{ color: '#64748b', fontSize: '0.875rem' }}>Rating:</strong>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '0.5rem' }}>
-                    <span style={{ fontSize: '1.5rem' }}>{'⭐'.repeat(order.rating)}{'☆'.repeat(5 - order.rating)}</span>
-                    <span style={{ fontSize: '1.25rem', fontWeight: '600', color: '#22c55e' }}>
-                      {order.rating}/5
-                    </span>
-                  </div>
-                </div>
-              )}
-              {order.review && (
-                <div>
-                  <strong style={{ color: '#64748b', fontSize: '0.875rem' }}>Review:</strong>
-                  <div
-                    style={{
-                      marginTop: '0.5rem',
-                      padding: '1rem',
-                      background: '#f9fafb',
-                      borderRadius: '8px',
-                      whiteSpace: 'pre-wrap',
-                      borderLeft: '4px solid #22c55e',
-                    }}
-                  >
-                    {order.review}
-                  </div>
-                </div>
-              )}
-              {order.reviewedAt && (
-                <div style={{ fontSize: '0.875rem', color: '#7a7e85' }}>
-                  Reviewed on {moment(order.reviewedAt).format('DD/MM/YYYY HH:mm')}
-                </div>
-              )}
-            </div>
+            <h3 className={styles.cardTitle}>Customer Feedback</h3>
+            {order.rating && (
+              <div className={styles.row}>
+                <span className={styles.label}>Rating</span>
+                <span className={styles.value}>
+                  {'⭐'.repeat(order.rating)}{'☆'.repeat(5 - order.rating)} ({order.rating}/5)
+                </span>
+              </div>
+            )}
+            {order.review && (
+              <div className={styles.reviewBlock}>
+                <span className={styles.label}>Review</span>
+                <div className={styles.reviewText}>{order.review}</div>
+              </div>
+            )}
+            {order.reviewedAt && (
+              <div className={styles.row}>
+                <span className={styles.label}>Reviewed At</span>
+                <span className={styles.value}>{moment(order.reviewedAt).format('DD/MM/YYYY HH:mm')}</span>
+              </div>
+            )}
           </Card>
         )}
 
-        {/* Timeline */}
+        {/* Order Timeline */}
         <Card>
+          <h3 className={styles.cardTitle}>Order Timeline</h3>
           <div className={styles.timeline}>
-            <h3 className={styles.sectionTitle}>Order Timeline</h3>
-
+            {/* Order Created */}
             <div className={styles.timelineItem}>
-              <div className={`${styles.timelineIcon} ${styles.blue}`}>
-                <IoAlert />
+              <div className={`${styles.timelineIcon} ${styles.iconWarning}`}>
+                <span>!</span>
               </div>
               <div className={styles.timelineContent}>
-                <div className={styles.timelineAction}>Order Created</div>
-                <div className={styles.timelineTime}>
-                  {moment(order.createdAt).format('DD/MM/YYYY HH:mm')}
-                </div>
+                <div className={styles.timelineTitle}>Order Created</div>
+                <div className={styles.timelineDate}>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</div>
               </div>
             </div>
 
+            {/* Worker Assigned */}
             {order.assignedAt && (
               <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.orange}`}>
-                  <IoTime />
+                <div className={`${styles.timelineIcon} ${styles.iconPending}`}>
+                  <span className={styles.clockIcon}></span>
                 </div>
                 <div className={styles.timelineContent}>
-                  <div className={styles.timelineAction}>Worker Assigned</div>
-                  <div className={styles.timelineTime}>
-                    {moment(order.assignedAt).format('DD/MM/YYYY HH:mm')}
-                  </div>
+                  <div className={styles.timelineTitle}>Worker Assigned</div>
+                  <div className={styles.timelineDate}>{moment(order.assignedAt).format('DD/MM/YYYY HH:mm')}</div>
                 </div>
               </div>
             )}
 
+            {/* Work Started */}
             {order.startedAt && (
               <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.orange}`}>
-                  <IoTime />
+                <div className={`${styles.timelineIcon} ${styles.iconPending}`}>
+                  <span className={styles.clockIcon}></span>
                 </div>
                 <div className={styles.timelineContent}>
-                  <div className={styles.timelineAction}>Work Started</div>
-                  <div className={styles.timelineTime}>
-                    {moment(order.startedAt).format('DD/MM/YYYY HH:mm')}
-                  </div>
+                  <div className={styles.timelineTitle}>Work Started</div>
+                  <div className={styles.timelineDate}>{moment(order.startedAt).format('DD/MM/YYYY HH:mm')}</div>
                 </div>
               </div>
             )}
 
+            {/* Order Completed */}
             {order.completedAt && (
               <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.green}`}>
-                  <IoCheckmark />
+                <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
+                  <span className={styles.checkIcon}></span>
                 </div>
                 <div className={styles.timelineContent}>
-                  <div className={styles.timelineAction}>Order Completed</div>
-                  <div className={styles.timelineTime}>
-                    {moment(order.completedAt).format('DD/MM/YYYY HH:mm')}
-                  </div>
+                  <div className={styles.timelineTitle}>Order Completed</div>
+                  <div className={styles.timelineDate}>{moment(order.completedAt).format('DD/MM/YYYY HH:mm')}</div>
                 </div>
               </div>
             )}
 
+            {/* Completion Confirmed */}
             {order.confirmedAt && (
               <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.green}`}>
-                  <IoCheckmark />
+                <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
+                  <span className={styles.checkIcon}></span>
                 </div>
                 <div className={styles.timelineContent}>
-                  <div className={styles.timelineAction}>Completion Confirmed</div>
-                  <div className={styles.timelineTime}>
-                    {moment(order.confirmedAt).format('DD/MM/YYYY HH:mm')}
-                  </div>
+                  <div className={styles.timelineTitle}>Completion Confirmed</div>
+                  <div className={styles.timelineDate}>{moment(order.confirmedAt).format('DD/MM/YYYY HH:mm')}</div>
                 </div>
               </div>
             )}
 
+            {/* Reviewed */}
             {order.reviewedAt && (
               <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.green}`}>
-                  ⭐
+                <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
+                  <span className={styles.checkIcon}></span>
                 </div>
                 <div className={styles.timelineContent}>
-                  <div className={styles.timelineAction}>
-                    Customer Review - {order.rating ? `${order.rating}/5 Stars` : 'No Rating'}
-                  </div>
-                  <div className={styles.timelineTime}>
-                    {moment(order.reviewedAt).format('DD/MM/YYYY HH:mm')}
-                  </div>
+                  <div className={styles.timelineTitle}>Customer Review</div>
+                  <div className={styles.timelineDate}>{moment(order.reviewedAt).format('DD/MM/YYYY HH:mm')}</div>
                 </div>
               </div>
             )}
@@ -432,7 +364,7 @@ const OrderDetailPage = () => {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className={styles.select}
+                className={styles.selectInput}
               >
                 <option value="">Select status...</option>
                 {availableStatuses.map((status) => (
@@ -449,26 +381,22 @@ const OrderDetailPage = () => {
                 value={statusReason}
                 onChange={(e) => setStatusReason(e.target.value)}
                 placeholder="Enter reason for status change..."
-                className={styles.textarea}
+                className={styles.textareaInput}
                 rows={3}
               />
             </div>
 
             <div className={styles.modalActions}>
-              <button
-                className={styles.cancelBtn}
-                onClick={handleCloseStatusModal}
-                disabled={updatingStatus}
-              >
+              <Button style="outline" onClick={handleCloseStatusModal} disabled={updatingStatus}>
                 Cancel
-              </button>
-              <button
-                className={styles.confirmBtn}
+              </Button>
+              <Button
+                primary
                 onClick={handleUpdateStatus}
                 disabled={updatingStatus || !selectedStatus || !statusReason.trim()}
               >
                 {updatingStatus ? 'Updating...' : 'Update Status'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

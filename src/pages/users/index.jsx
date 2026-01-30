@@ -1,346 +1,235 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styles from './users.module.scss'
 import Card from '@/components/atoms/cards'
 import Head from '@/components/molecules/head/head'
 import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
+import Table from '@/components/shared/Table'
+import SearchInput from '@/components/atoms/inputs/searchInput'
 import Loading from '@/components/atoms/loading'
-import Button from '@/components/atoms/buttons/button'
+import Badge from '@/components/atoms/badge'
 import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
+import KebabMenu from '@/components/shared/KebabMenu'
 import moment from 'moment'
 import Pagination from '@mui/material/Pagination'
 
-// Role info with icons and colors
-const ROLE_INFO = {
-    admin: { label: 'Admin', icon: '👑', color: '#e74c3c' },
-    support: { label: 'Support', icon: '🎧', color: '#f39c12' },
-    worker: { label: 'Worker', icon: '⚒️', color: '#3498db' },
-    customer: { label: 'Customer', icon: '👤', color: '#27ae60' },
-}
+const ROLE_OPTIONS = [
+    { value: 'admin', label: 'Admin', type: 'danger' },
+    { value: 'support', label: 'Support', type: 'warning' },
+    { value: 'worker', label: 'Worker', type: 'info' },
+    { value: 'customer', label: 'Customer', type: 'success' },
+]
 
 const UsersPage = () => {
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [usersList, setUsersList] = useState([])
-  const [stats, setStats] = useState(null)
+    const router = useRouter()
+    const [pageLoading, setPageLoading] = useState(true)
 
-  // Filters
-  const [roleFilter, setRoleFilter] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
+    const [items, setItems] = useState([])
+    const [stats, setStats] = useState(null)
+    const [search, setSearch] = useState('')
+    const [roleFilter, setRoleFilter] = useState('')
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(10)
+    const [filterCount, setFilterCount] = useState(0)
 
-  // Pagination
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [totalCount, setTotalCount] = useState(0)
-
-  useEffect(() => {
-    fetchUsers()
-    fetchStats()
-  }, [roleFilter, page, limit])
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true)
-      const queryParams = new URLSearchParams()
-
-      if (roleFilter) queryParams.append('discordRole', roleFilter)
-      if (searchQuery) queryParams.append('search', searchQuery)
-      queryParams.append('page', String(page))
-      queryParams.append('limit', String(limit))
-
-      const query = queryParams.toString()
-      const response = await adminController.getAllUsers(query)
-
-      if (response && response.success && response.data) {
-        setUsersList(response.data.items || response.data.users || [])
-        setTotalCount(response.data.filterCount || response.data.total || 0)
-      } else {
-        notify('Failed to load users', 'error')
-      }
-    } catch (error) {
-      console.error('[Users] Error fetching:', error)
-      notify('Error loading users', 'error')
-    } finally {
-      setLoading(false)
+    const handleSearchChange = (value) => {
+        setSearch(value)
+        setPage(1)
     }
-  }
 
-  const fetchStats = async () => {
-    try {
-      const response = await adminController.getUserStats()
-      if (response && response.success && response.data) {
-        setStats(response.data)
-      }
-    } catch (error) {
-      console.error('[Users] Error fetching stats:', error)
+    const handleRoleChange = (value) => {
+        setRoleFilter(value)
+        setPage(1)
     }
-  }
 
-  const handleViewUser = (userId) => {
-    router.push(`/users/${userId}`)
-  }
+    useEffect(() => {
+        const fetchAll = async () => {
+            try {
+                const queryParams = new URLSearchParams()
+                if (search) queryParams.append('search', search)
+                if (roleFilter) queryParams.append('discordRole', roleFilter)
+                queryParams.append('page', String(page))
+                queryParams.append('limit', String(limit))
+                const query = queryParams.toString()
 
-  const handleSearch = () => {
-    setPage(1)
-    fetchUsers()
-  }
+                const [usersRes, statsRes] = await Promise.all([
+                    adminController.getAllUsers(query),
+                    adminController.getUserStats(),
+                ])
 
-  const handlePaginate = (event, value) => {
-    setPage(value)
-  }
+                if (usersRes && usersRes.success && usersRes.data) {
+                    setItems(usersRes.data.items || usersRes.data.users || [])
+                    setFilterCount(usersRes.data.filterCount || usersRes.data.total || 0)
+                } else {
+                    notify(usersRes?.error?.message || 'Failed to load users')
+                }
 
-  const formatCurrency = (amount) => {
-    const num = parseFloat(amount) || 0
-    return `$${num.toFixed(2)}`
-  }
+                if (statsRes && statsRes.success && statsRes.data) {
+                    setStats(statsRes.data)
+                }
+            } catch (e) {
+                notify('Error loading users')
+            } finally {
+                setPageLoading(false)
+            }
+        }
+        fetchAll()
+    }, [page, limit, search, roleFilter])
 
-  const formatDate = (date) => {
-    return moment(date).format('MMM D, YYYY')
-  }
+    const handleView = (id) => router.push(`/users/${id}`)
 
-  const getUserRole = (user) => {
-    // Priority: system admin > discordRole (non-customer) > wallet type > discordRole > null
-    if (user.role === 'admin') return 'admin'
-    if (user.discordRole && user.discordRole !== 'customer') return user.discordRole
-    if (user.wallet?.walletType) {
-      const walletTypeMap = {
-        'WORKER': 'worker',
-        'SUPPORT': 'support',
-        'CUSTOMER': 'customer'
-      }
-      return walletTypeMap[user.wallet.walletType]
+    const handlePaginate = useCallback(
+        (e = null) => {
+            e.stopPropagation()
+
+            const pageItem = e.target.closest('.MuiPaginationItem-root')
+            const isPrev = pageItem?.getAttribute('aria-label') === 'Go to previous page'
+            const isNext = pageItem?.getAttribute('aria-label') === 'Go to next page'
+
+            let newPage
+            if (isPrev && page > 1) newPage = page - 1
+            else if (isNext && page < Math.ceil(filterCount / limit)) newPage = page + 1
+            else if (!isPrev && !isNext && !isNaN(+e.target.textContent)) newPage = +e.target.textContent
+
+            if (newPage) setPage(newPage)
+        },
+        [page, filterCount, limit],
+    )
+
+    const getUserRole = (user) => {
+        if (user.role === 'admin') return 'admin'
+        if (user.discordRole && user.discordRole !== 'customer') return user.discordRole
+        if (user.wallet?.walletType) {
+            const walletTypeMap = {
+                'WORKER': 'worker',
+                'SUPPORT': 'support',
+                'CUSTOMER': 'customer'
+            }
+            return walletTypeMap[user.wallet.walletType]
+        }
+        if (user.discordRole) return user.discordRole
+        return null
     }
-    if (user.discordRole) return user.discordRole
-    return null
-  }
 
-  if (loading && !usersList.length) return <Loading />
+    const getRoleBadge = (user) => {
+        const role = getUserRole(user)
+        if (!role) return '-'
+        const roleConfig = ROLE_OPTIONS.find(r => r.value === role)
+        return <Badge type={roleConfig?.type || 'default'}>{roleConfig?.label || role}</Badge>
+    }
 
-  return (
-    <div className={styles.usersPage}>
-      <PageHead current="Users">
-        <Head title="User Management" back="/dashboard" />
-      </PageHead>
+    const formatCurrency = (amount) => {
+        const num = parseFloat(amount) || 0
+        return `$${num.toFixed(2)}`
+    }
 
-      <Container>
-        {/* Statistics Cards */}
-        {stats && (
-          <div className={styles.statsGrid}>
-            <Card className={styles.statCard}>
-              <div className={styles.statIcon} style={{ background: '#3498db' }}>
-                👥
-              </div>
-              <div className={styles.statInfo}>
-                <div className={styles.statValue}>{stats.totalUsers || 0}</div>
-                <div className={styles.statLabel}>Total Users</div>
-              </div>
-            </Card>
+    const getUserDisplayName = (user) => {
+        return user.discordDisplayName || user.fullname || user.username || 'Unknown User'
+    }
 
-            <Card className={styles.statCard}>
-              <div className={styles.statIcon} style={{ background: '#27ae60' }}>
-                💰
-              </div>
-              <div className={styles.statInfo}>
-                <div className={styles.statValue}>{stats.usersWithWallets || 0}</div>
-                <div className={styles.statLabel}>Users with Wallets</div>
-              </div>
-            </Card>
+    const getUserDiscord = (user) => {
+        if (user.discordUsername) return `@${user.discordUsername}`
+        if (user.discordId) return user.discordId
+        return '-'
+    }
 
-            <Card className={styles.statCard}>
-              <div className={styles.statIcon} style={{ background: '#9b59b6' }}>
-                🛒
-              </div>
-              <div className={styles.statInfo}>
-                <div className={styles.statValue}>{stats.activeCustomers || 0}</div>
-                <div className={styles.statLabel}>Active Customers</div>
-              </div>
-            </Card>
+    if (pageLoading) return <Loading />
 
-            <Card className={styles.statCard}>
-              <div className={styles.statIcon} style={{ background: '#f39c12' }}>
-                ⚒️
-              </div>
-              <div className={styles.statInfo}>
-                <div className={styles.statValue}>{stats.activeWorkers || 0}</div>
-                <div className={styles.statLabel}>Active Workers</div>
-              </div>
-            </Card>
-          </div>
-        )}
+    return (
+        <div className={styles.users}>
+            <PageHead current="Users">
+                <Head title="Users" back="/dashboard" />
+            </PageHead>
 
-        {/* Filters */}
-        <Card className={styles.filtersCard}>
-          <div className={styles.filtersRow}>
-            <div className={styles.filterGroup}>
-              <label>Role</label>
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className={styles.select}
-              >
-                <option value="">All Roles</option>
-                {Object.entries(ROLE_INFO).map(([key, info]) => (
-                  <option key={key} value={key}>
-                    {info.icon} {info.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.filterGroup}>
-              <label>Search</label>
-              <div className={styles.searchRow}>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder="Username, email or Discord ID..."
-                  className={styles.searchInput}
-                />
-                <Button onClick={handleSearch} primary small>
-                  Search
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Users List */}
-        <Card className={styles.usersListCard}>
-          <div className={styles.listHeader}>
-            <h3>Users ({totalCount})</h3>
-          </div>
-
-          {usersList.length > 0 ? (
-            <>
-              {/* Table Header */}
-              <div className={styles.tableHeader}>
-                <div className={styles.headerMain}>
-                  <div className={styles.headerCell}>User</div>
-                </div>
-                <div className={styles.headerMeta}>
-                  <div className={styles.headerCell}>Wallet</div>
-                  <div className={styles.headerCell}>Orders</div>
-                  <div className={styles.headerCell}>Joined</div>
-                </div>
-              </div>
-
-              {/* Users List */}
-              <div className={styles.usersList}>
-                {usersList.map((user, index) => {
-                  const userRole = getUserRole(user)
-                  const roleInfo = userRole ? ROLE_INFO[userRole] : null
-
-                  return (
-                    <div
-                      key={user.id}
-                      className={styles.userRow}
-                      onClick={() => handleViewUser(user.id)}
-                    >
-                      <div className={styles.userMain}>
-                        <div className={styles.userAvatar}>
-                          {(user.discordDisplayName || user.fullname || user.username || 'U')[0].toUpperCase()}
+            <Container>
+                {/* Stats Cards */}
+                {stats && (
+                    <div className={styles.statsGrid}>
+                        <div className={styles.statCard}>
+                            <div className={styles.statLabel}>Total Users</div>
+                            <div className={styles.statValue}>{stats.totalUsers || 0}</div>
                         </div>
-
-                        <div className={styles.userInfo}>
-                          <div className={styles.userName}>
-                            {user.discordDisplayName || user.fullname || user.username || 'Unknown User'}
-                            {roleInfo && (
-                              <span
-                                className={styles.roleBadge}
-                                style={{ background: roleInfo.color }}
-                              >
-                                {roleInfo.icon} {roleInfo.label}
-                              </span>
-                            )}
-                          </div>
-                          <div className={styles.userEmail}>
-                            {user.discordId ? (
-                              <span>
-                                Discord: {user.discordId}
-                                {user.discordUsername && user.discordDisplayName && (
-                                  <span style={{ marginLeft: '0.5rem', opacity: 0.7 }}>
-                                    (@{user.discordUsername})
-                                  </span>
-                                )}
-                              </span>
-                            ) : (
-                              user.email || 'No email'
-                            )}
-                          </div>
+                        <div className={`${styles.statCard} ${styles.wallets}`}>
+                            <div className={styles.statLabel}>With Wallets</div>
+                            <div className={styles.statValue}>{stats.usersWithWallets || 0}</div>
                         </div>
-                      </div>
-
-                      <div className={styles.userMeta}>
-                        {user.wallet ? (
-                          <div className={styles.walletInfo}>
-                            <div className={styles.walletBalance}>
-                              {formatCurrency(user.wallet.balance)}
-                            </div>
-                            <div className={styles.walletType}>
-                              {user.wallet.walletType}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className={styles.walletInfo}>
-                            <div className={styles.noWallet}>No wallet</div>
-                          </div>
-                        )}
-
-                        <div className={styles.ordersInfo}>
-                          <div className={styles.ordersStat}>
-                            <span className={styles.ordersLabel}>C:</span>
-                            <span className={styles.ordersValue}>{user.ordersAsCustomer || 0}</span>
-                          </div>
-                          <div className={styles.ordersStat}>
-                            <span className={styles.ordersLabel}>W:</span>
-                            <span className={styles.ordersValue}>{user.ordersAsWorker || 0}</span>
-                          </div>
+                        <div className={`${styles.statCard} ${styles.customers}`}>
+                            <div className={styles.statLabel}>Active Customers</div>
+                            <div className={styles.statValue}>{stats.activeCustomers || 0}</div>
                         </div>
-
-                        <div className={styles.userDate}>
-                          {formatDate(user.createdAt)}
+                        <div className={`${styles.statCard} ${styles.workers}`}>
+                            <div className={styles.statLabel}>Active Workers</div>
+                            <div className={styles.statValue}>{stats.activeWorkers || 0}</div>
                         </div>
-                      </div>
                     </div>
-                  )
-                })}
-              </div>
+                )}
 
-              {/* Pagination */}
-              <div className={styles.tableFooter}>
-                <div className={styles.limitSelector}>
-                  <span>View</span>
-                  <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                  </select>
-                  <span>users per page</span>
-                </div>
-                <Pagination
-                  page={page}
-                  count={Math.ceil(totalCount / limit)}
-                  shape="rounded"
-                  onChange={handlePaginate}
-                />
-              </div>
-            </>
-          ) : (
-            <div className={styles.emptyState}>
-              <div className={styles.emptyIcon}>👥</div>
-              <h3>No users found</h3>
-              <p>No users match your current filters</p>
-            </div>
-          )}
-        </Card>
-      </Container>
-    </div>
-  )
+                <Card>
+                    <div className={styles.searchRow}>
+                        <div className={styles.searchInput}>
+                            <SearchInput
+                                value={search}
+                                valueChange={handleSearchChange}
+                                placeHolder="Search by username, email or Discord ID"
+                                defaultInput={true}
+                            />
+                        </div>
+                        <select
+                            className={styles.select}
+                            value={roleFilter}
+                            onChange={(e) => handleRoleChange(e.target.value)}
+                        >
+                            <option value="">All Roles</option>
+                            {ROLE_OPTIONS.map(r => (
+                                <option key={r.value} value={r.value}>{r.label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className={styles.table}>
+
+                        <Table
+                            columns={[
+                                { key: 'index', header: '#', render: (_user, idx) => (page - 1) * limit + idx + 1 },
+                                { key: 'name', header: 'Name', render: (user) => getUserDisplayName(user) },
+                                { key: 'discord', header: 'Discord', render: (user) => <span className={styles.discordCell}>{getUserDiscord(user)}</span> },
+                                { key: 'role', header: 'Role', render: (user) => getRoleBadge(user) },
+                                { key: 'wallet', header: 'Wallet', render: (user) => user.wallet ? <span className={styles.walletBalance}>{formatCurrency(user.wallet.balance)}</span> : <span className={styles.noWallet}>-</span> },
+                                { key: 'orders', header: 'Orders', render: (user) => (user.ordersAsCustomer || 0) + (user.ordersAsWorker || 0) },
+                                { key: 'createdAt', header: 'Joined', render: (user) => user.createdAt ? moment(user.createdAt).format('DD/MM/YYYY') : '-' },
+                                { key: 'actions', header: 'Actions', render: (user) => (
+                                    <KebabMenu actions={[
+                                        { label: 'View', onClick: () => handleView(user.id) },
+                                    ]} />
+                                )},
+                            ]}
+                            data={items}
+                        />
+                    </div>
+
+                    <div className="tableFooter">
+                        <div className="limit">
+                            <span>View</span>
+                            <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                            </select>
+                            <span>users per page</span>
+                        </div>
+                        <Pagination
+                            page={page}
+                            count={Math.ceil(filterCount / limit)}
+                            shape="rounded"
+                            onClick={handlePaginate}
+                        />
+                    </div>
+                </Card>
+            </Container>
+        </div>
+    )
 }
-
 
 export default UsersPage

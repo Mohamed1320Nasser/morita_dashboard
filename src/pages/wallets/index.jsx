@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import styles from './wallets.module.scss'
-import PageTitle from '@/components/atoms/labels/pageTitle'
 import Card from '@/components/atoms/cards'
 import Head from '@/components/molecules/head/head'
 import Container from '@/components/templates/container'
@@ -14,6 +13,7 @@ import walletsController from '@/controllers/wallets'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
 import Table from '@/components/shared/Table'
+import KebabMenu from '@/components/shared/KebabMenu'
 import moment from 'moment'
 import Pagination from '@mui/material/Pagination'
 
@@ -214,18 +214,8 @@ const WalletsPage = () => {
             <Table
               columns={[
                 { key: 'index', header: '#', className: 'index', width: '48px', render: (_w, idx) => (page - 1) * limit + idx + 1 },
-                { key: 'user', header: 'User', className: 'user', flex: 2, render: (w) => (
-                  <div>
-                    <div style={{ fontWeight: 600, color: '#12161c' }}>
-                      {w.user?.discordDisplayName || w.user?.fullname || w.user?.username || w.user?.email || 'Unknown User'}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: '#7a7e85' }}>
-                      {w.user?.discordId ? `Discord: ${w.user.discordId}` : '-'}
-                      {w.user?.discordUsername && w.user?.discordDisplayName && (
-                        <span style={{ marginLeft: '0.5rem' }}>({w.user.discordUsername})</span>
-                      )}
-                    </div>
-                  </div>
+                { key: 'user', header: 'User', className: 'user', render: (w) => (
+                  w.user?.discordDisplayName || w.user?.fullname || w.user?.username || w.user?.email || 'Unknown User'
                 ) },
                 { key: 'type', header: 'Type', className: 'type', flex: 1, render: (w) => getWalletTypeBadge(w.walletType) },
                 { key: 'balance', header: 'Balance', className: 'balance', flex: 1, render: (w) => (
@@ -241,13 +231,10 @@ const WalletsPage = () => {
                   w.isActive ? <Badge type="success">Active</Badge> : <Badge type="danger">Inactive</Badge>
                 ) },
                 { key: 'createdAt', header: 'Created', className: 'createdAt', flex: 1, render: (w) => w.createdAt ? moment(w.createdAt).format('DD/MM/YYYY') : '-' },
-                { key: 'actions', header: 'Actions', className: 'actions', width: '100px', render: (w) => (
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={() => handleView(w.id)}
-                  >
-                    View
-                  </button>
+                { key: 'actions', header: 'Actions', className: 'actions', render: (w) => (
+                  <KebabMenu actions={[
+                    { label: 'View', onClick: () => handleView(w.id) },
+                  ]} />
                 ) },
               ]}
               data={items}

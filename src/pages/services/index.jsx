@@ -172,32 +172,30 @@ return ( <div className={styles.services}> <PageHead current="Services"> <Head t
 
   <Container>
     <Card>
-      <div className="mb-4">
-        <SearchInput
-          value={search}
-          valueChange={handleSearchChange}
-          placeHolder="Search by service name"
-          defaultInput={true}
-        />
+      <div className={styles.searchRow}>
+        <div className={styles.searchInput}>
+          <SearchInput
+            value={search}
+            valueChange={handleSearchChange}
+            placeHolder="Search by service name"
+            defaultInput={true}
+          />
+        </div>
+        <select
+          className={styles.select}
+          value={categoryId}
+          onChange={(e) => handleCategoryChange(e.target.value)}
+        >
+          <option value="">All categories</option>
+          {categories.map(c => (
+            <option key={c.id} value={c.id}>
+              {getEmojiText(c.emoji)} {c.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className={styles.table}>
-        <div className={styles.tableHead}>
-          <div />
-          <select
-            className={styles.select}
-            value={categoryId}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-          >
-            <option value="">All categories</option>
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>
-                {getEmojiText(c.emoji)} {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <Table
           columns={[
             { key: 'index', header: '#', className: 'index', width: '48px', render: (_svc, idx) => (page - 1) * limit + idx + 1 },

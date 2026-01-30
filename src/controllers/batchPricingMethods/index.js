@@ -1,11 +1,6 @@
 import { postData } from '../../constant/axiosClon'
 
 const batchPricingMethods = {
-  /**
-   * Create multiple pricing methods in batch
-   * @param {Object} payload - { serviceId, pricingMethods: [] }
-   * @returns {Promise} API response
-   */
   batchCreatePricingMethods: async (payload) => {
     try {
       const response = await postData('/batch/pricing-methods', payload)
@@ -21,11 +16,7 @@ const batchPricingMethods = {
     }
   },
 
-  /**
-   * Validate batch pricing methods without creating
-   * @param {Object} payload - { serviceId, pricingMethods: [] }
-   * @returns {Promise} Validation result
-   */
+
   validateBatchPricingMethods: async (payload) => {
     try {
       const response = await postData('/batch/pricing-methods/validate', payload)

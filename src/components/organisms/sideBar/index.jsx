@@ -7,7 +7,7 @@ import { LuLayoutDashboard, LuChevronUp, LuChevronDown } from "react-icons/lu";
 import { MdCategory } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
-import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal } from "react-icons/io5";
+import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal, IoPersonCircle } from "react-icons/io5";
 import { TbTicket } from "react-icons/tb";
 import { FaScroll, FaQuestion, FaUsers, FaClipboardList } from "react-icons/fa";
 import { Collapse } from 'react-bootstrap';
@@ -37,6 +37,7 @@ const SideBar = () => {
     // Financials
     { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
     { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
+    { label: 'Accounts', icon: <IoPersonCircle />, href: '/accounts' },
 
     // Catalog Management
     { label: 'Services', icon: <LuGamepad2 />, href: '/services' },

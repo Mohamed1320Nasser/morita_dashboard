@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import styles from './users.module.scss'
+import styles from './userView.module.scss'
 import Card from '@/components/atoms/cards'
 import Head from '@/components/molecules/head/head'
 import Container from '@/components/templates/container'
@@ -10,7 +10,6 @@ import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
 import moment from 'moment'
-import { IoArrowBack } from 'react-icons/io5'
 
 const UserDetailPage = () => {
   const router = useRouter()
@@ -50,10 +49,12 @@ const UserDetailPage = () => {
         return <Badge type="danger">Admin</Badge>
       case 'support':
         return <Badge type="warning">Support</Badge>
-      case 'user':
-        return <Badge type="info">User</Badge>
+      case 'worker':
+        return <Badge type="info">Worker</Badge>
+      case 'customer':
+        return <Badge type="success">Customer</Badge>
       default:
-        return <Badge>{role}</Badge>
+        return <Badge>{role || '-'}</Badge>
     }
   }
 
@@ -72,141 +73,105 @@ const UserDetailPage = () => {
     }
   }
 
-  const handleBack = () => router.push('/users')
-
   if (pageLoading) return <Loading />
-  if (!user) {
-    return (
-      <Container>
-        <div className="text-center p-5">
-          <h3>User not found</h3>
-          <button className="btn btn-primary mt-3" onClick={handleBack}>
-            Back to Users
-          </button>
-        </div>
-      </Container>
-    )
-  }
+  if (!user) return null
+
+  const displayName = user.discordDisplayName || user.fullname || user.username || 'Unknown User'
 
   return (
-    <div className={styles.userDetail}>
-      <PageHead current="User Details">
-        <div className={styles.backLink} onClick={handleBack}>
-          <IoArrowBack /> Back to Users
-        </div>
+    <div className={styles.viewPage}>
+      <PageHead current="Users">
+        <Head title={displayName} back="/users" />
       </PageHead>
+
       <Container>
-        <Card>
-          {/* User Header */}
-          <div className={styles.userHeader}>
-          <div className={styles.userInfo}>
-            <div className={styles.userId}>User ID: {user.id}</div>
-            <div className={styles.userName}>
-              {user.discordDisplayName || user.fullname || user.username || 'Unknown User'}
-              {getRoleBadge(user.role)}
-            </div>
-            <div className={styles.userMeta}>
-              <span>Joined {moment(user.createdAt).format('DD/MM/YYYY')}</span>
-              {user.discordId && <span>• Discord: {user.discordId}</span>}
-              {user.discordUsername && user.discordDisplayName && (
-                <span>• @{user.discordUsername}</span>
-              )}
+        {/* Header Section */}
+        <div className={styles.header}>
+          <div className={styles.headerInfo}>
+            <div className={styles.userName}>{displayName}</div>
+            <div className={styles.headerMeta}>
+              {getRoleBadge(user.role || user.discordRole)}
+              <span className={styles.date}>Joined {moment(user.createdAt).format('DD/MM/YYYY')}</span>
             </div>
           </div>
           {user.wallet ? (
-            <div className={styles.walletCard}>
-              <div className={styles.walletLabel}>Wallet Balance</div>
-              <div className={styles.walletBalance}>{formatCurrency(user.wallet.balance)}</div>
-              <div className={styles.walletType}>{user.wallet.walletType}</div>
+            <div className={styles.valueCard}>
+              <div className={styles.valueLabel}>Wallet Balance</div>
+              <div className={styles.valueAmount}>{formatCurrency(user.wallet.balance)}</div>
             </div>
           ) : (
-            <div className={styles.noWalletCard}>
-              <div>No Wallet</div>
-              <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                User has not created a wallet yet
-              </div>
+            <div className={styles.valueCardEmpty}>
+              <div className={styles.valueLabel}>No Wallet</div>
             </div>
           )}
         </div>
 
-          {/* User Information Grid */}
-          <div className={styles.infoGrid}>
-          {/* Personal Info */}
-          <div className={styles.infoCard}>
-            <div className={styles.infoTitle}>Personal Information</div>
-            <div className={styles.infoContent}>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Display Name</span>
-                <span className={styles.value}>{user.discordDisplayName || user.fullname || '-'}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Username</span>
-                <span className={styles.value}>{user.username || '-'}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Email</span>
-                <span className={styles.value}>{user.email || '-'}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Phone</span>
-                <span className={styles.value}>{user.phone || '-'}</span>
-              </div>
+        {/* Info Grid - 3 columns */}
+        <div className={styles.infoGrid}>
+          {/* Personal Info Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Personal Info</h3>
+            <div className={styles.row}>
+              <span className={styles.label}>Display Name</span>
+              <span className={styles.value}>{user.discordDisplayName || user.fullname || '-'}</span>
             </div>
-          </div>
-
-          {/* Account Info */}
-          <div className={styles.infoCard}>
-            <div className={styles.infoTitle}>Account Information</div>
-            <div className={styles.infoContent}>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Role</span>
-                <span className={styles.value}>{getRoleBadge(user.role)}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Discord ID</span>
-                <span className={styles.value} style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-                  {user.discordId || '-'}
-                </span>
-              </div>
-              {user.discordUsername && (
-                <div className={styles.infoRow}>
-                  <span className={styles.label}>Discord Username</span>
-                  <span className={styles.value} style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-                    @{user.discordUsername}
-                  </span>
-                </div>
-              )}
-              <div className={styles.infoRow}>
-                <span className={styles.label}>Joined</span>
-                <span className={styles.value}>
-                  {moment(user.createdAt).format('DD/MM/YYYY HH:mm')}
-                </span>
-              </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Username</span>
+              <span className={styles.value}>{user.username || '-'}</span>
             </div>
-          </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Email</span>
+              <span className={styles.value}>{user.email || '-'}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Phone</span>
+              <span className={styles.value}>{user.phone || '-'}</span>
+            </div>
+          </Card>
 
-          {/* Wallet Info */}
-          {user.wallet && (
-            <div className={styles.infoCard}>
-              <div className={styles.infoTitle}>Wallet Details</div>
-              <div className={styles.infoContent}>
-                <div className={styles.infoRow}>
+          {/* Discord Info Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Discord</h3>
+            <div className={styles.row}>
+              <span className={styles.label}>Discord ID</span>
+              <span className={styles.value}>{user.discordId || '-'}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Username</span>
+              <span className={styles.value}>{user.discordUsername ? `@${user.discordUsername}` : '-'}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Display Name</span>
+              <span className={styles.value}>{user.discordDisplayName || '-'}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Role</span>
+              <span className={styles.value}>{getRoleBadge(user.discordRole)}</span>
+            </div>
+          </Card>
+
+          {/* Wallet Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Wallet</h3>
+            {user.wallet ? (
+              <>
+                <div className={styles.row}>
                   <span className={styles.label}>Type</span>
                   <span className={styles.value}>{user.wallet.walletType}</span>
                 </div>
-                <div className={styles.infoRow}>
+                <div className={styles.row}>
                   <span className={styles.label}>Balance</span>
-                  <span className={styles.value} style={{ color: '#22c55e' }}>
+                  <span className={styles.value} style={{ color: '#10b981', fontWeight: 600 }}>
                     {formatCurrency(user.wallet.balance)}
                   </span>
                 </div>
-                <div className={styles.infoRow}>
+                <div className={styles.row}>
                   <span className={styles.label}>Pending</span>
-                  <span className={styles.value} style={{ color: '#f97316' }}>
+                  <span className={styles.value} style={{ color: '#f59e0b' }}>
                     {formatCurrency(user.wallet.pendingBalance)}
                   </span>
                 </div>
-                <div className={styles.infoRow}>
+                <div className={styles.row}>
                   <span className={styles.label}>Status</span>
                   <span className={styles.value}>
                     {user.wallet.isActive ? (
@@ -216,113 +181,121 @@ const UserDetailPage = () => {
                     )}
                   </span>
                 </div>
-              </div>
+              </>
+            ) : (
+              <div className={styles.emptyText}>No wallet created</div>
+            )}
+          </Card>
+        </div>
+
+        {/* Orders as Customer */}
+        <Card>
+          <h3 className={styles.cardTitle}>Orders as Customer ({user.ordersAsCustomer?.length || 0})</h3>
+          {user.ordersAsCustomer && user.ordersAsCustomer.length > 0 ? (
+            <div className={styles.ordersList}>
+              {user.ordersAsCustomer.map((order) => (
+                <div key={order.id} className={styles.orderItem}>
+                  <div className={styles.orderInfo}>
+                    <div className={styles.orderNumber}>
+                      Order #{order.orderNumber}
+                      <span className={styles.orderStatus}>{getStatusBadge(order.status)}</span>
+                    </div>
+                    <div className={styles.orderDate}>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</div>
+                  </div>
+                  <div className={styles.orderValue}>{formatCurrency(order.orderValue)}</div>
+                </div>
+              ))}
             </div>
+          ) : (
+            <div className={styles.emptyText}>No orders as customer</div>
           )}
-          </div>
         </Card>
 
-        {/* Orders Sections */}
-        <div className={styles.ordersSection}>
-          <h3 className={styles.sectionTitle}>Order History</h3>
-          <div className={styles.ordersGrid}>
-            {/* Orders as Customer */}
-            <Card>
-              <h4 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: '#7a7e85' }}>
-                As Customer ({user.ordersAsCustomer?.length || 0})
-              </h4>
-              {user.ordersAsCustomer && user.ordersAsCustomer.length > 0 ? (
-                <div>
-                  {user.ordersAsCustomer.map((order) => (
-                    <div key={order.id} className={styles.orderItem}>
-                      <div className={styles.orderInfo}>
-                        <div className={styles.orderNumber}>
-                          Order #{order.orderNumber} {getStatusBadge(order.status)}
-                        </div>
-                        <div className={styles.orderDate}>
-                          {moment(order.createdAt).format('DD/MM/YYYY HH:mm')}
-                        </div>
-                      </div>
-                      <div className={styles.orderValue}>{formatCurrency(order.orderValue)}</div>
+        {/* Orders as Worker */}
+        <Card>
+          <h3 className={styles.cardTitle}>Orders as Worker ({user.ordersAsWorker?.length || 0})</h3>
+          {user.ordersAsWorker && user.ordersAsWorker.length > 0 ? (
+            <div className={styles.ordersList}>
+              {user.ordersAsWorker.map((order) => (
+                <div key={order.id} className={styles.orderItem}>
+                  <div className={styles.orderInfo}>
+                    <div className={styles.orderNumber}>
+                      Order #{order.orderNumber}
+                      <span className={styles.orderStatus}>{getStatusBadge(order.status)}</span>
                     </div>
-                  ))}
-                  {user.ordersAsCustomer.length === 10 && (
-                    <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#7a7e85' }}>
-                      Showing last 10 orders
-                    </div>
-                  )}
+                    <div className={styles.orderDate}>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</div>
+                  </div>
+                  <div className={styles.orderValue}>{formatCurrency(order.orderValue)}</div>
                 </div>
-              ) : (
-                <div className={styles.emptyState}>No orders as customer</div>
-              )}
-            </Card>
-
-            {/* Orders as Worker */}
-            <Card>
-              <h4 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: '#7a7e85' }}>
-                As Worker ({user.ordersAsWorker?.length || 0})
-              </h4>
-              {user.ordersAsWorker && user.ordersAsWorker.length > 0 ? (
-                <div>
-                  {user.ordersAsWorker.map((order) => (
-                    <div key={order.id} className={styles.orderItem}>
-                      <div className={styles.orderInfo}>
-                        <div className={styles.orderNumber}>
-                          Order #{order.orderNumber} {getStatusBadge(order.status)}
-                        </div>
-                        <div className={styles.orderDate}>
-                          {moment(order.createdAt).format('DD/MM/YYYY HH:mm')}
-                        </div>
-                      </div>
-                      <div className={styles.orderValue}>{formatCurrency(order.orderValue)}</div>
-                    </div>
-                  ))}
-                  {user.ordersAsWorker.length === 10 && (
-                    <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.85rem', color: '#7a7e85' }}>
-                      Showing last 10 orders
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className={styles.emptyState}>No orders as worker</div>
-              )}
-            </Card>
-          </div>
-        </div>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.emptyText}>No orders as worker</div>
+          )}
+        </Card>
 
         {/* Recent Transactions */}
         {user.wallet && user.wallet.transactions && user.wallet.transactions.length > 0 && (
           <Card>
-            <h3 className={styles.sectionTitle}>Recent Transactions (Last 10)</h3>
-            <div>
+            <h3 className={styles.cardTitle}>Recent Transactions</h3>
+            <div className={styles.ordersList}>
               {user.wallet.transactions.map((tx) => (
                 <div key={tx.id} className={styles.orderItem}>
                   <div className={styles.orderInfo}>
-                    <div className={styles.orderNumber}>
-                      {tx.type} - {tx.status}
-                    </div>
-                    <div className={styles.orderDate}>
-                      {moment(tx.createdAt).format('DD/MM/YYYY HH:mm')}
-                    </div>
+                    <div className={styles.orderNumber}>{tx.type}</div>
+                    <div className={styles.orderDate}>{moment(tx.createdAt).format('DD/MM/YYYY HH:mm')}</div>
                   </div>
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      color: parseFloat(tx.amount) > 0 ? '#22c55e' : '#ef4444',
-                    }}
-                  >
-                    {parseFloat(tx.amount) > 0 ? '+' : ''}
-                    {formatCurrency(tx.amount)}
+                  <div className={styles.orderValue} style={{ color: parseFloat(tx.amount) >= 0 ? '#10b981' : '#ef4444' }}>
+                    {parseFloat(tx.amount) >= 0 ? '+' : ''}{formatCurrency(tx.amount)}
                   </div>
                 </div>
               ))}
             </div>
           </Card>
         )}
+
+        {/* User Timeline */}
+        <Card>
+          <h3 className={styles.cardTitle}>User Timeline</h3>
+          <div className={styles.timeline}>
+            <div className={styles.timelineItem}>
+              <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
+                <span className={styles.checkIcon}></span>
+              </div>
+              <div className={styles.timelineContent}>
+                <div className={styles.timelineTitle}>Account Created</div>
+                <div className={styles.timelineDate}>{moment(user.createdAt).format('DD/MM/YYYY HH:mm')}</div>
+              </div>
+            </div>
+
+            {user.wallet && (
+              <div className={styles.timelineItem}>
+                <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
+                  <span className={styles.checkIcon}></span>
+                </div>
+                <div className={styles.timelineContent}>
+                  <div className={styles.timelineTitle}>Wallet Created</div>
+                  <div className={styles.timelineDate}>{moment(user.wallet.createdAt).format('DD/MM/YYYY HH:mm')}</div>
+                </div>
+              </div>
+            )}
+
+            {user.updatedAt && user.updatedAt !== user.createdAt && (
+              <div className={styles.timelineItem}>
+                <div className={`${styles.timelineIcon} ${styles.iconPending}`}>
+                  <span className={styles.clockIcon}></span>
+                </div>
+                <div className={styles.timelineContent}>
+                  <div className={styles.timelineTitle}>Last Updated</div>
+                  <div className={styles.timelineDate}>{moment(user.updatedAt).format('DD/MM/YYYY HH:mm')}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
       </Container>
     </div>
   )
 }
-
 
 export default UserDetailPage

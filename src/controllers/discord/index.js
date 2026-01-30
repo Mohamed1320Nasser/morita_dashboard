@@ -1,15 +1,6 @@
 import { getData, postData } from '../../constant/axiosClon'
 
 export default {
-    // ============================================
-    // DISCORD CHANNELS STATUS & PUBLISHING
-    // Routes through main API which proxies to bot API
-    // ============================================
-
-    /**
-     * Get status of all Discord channels
-     * Returns bot connection status, channel states, and last publish info
-     */
     getChannelsStatus: async () => {
         try {
             const response = await getData('/discord/channels/status')
@@ -21,10 +12,6 @@ export default {
         }
     },
 
-    /**
-     * Publish all channels to Discord
-     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
-     */
     publishAllChannels: async (clearAllMessages = false) => {
         try {
             const response = await postData('/discord/channels/publish/all', { clearAllMessages })
@@ -35,10 +22,6 @@ export default {
         }
     },
 
-    /**
-     * Publish pricing/services channel to Discord
-     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
-     */
     publishPricingChannel: async (clearAllMessages = false) => {
         try {
             const response = await postData('/discord/channels/publish/pricing', { clearAllMessages })
@@ -49,10 +32,6 @@ export default {
         }
     },
 
-    /**
-     * Publish TOS channel to Discord
-     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
-     */
     publishTosChannel: async (clearAllMessages = false) => {
         try {
             const response = await postData('/discord/channels/publish/tos', { clearAllMessages })
@@ -63,10 +42,6 @@ export default {
         }
     },
 
-    /**
-     * Publish ticket channels to Discord
-     * @param {boolean} clearAllMessages - If true, clears ALL messages (not just bot messages) before publishing
-     */
     publishTicketChannels: async (clearAllMessages = false) => {
         try {
             const response = await postData('/discord/channels/publish/tickets', { clearAllMessages })

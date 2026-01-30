@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import styles from './wallets.module.scss'
+import styles from './walletView.module.scss'
 import Card from '@/components/atoms/cards'
 import Container from '@/components/templates/container'
 import PageHead from '@/components/templates/pageHead'
-import { IoWallet, IoArrowBack } from 'react-icons/io5'
-import { FaPlus, FaMinus, FaExchangeAlt, FaPowerOff } from 'react-icons/fa'
+import Head from '@/components/molecules/head/head'
 import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
 import Button from '@/components/atoms/buttons/button'
@@ -79,8 +78,6 @@ const WalletDetailPage = () => {
     fetchTransactions()
   }, [id, page, limit, refreshKey])
 
-  const handleBack = () => router.push('/wallets')
-
   const handlePaginate = useCallback(
     (e = null) => {
       e.stopPropagation()
@@ -108,15 +105,6 @@ const WalletDetailPage = () => {
   const formatBalance = (balance) => {
     const num = parseFloat(balance) || 0
     return `$${num.toFixed(2)}`
-  }
-
-  const getWalletTypeClass = (type) => {
-    switch (type) {
-      case 'CUSTOMER': return styles.customer
-      case 'WORKER': return styles.worker
-      case 'SUPPORT': return styles.support
-      default: return ''
-    }
   }
 
   const getTransactionTypeBadge = (type) => {
@@ -191,10 +179,6 @@ const WalletDetailPage = () => {
     }
   }
 
-  const handleToggleStatus = () => {
-    setShowStatusModal(true)
-  }
-
   const confirmToggleStatus = async () => {
     setModalLoading(true)
     try {
@@ -214,164 +198,210 @@ const WalletDetailPage = () => {
   }
 
   if (pageLoading) return <Loading />
-  if (!wallet) return <div>Wallet not found</div>
+  if (!wallet) return null
 
+  const userName = wallet.user?.discordDisplayName || wallet.user?.fullname || wallet.user?.username || 'Unknown User'
   const availableBalance = (parseFloat(wallet.balance) - parseFloat(wallet.pendingBalance)).toFixed(2)
 
   return (
-    <div className={styles.walletDetail}>
-      <PageHead current="Wallet Details">
-        <div className={styles.backLink} onClick={handleBack}>
-          <IoArrowBack /> Back to Wallets
-        </div>
+    <div className={styles.viewPage}>
+      <PageHead current="Wallets">
+        <Head title={userName} back="/wallets" btns>
+          <Button primary onClick={() => setShowAddModal(true)}>
+            Add Balance
+          </Button>
+        </Head>
       </PageHead>
-      <Container>
-        <Card>
-          <div className={styles.walletHeader}>
-            <div className={styles.walletInfo}>
 
-              <div className={styles.userName}>
-                <IoWallet />
-                {wallet.user?.discordDisplayName || wallet.user?.fullname || wallet.user?.username || wallet.user?.email || 'Unknown User'}
-                <span className={`${styles.walletType} ${getWalletTypeClass(wallet.walletType)}`}>
-                  {wallet.walletType}
-                </span>
-              </div>
-              <div style={{ color: '#7a7e85', fontSize: '0.9rem' }}>
-                Discord ID: {wallet.user?.discordId || '-'}
-                {wallet.user?.discordUsername && wallet.user?.discordDisplayName && (
-                  <span style={{ marginLeft: '1rem', fontSize: '0.85rem' }}>
-                    Username: {wallet.user.discordUsername}
-                  </span>
-                )}
-              </div>
-              <div style={{ marginTop: '0.5rem' }}>
+      <Container>
+        {/* Header Section */}
+        <div className={styles.header}>
+          <div className={styles.headerInfo}>
+            <div className={styles.userName}>{userName}</div>
+            <div className={styles.headerMeta}>
+              <Badge type={wallet.walletType === 'WORKER' ? 'info' : wallet.walletType === 'SUPPORT' ? 'warning' : 'success'}>
+                {wallet.walletType}
+              </Badge>
+              {wallet.isActive ? (
+                <Badge type="success">Active</Badge>
+              ) : (
+                <Badge type="danger">Inactive</Badge>
+              )}
+              <span className={styles.date}>Created {moment(wallet.createdAt).format('DD/MM/YYYY')}</span>
+            </div>
+          </div>
+          <div className={styles.valueCard}>
+            <div className={styles.valueLabel}>Total Balance</div>
+            <div className={styles.valueAmount}>{formatBalance(wallet.balance)}</div>
+          </div>
+        </div>
+
+        {/* Info Grid - 3 columns */}
+        <div className={styles.infoGrid}>
+          {/* User Info Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>User Info</h3>
+            <div className={styles.row}>
+              <span className={styles.label}>Name</span>
+              <span className={styles.value}>{userName}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Discord</span>
+              <span className={styles.value}>{wallet.user?.discordUsername ? `@${wallet.user.discordUsername}` : '-'}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Discord ID</span>
+              <span className={styles.value}>{wallet.user?.discordId || '-'}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Email</span>
+              <span className={styles.value}>{wallet.user?.email || '-'}</span>
+            </div>
+          </Card>
+
+          {/* Wallet Info Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Wallet Info</h3>
+            <div className={styles.row}>
+              <span className={styles.label}>Type</span>
+              <span className={styles.value}>{wallet.walletType}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Currency</span>
+              <span className={styles.value}>{wallet.currency}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Status</span>
+              <span className={styles.value}>
                 {wallet.isActive ? (
                   <Badge type="success">Active</Badge>
                 ) : (
                   <Badge type="danger">Inactive</Badge>
                 )}
-              </div>
+              </span>
             </div>
-
-            <div className={styles.balanceCard}>
-              <div className={styles.balanceLabel}>Total Balance</div>
-              <div className={styles.balanceValue}>{formatBalance(wallet.balance)} {wallet.currency}</div>
-              <div className={styles.balanceDetails}>
-                <div className={styles.detailItem}>
-                  <div className={styles.label}>Deposit</div>
-                  <div className={styles.value}>{formatBalance(wallet.deposit)}</div>
-                </div>
-                <div className={styles.detailItem}>
-                  <div className={styles.label}>Pending</div>
-                  <div className={styles.value}>{formatBalance(wallet.pendingBalance)}</div>
-                </div>
-                <div className={styles.detailItem}>
-                  <div className={styles.label}>Available</div>
-                  <div className={styles.value}>${availableBalance}</div>
-                </div>
-              </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Created</span>
+              <span className={styles.value}>{moment(wallet.createdAt).format('DD/MM/YYYY')}</span>
             </div>
-          </div>
+          </Card>
 
-          <div className={styles.actions}>
-            <Button
-              successPrimary
-              onClick={() => setShowAddModal(true)}
-            >
-              <FaPlus /> Add Balance
-            </Button>
-            <Button
-              warningPrimary
-              onClick={() => setShowAdjustModal(true)}
-            >
-              <FaExchangeAlt /> Adjust Balance
-            </Button>
-            <Button
-              danger={wallet.isActive}
-              successPrimary={!wallet.isActive}
-              onClick={handleToggleStatus}
-            >
-              <FaPowerOff /> {wallet.isActive ? 'Deactivate Wallet' : 'Activate Wallet'}
-            </Button>
-          </div>
-        </Card>
+          {/* Balance Card */}
+          <Card>
+            <h3 className={styles.cardTitle}>Balance Details</h3>
+            <div className={styles.row}>
+              <span className={styles.label}>Balance</span>
+              <span className={styles.value} style={{ color: '#10b981', fontWeight: 600 }}>
+                {formatBalance(wallet.balance)}
+              </span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Deposit</span>
+              <span className={styles.value}>{formatBalance(wallet.deposit)}</span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Pending</span>
+              <span className={styles.value} style={{ color: '#f59e0b' }}>
+                {formatBalance(wallet.pendingBalance)}
+              </span>
+            </div>
+            <div className={styles.row}>
+              <span className={styles.label}>Available</span>
+              <span className={styles.value} style={{ color: '#10b981', fontWeight: 600 }}>
+                ${availableBalance}
+              </span>
+            </div>
+          </Card>
+        </div>
 
-        <Card style={{ marginTop: '1.5rem' }}>
-          <div className={styles.transactionsSection}>
-            <h3 className={styles.sectionTitle}>Transaction History</h3>
+        {/* Action Buttons */}
+        <div className={styles.actionsRow}>
+          <Button primary onClick={() => setShowAddModal(true)}>
+            Add Balance
+          </Button>
+          <Button warningPrimary onClick={() => setShowAdjustModal(true)}>
+            Adjust Balance
+          </Button>
+          <Button
+            danger={wallet.isActive}
+            successPrimary={!wallet.isActive}
+            onClick={() => setShowStatusModal(true)}
+          >
+            {wallet.isActive ? 'Deactivate Wallet' : 'Activate Wallet'}
+          </Button>
+        </div>
 
-            <div className={styles.table}>
-              <Table
-                columns={[
-                  { key: 'index', header: '#', width: '48px', render: (_t, idx) => (page - 1) * limit + idx + 1 },
-                  { key: 'date', header: 'Date', flex: 1, render: (t) => moment(t.createdAt).format('DD/MM/YYYY HH:mm') },
-                  { key: 'type', header: 'Type', flex: 1, render: (t) => getTransactionTypeBadge(t.type) },
-                  {
-                    key: 'amount', header: 'Amount', flex: 1, render: (t) => {
-                      const amount = parseFloat(t.amount)
-                      const isPositive = amount >= 0
-                      return (
-                        <span className={`${styles.amount} ${isPositive ? styles.positive : styles.negative}`}>
-                          {isPositive ? '+' : ''}{formatBalance(amount)}
-                        </span>
-                      )
-                    }
-                  },
-                  {
-                    key: 'balanceAfter', header: 'After', flex: 1, render: (t) => {
-                      // For WORKER_DEPOSIT, show depositAfter instead
-                      const value = t.type === 'WORKER_DEPOSIT' && t.depositAfter !== null && t.depositAfter !== undefined
-                        ? t.depositAfter
-                        : t.balanceAfter;
-                      const label = t.type === 'WORKER_DEPOSIT' ? 'Deposit' : 'Balance';
-                      return (
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{formatBalance(value)}</div>
-                          <div style={{ fontSize: '0.7rem', color: '#999' }}>{label}</div>
-                        </div>
-                      );
-                    }
-                  },
-                  { key: 'reference', header: 'Reference', flex: 1.5, render: (t) => t.reference || '-' },
-                  {
-                    key: 'notes', header: 'Notes', flex: 2, render: (t) => (
-                      <span style={{ fontSize: '0.85rem', color: '#5a5d61' }}>
-                        {t.notes ? (t.notes.length > 50 ? t.notes.substring(0, 50) + '...' : t.notes) : '-'}
+        {/* Transaction History */}
+        <Card>
+          <h3 className={styles.cardTitle}>Transaction History</h3>
+
+          <div className={styles.table}>
+            <Table
+              columns={[
+                { key: 'index', header: '#', render: (_t, idx) => (page - 1) * limit + idx + 1 },
+                { key: 'date', header: 'Date', render: (t) => moment(t.createdAt).format('DD/MM/YYYY HH:mm') },
+                { key: 'type', header: 'Type', render: (t) => getTransactionTypeBadge(t.type) },
+                {
+                  key: 'amount', header: 'Amount', render: (t) => {
+                    const amount = parseFloat(t.amount)
+                    const isPositive = amount >= 0
+                    return (
+                      <span className={`${styles.amount} ${isPositive ? styles.positive : styles.negative}`}>
+                        {isPositive ? '+' : ''}{formatBalance(amount)}
                       </span>
                     )
-                  },
-                ]}
-                data={transactions}
+                  }
+                },
+                {
+                  key: 'balanceAfter', header: 'After', render: (t) => {
+                    const value = t.type === 'WORKER_DEPOSIT' && t.depositAfter !== null && t.depositAfter !== undefined
+                      ? t.depositAfter
+                      : t.balanceAfter;
+                    const label = t.type === 'WORKER_DEPOSIT' ? 'Deposit' : 'Balance';
+                    return (
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{formatBalance(value)}</div>
+                        <div style={{ fontSize: '0.7rem', color: '#999' }}>{label}</div>
+                      </div>
+                    );
+                  }
+                },
+                { key: 'reference', header: 'Reference', render: (t) => t.reference || '-' },
+                {
+                  key: 'notes', header: 'Notes', render: (t) => (
+                    <span style={{ fontSize: '0.85rem', color: '#666' }}>
+                      {t.notes ? (t.notes.length > 40 ? t.notes.substring(0, 40) + '...' : t.notes) : '-'}
+                    </span>
+                  )
+                },
+              ]}
+              data={transactions}
+            />
+          </div>
+
+          {transactions.length > 0 && (
+            <div className="tableFooter">
+              <div className="limit">
+                <span>View</span>
+                <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>transactions per page</span>
+              </div>
+              <Pagination
+                page={page}
+                count={Math.ceil(filterCount / limit)}
+                shape="rounded"
+                onClick={handlePaginate}
               />
             </div>
+          )}
 
-            {transactions.length > 0 && (
-              <div className="tableFooter">
-                <div className="limit">
-                  <span>View</span>
-                  <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                  </select>
-                  <span>transactions per page</span>
-                </div>
-                <Pagination
-                  page={page}
-                  count={Math.ceil(filterCount / limit)}
-                  shape="rounded"
-                  onClick={handlePaginate}
-                />
-              </div>
-            )}
-
-            {transactions.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#7a7e85' }}>
-                No transactions found
-              </div>
-            )}
-          </div>
+          {transactions.length === 0 && (
+            <div className={styles.emptyText}>No transactions found</div>
+          )}
         </Card>
       </Container>
 

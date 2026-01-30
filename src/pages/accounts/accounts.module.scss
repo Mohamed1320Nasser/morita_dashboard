@@ -1,4 +1,4 @@
-.users {
+.accounts {
     padding-bottom: 40px;
 }
 
@@ -27,15 +27,15 @@
         color: #1a1a1a;
     }
 
-    &.wallets .statValue {
+    &.inStock .statValue {
         color: #10b981;
     }
 
-    &.customers .statValue {
+    &.sold .statValue {
         color: #6366f1;
     }
 
-    &.workers .statValue {
+    &.value .statValue {
         color: #f59e0b;
     }
 }
@@ -71,26 +71,37 @@
     }
 }
 
-.discordCell {
-    display: inline-block;
-    max-width: 12ch;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: middle;
+.accountImage {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #f3f4f6;
 }
 
-.walletBalance {
+.noImage {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 20px;
+}
+
+.priceCell {
     font-weight: 600;
     color: #10b981;
 }
 
-.noWallet {
-    color: #9ca3af;
+.quantityCell {
+    font-weight: 500;
 }
 
-// User Detail Page Styles
-.userDetail {
+// Account Detail Page Styles
+.accountDetail {
     padding: 20px;
 
     .backLink {
@@ -116,17 +127,15 @@
         }
     }
 
-    .userHeader {
+    .accountHeader {
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 24px;
-        margin-bottom: 24px;
         padding: 24px;
         border-bottom: 1px solid #eaeef3;
-        background: white;
 
-        .userInfo {
-            .userId {
+        .accountInfo {
+            .accountId {
                 font-size: 12px;
                 color: #7a7e85;
                 margin-bottom: 8px;
@@ -135,7 +144,7 @@
                 letter-spacing: 0.5px;
             }
 
-            .userName {
+            .accountName {
                 display: flex;
                 align-items: center;
                 gap: 12px;
@@ -145,41 +154,37 @@
                 margin-bottom: 12px;
             }
 
-            .userMeta {
+            .accountMeta {
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 8px;
                 font-size: 14px;
                 color: #7a7e85;
 
                 span {
                     white-space: nowrap;
-                    display: flex;
-                    align-items: center;
-                    gap: 4px;
 
-                    &::before {
+                    &::after {
                         content: '•';
-                        display: inline-block;
-                        margin-right: 4px;
+                        margin-left: 8px;
                     }
 
-                    &:first-child::before {
+                    &:last-child::after {
                         display: none;
                     }
                 }
             }
         }
 
-        .walletCard {
-            padding: 20px;
+        .priceCard {
+            padding: 20px 28px;
             border-radius: 12px;
             background: linear-gradient(135deg, #10B981 0%, #059669 100%);
             color: white;
             text-align: center;
-            min-width: 200px;
+            min-width: 180px;
 
-            .walletLabel {
+            .priceLabel {
                 font-size: 11px;
                 opacity: 0.9;
                 margin-bottom: 6px;
@@ -187,13 +192,13 @@
                 letter-spacing: 0.5px;
             }
 
-            .walletBalance {
-                font-size: 24px;
+            .priceValue {
+                font-size: 28px;
                 font-weight: 700;
                 margin-bottom: 4px;
             }
 
-            .walletType {
+            .priceStatus {
                 font-size: 11px;
                 opacity: 0.85;
                 text-transform: uppercase;
@@ -201,25 +206,10 @@
             }
         }
 
-        .noWalletCard {
-            padding: 16px 24px;
-            background: #f3f4f6;
-            border-radius: 12px;
-            color: #6b7280;
-            text-align: center;
-            min-width: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-        }
-
         @media (max-width: 768px) {
             grid-template-columns: 1fr;
 
-            .walletCard,
-            .noWalletCard {
+            .priceCard {
                 width: 100%;
             }
         }
@@ -229,7 +219,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
-        margin-bottom: 24px;
+        margin: 24px 0;
 
         .infoCard {
             background: #fafbfc;
@@ -285,88 +275,141 @@
         }
     }
 
-    .ordersSection {
-        margin-top: 20px;
-        margin-bottom: 24px;
+    .sectionTitle {
+        font-size: 18px;
+        font-weight: 700;
+        color: #12161c;
+        margin-bottom: 16px;
+    }
 
-        .sectionTitle {
-            font-size: 18px;
-            font-weight: 700;
-            color: #12161c;
-            margin-bottom: 16px;
-        }
+    .jsonBlock {
+        padding: 16px;
+        background: #f9fafb;
+        border-radius: 8px;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 300px;
+        overflow: auto;
+        border: 1px solid #eaeef3;
+    }
 
-        .ordersGrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
+    .imagesGrid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
 
-            > div {
-                border-radius: 12px;
-                border: 1px solid #eaeef3;
-                overflow: hidden;
+        .imageThumb {
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid #eaeef3;
+            transition: all 0.2s;
 
-                h4 {
-                    background: #001F3F;
-                    padding: 14px 18px;
-                    margin: 0;
-                    border-bottom: 1px solid #eaeef3;
-                    font-size: 13px;
-                    font-weight: 700;
-                    color: white;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
+            &:hover {
+                border-color: #001F3F;
+                transform: scale(1.02);
             }
 
-            @media (max-width: 768px) {
-                grid-template-columns: 1fr;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
         }
 
         .emptyState {
-            padding: 40px 20px;
-            text-align: center;
+            padding: 40px;
             color: #7a7e85;
             font-size: 14px;
             font-style: italic;
         }
     }
 
-    .orderItem {
+    .actionsSection {
         display: flex;
-        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 0;
+    }
+
+    // Lightbox
+    .lightbox {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
         align-items: center;
-        padding: 14px 18px;
-        border-bottom: 1px solid #f5f5f6;
+        justify-content: center;
+        z-index: 1000;
+        cursor: pointer;
 
-        &:last-child {
-            border-bottom: none;
-        }
+        .lightboxClose {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            opacity: 0.8;
+            transition: opacity 0.2s;
 
-        .orderInfo {
-            flex: 1;
-
-            .orderNumber {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                font-size: 14px;
-                font-weight: 600;
-                color: #12161c;
-                margin-bottom: 4px;
-            }
-
-            .orderDate {
-                font-size: 12px;
-                color: #7a7e85;
+            &:hover {
+                opacity: 1;
             }
         }
 
-        .orderValue {
-            font-size: 15px;
-            font-weight: 700;
-            color: #10B981;
+        .lightboxNav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 60px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 20px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &.prev {
+                left: 20px;
+            }
+
+            &.next {
+                right: 20px;
+            }
+        }
+
+        .lightboxImage {
+            max-width: 85%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .lightboxCounter {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
         }
     }
 }

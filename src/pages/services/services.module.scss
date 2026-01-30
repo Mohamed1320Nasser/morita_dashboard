@@ -1,25 +1,30 @@
 @import '../../styles/var.scss';
 
 .services {
-  .head {
+  .searchRow {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    gap: 12px;
-    position: sticky;
-    top: 0;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .searchInput {
+    flex: 1;
+  }
+
+  .select {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
     background: #fff;
-    z-index: 2;
-    padding: 8px 0 12px;
-    border-bottom: 1px solid #eaeef3;
-    .searchLeft { flex: 1; max-width: 420px; }
-    .searchLeft :global(input) {
-      height: 36px;
-      padding: 0 12px;
-      border: 1px solid $lightBorder;
-      border-radius: 8px;
-      background: #fff;
+    font-size: 14px;
+    color: #374151;
+    cursor: pointer;
+    min-width: 160px;
+
+    &:focus {
+      outline: none;
+      border-color: #6366f1;
     }
   }
 

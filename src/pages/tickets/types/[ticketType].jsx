@@ -19,6 +19,7 @@ const TEMPLATE_VARIABLES = [
     { name: '{price}', description: 'Calculated price' },
     { name: '{currency}', description: 'Currency code (USD)' },
     { name: '{ticket_id}', description: 'Ticket number' },
+    { name: '{account_name}', description: 'Account name (for account purchases)' },
 ]
 
 // Group information
@@ -27,6 +28,7 @@ const GROUP_INFO = {
     'buy-gold': { label: 'Buy Gold', icon: '💰' },
     'sell-gold': { label: 'Sell Gold', icon: '💵' },
     'crypto-swap': { label: 'Crypto Swap', icon: '🔄' },
+    'account-purchase': { label: 'Account Purchase', icon: '🎮' },
     'general': { label: 'General Support', icon: '💬' },
 }
 

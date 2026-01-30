@@ -1,11 +1,6 @@
 import { getData, postData, putData, patchData } from '../../constant/axiosClon'
 
 export default {
-    /**
-     * Get ticket settings for a category
-     * @param {string} categoryId - The category ID
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     getSettings: async (categoryId) => {
         try {
             const response = await getData(`/category-ticket-settings/category/${categoryId}`)
@@ -44,15 +39,8 @@ export default {
         }
     },
 
-    /**
-     * Create or update ticket settings for a category (upsert)
-     * @param {string} categoryId - The category ID
-     * @param {object} data - The settings data
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     upsertSettings: async (categoryId, data) => {
         try {
-            // Use POST for upsert (create or update)
             const payload = { categoryId, ...data }
             const response = await postData('/category-ticket-settings', payload)
             if (response && !response.error) {
@@ -64,12 +52,6 @@ export default {
         }
     },
 
-    /**
-     * Render welcome message preview with variables
-     * @param {string} categoryId - The category ID
-     * @param {object} variables - The template variables
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     previewWelcomeMessage: async (categoryId, variables = {}) => {
         try {
             const response = await postData(`/category-ticket-settings/${categoryId}/preview`, variables)

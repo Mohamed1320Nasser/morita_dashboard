@@ -1,11 +1,6 @@
 import { getData, postData, patchData, deleteData } from '../../constant/axiosClon'
 
 export default {
-    /**
-     * Get all tickets with optional filters
-     * @param {object} filters - Filter options (status, ticketType, page, limit)
-     * @returns {Promise<{success: boolean, data?: array, error?: object}>}
-     */
     getAllTickets: async (filters = {}) => {
         try {
             const queryParams = new URLSearchParams()
@@ -30,11 +25,6 @@ export default {
         }
     },
 
-    /**
-     * Get a single ticket by ID
-     * @param {string} ticketId - The ticket ID
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     getTicketById: async (ticketId) => {
         try {
             const response = await getData(`/tickets/${ticketId}`)
@@ -47,12 +37,6 @@ export default {
         }
     },
 
-    /**
-     * Update ticket status
-     * @param {string} ticketId - The ticket ID
-     * @param {string} status - New status
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     updateTicketStatus: async (ticketId, status) => {
         try {
             const response = await patchData(`/tickets/${ticketId}/status`, { status })
@@ -65,12 +49,6 @@ export default {
         }
     },
 
-    /**
-     * Assign ticket to support user
-     * @param {string} ticketId - The ticket ID
-     * @param {number} supportId - Support user ID
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     assignTicket: async (ticketId, supportId) => {
         try {
             const response = await patchData(`/tickets/${ticketId}/assign`, { supportId })
@@ -83,11 +61,6 @@ export default {
         }
     },
 
-    /**
-     * Close a ticket
-     * @param {string} ticketId - The ticket ID
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     closeTicket: async (ticketId) => {
         try {
             const response = await patchData(`/tickets/${ticketId}/close`, {})
@@ -100,10 +73,6 @@ export default {
         }
     },
 
-    /**
-     * Get ticket statistics
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     getTicketStats: async () => {
         try {
             const response = await getData('/tickets/stats')
@@ -116,11 +85,6 @@ export default {
         }
     },
 
-    /**
-     * Get tickets by type
-     * @param {string} ticketType - The ticket type
-     * @returns {Promise<{success: boolean, data?: array, error?: object}>}
-     */
     getTicketsByType: async (ticketType) => {
         try {
             const response = await getData(`/tickets?ticketType=${ticketType}`)
@@ -133,11 +97,6 @@ export default {
         }
     },
 
-    /**
-     * Get ticket metadata
-     * @param {string} ticketId - The ticket ID
-     * @returns {Promise<{success: boolean, data?: object, error?: object}>}
-     */
     getTicketMetadata: async (ticketId) => {
         try {
             const response = await getData(`/tickets/${ticketId}/metadata`)

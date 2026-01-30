@@ -1,0 +1,163 @@
+.viewPage {
+    padding-bottom: 40px;
+}
+
+// Card Title
+.cardTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 20px 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+// Row - Label/Value
+.row {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+// JSON Content
+.jsonContent {
+    margin: 0;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+// Images Grid
+.imagesGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.imageItem {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: #3b82f6;
+        transform: scale(1.02);
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.noImages {
+    padding: 40px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+// Lightbox
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+.lightboxClose {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.8;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.lightboxNav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 60px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.7;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    &.prev {
+        left: 20px;
+    }
+
+    &.next {
+        right: 20px;
+    }
+}
+
+.lightboxImage {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.lightboxCounter {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 14px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 20px;
+}

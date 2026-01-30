@@ -11,6 +11,7 @@ import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
 import Table from '@/components/shared/Table'
+import KebabMenu from '@/components/shared/KebabMenu'
 import moment from 'moment'
 import Pagination from '@mui/material/Pagination'
 import { IoCart, IoTrendingUp, IoCheckmark, IoClose, IoDownload } from 'react-icons/io5'
@@ -330,14 +331,10 @@ const OrdersPage = () => {
                   key: 'actions',
                   header: 'Actions',
                   className: 'actions',
-                  width: '100px',
                   render: (o) => (
-                    <button
-                      className={styles.viewBtn}
-                      onClick={() => handleView(o.id)}
-                    >
-                      View
-                    </button>
+                    <KebabMenu actions={[
+                      { label: 'View', onClick: () => handleView(o.id) },
+                    ]} />
                   ),
                 },
               ]}
