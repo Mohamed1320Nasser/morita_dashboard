@@ -231,6 +231,33 @@ const AccountsPage = () => {
                                 { key: 'price', header: 'Price', className: 'price', flex: 1, render: (acc) => <span className={styles.priceCell}>{formatPrice(acc.price)}</span> },
                                 { key: 'quantity', header: 'Qty', className: 'quantity', width: '60px', render: (acc) => <span className={styles.quantityCell}>{acc.quantity || 1}</span> },
                                 { key: 'status', header: 'Status', className: 'status', flex: 1, render: (acc) => getStatusBadge(acc.status) },
+                                {
+                                    key: 'soldTo',
+                                    header: 'Customer',
+                                    className: 'soldTo',
+                                    flex: 1.5,
+                                    render: (acc) => {
+                                        if (acc.status === 'SOLD' && acc.soldTo) {
+                                            return (
+                                                <div className={styles.customerCell}>
+                                                    <span className={styles.customerName}>{acc.soldTo.fullname || 'Unknown'}</span>
+                                                    {acc.soldTo.discordId && (
+                                                        <span className={styles.customerDiscord}>@{acc.soldTo.discordId}</span>
+                                                    )}
+                                                </div>
+                                            )
+                                        }
+                                        if (acc.status === 'RESERVED' && acc.reservedBy) {
+                                            return (
+                                                <div className={styles.customerCell}>
+                                                    <span className={styles.customerName}>{acc.reservedBy.fullname || 'Unknown'}</span>
+                                                    <span className={styles.reservedLabel}>(Reserved)</span>
+                                                </div>
+                                            )
+                                        }
+                                        return '-'
+                                    }
+                                },
                                 { key: 'createdAt', header: 'Created', className: 'createdAt', flex: 1, render: (acc) => acc.createdAt ? moment(acc.createdAt).format('DD/MM/YYYY') : '-' },
                                 {
                                     key: 'actions', header: 'Actions', className: 'actions', width: '100px', render: (acc) => (

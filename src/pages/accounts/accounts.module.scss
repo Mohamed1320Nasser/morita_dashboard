@@ -100,6 +100,30 @@
     font-weight: 500;
 }
 
+.customerCell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .customerName {
+        font-weight: 500;
+        color: #12161c;
+        font-size: 13px;
+    }
+
+    .customerDiscord {
+        font-size: 11px;
+        color: #6366f1;
+        font-weight: 500;
+    }
+
+    .reservedLabel {
+        font-size: 11px;
+        color: #f59e0b;
+        font-weight: 500;
+    }
+}
+
 // Account Detail Page Styles
 .accountDetail {
     padding: 20px;

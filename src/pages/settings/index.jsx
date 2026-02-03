@@ -175,6 +175,12 @@ const SettingsPage = () => {
           case 'TICKETS':
             result = await discordController.publishTicketChannels(clearAll)
             break
+          case 'ACCOUNTS':
+            result = await discordController.publishAccountsChannel(clearAll)
+            break
+          case 'PAYMENTS':
+            result = await discordController.publishPaymentsChannel(clearAll)
+            break
           default:
             throw new Error('Unknown channel type')
         }
@@ -214,6 +220,10 @@ const SettingsPage = () => {
         return 'Terms of Service'
       case 'TICKETS':
         return 'Ticket Channels'
+      case 'ACCOUNTS':
+        return 'Account Shop'
+      case 'PAYMENTS':
+        return 'Payments Channel'
       default:
         return channelType
     }
@@ -227,6 +237,10 @@ const SettingsPage = () => {
         return 'Terms of service with accept button'
       case 'TICKETS':
         return '5 ticket creation channels'
+      case 'ACCOUNTS':
+        return 'Account shop with category dropdowns'
+      case 'PAYMENTS':
+        return 'Payment methods with crypto/payment buttons'
       default:
         return ''
     }
@@ -498,6 +512,8 @@ const SettingsPage = () => {
               <li><strong>Pricing Channel:</strong> Shows all services with pricing. Publish after updating prices or adding services.</li>
               <li><strong>Terms of Service:</strong> Shows TOS with accept button. Publish after updating TOS content.</li>
               <li><strong>Ticket Channels:</strong> Creates 5 ticket channels (Purchase Services, Purchase Gold, Sell Gold, Swap Crypto, Account Shop).</li>
+              <li><strong>Account Shop:</strong> Shows accounts for sale with category dropdowns. Publish after adding/updating accounts.</li>
+              <li><strong>Payments Channel:</strong> Shows payment methods with Crypto and Payment buttons. Publish after updating payment config.</li>
               <li><strong>Status Colors:</strong> Green = Published, Yellow = Needs Update, Gray = Never Published, Red = Error</li>
             </ul>
           </div>

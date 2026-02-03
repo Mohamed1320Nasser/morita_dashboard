@@ -51,4 +51,24 @@ export default {
             return { success: false, error: err }
         }
     },
+
+    publishAccountsChannel: async (clearAllMessages = false) => {
+        try {
+            const response = await postData('/discord/channels/publish/accounts', { clearAllMessages })
+            return { success: response?.success !== false, data: response?.data || response, error: response?.error }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
+
+    publishPaymentsChannel: async (clearAllMessages = false) => {
+        try {
+            const response = await postData('/discord/channels/publish/payments', { clearAllMessages })
+            return { success: response?.success !== false, data: response?.data || response, error: response?.error }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
 }

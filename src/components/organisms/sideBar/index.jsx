@@ -7,9 +7,12 @@ import { LuLayoutDashboard, LuChevronUp, LuChevronDown } from "react-icons/lu";
 import { MdCategory } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
-import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal, IoPersonCircle } from "react-icons/io5";
+import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal, IoPersonCircle, IoGift, IoRibbon, IoLink, IoCash, IoCard } from "react-icons/io5";
+import { SiBlockchaindotcom } from "react-icons/si";
+import { BsCreditCard2Front } from "react-icons/bs";
+import { RiDiscordFill } from "react-icons/ri";
 import { TbTicket } from "react-icons/tb";
-import { FaScroll, FaQuestion, FaUsers, FaClipboardList } from "react-icons/fa";
+import { FaScroll, FaQuestion, FaUsers, FaClipboardList, FaTrophy } from "react-icons/fa";
 import { Collapse } from 'react-bootstrap';
 import { useRouter } from "next/router";
 
@@ -38,6 +41,36 @@ const SideBar = () => {
     { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
     { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
     { label: 'Accounts', icon: <IoPersonCircle />, href: '/accounts' },
+    {
+      label: 'Daily Reward',
+      groupKey: 'daily-reward',
+      icon: <IoGift />,
+      links: [
+        { label: 'Configuration', icon: <IoSettings />, href: '/daily-reward' },
+        { label: 'Claims', icon: <FaClipboardList />, href: '/daily-reward/claims' },
+        { label: 'Leaderboard', icon: <FaTrophy />, href: '/daily-reward/leaderboard' },
+      ]
+    },
+    {
+      label: 'Order Reward',
+      groupKey: 'order-reward',
+      icon: <IoRibbon />,
+      links: [
+        { label: 'Configuration', icon: <IoSettings />, href: '/order-reward' },
+        { label: 'Claims', icon: <FaClipboardList />, href: '/order-reward/claims' },
+      ]
+    },
+    {
+      label: 'Payments',
+      groupKey: 'payments',
+      icon: <IoCash />,
+      links: [
+        { label: 'Crypto Wallets', icon: <SiBlockchaindotcom />, href: '/blockchain' },
+        { label: 'Verify Transaction', icon: <IoLink />, href: '/blockchain/verify' },
+        { label: 'Payment Methods', icon: <BsCreditCard2Front />, href: '/payments/methods' },
+        { label: 'Discord Config', icon: <RiDiscordFill />, href: '/payments/discord-config' },
+      ]
+    },
 
     // Catalog Management
     { label: 'Services', icon: <LuGamepad2 />, href: '/services' },

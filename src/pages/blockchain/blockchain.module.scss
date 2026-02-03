@@ -1,0 +1,653 @@
+.blockchain {
+    padding-bottom: 40px;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.statCard {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    .statLabel {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+    .statValue {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    &.total .statValue {
+        color: #6366f1;
+    }
+
+    &.active .statValue {
+        color: #10b981;
+    }
+}
+
+// Form styles matching dailyReward
+.configForm {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.formSection {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 24px;
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+}
+
+.sectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    input, select, textarea {
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        font-size: 14px;
+        color: #374151;
+        transition: border-color 0.2s;
+
+        &:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        &:disabled {
+            background: #f9fafb;
+            cursor: not-allowed;
+        }
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .hint {
+        font-size: 12px;
+        color: #9ca3af;
+    }
+}
+
+.formGroupFull {
+    grid-column: 1 / -1;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+// Header actions
+.headerActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+// Wallet List
+.walletList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.walletCard {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+    border: 1px solid #e5e7eb;
+
+    &:hover {
+        border-color: #d1d5db;
+    }
+
+    &.inactive {
+        opacity: 0.6;
+    }
+}
+
+.walletInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.walletIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+
+    &.ltc { background: #345d9d20; color: #345d9d; }
+    &.btc { background: #f7931a20; color: #f7931a; }
+    &.eth { background: #627eea20; color: #627eea; }
+    &.usdt { background: #26a17b20; color: #26a17b; }
+    &.usdc { background: #2775ca20; color: #2775ca; }
+    &.sol { background: #9945ff20; color: #9945ff; }
+    &.xrp { background: #23292f20; color: #23292f; }
+}
+
+.walletDetails {
+    .walletName {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .walletAddress {
+        font-size: 13px;
+        color: #6b7280;
+        font-family: monospace;
+        max-width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .walletMeta {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+
+        .badge {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            color: #374151;
+
+            &.currency {
+                background: #dbeafe;
+                color: #1d4ed8;
+            }
+
+            &.network {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            &.active {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            &.inactive {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+        }
+    }
+}
+
+.walletActions {
+    display: flex;
+    gap: 8px;
+
+    button {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+
+        &.actionBtn {
+            background: #e0e7ff;
+            color: #4338ca;
+
+            &:hover {
+                background: #c7d2fe;
+            }
+        }
+
+        &.editBtn {
+            background: #f3f4f6;
+            color: #374151;
+
+            &:hover {
+                background: #e5e7eb;
+            }
+        }
+
+        &.deleteBtn {
+            background: #fee2e2;
+            color: #dc2626;
+
+            &:hover {
+                background: #fecaca;
+            }
+        }
+    }
+}
+
+// Modal Styles
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    h2 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 24px;
+    }
+
+    p {
+        font-size: 14px;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+
+    button {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.cancelBtn {
+            background: #f3f4f6;
+            color: #374151;
+
+            &:hover {
+                background: #e5e7eb;
+            }
+        }
+
+        &.saveBtn {
+            background: #6366f1;
+            color: #fff;
+
+            &:hover {
+                background: #4f46e5;
+            }
+
+            &:disabled {
+                background: #c7d2fe;
+                cursor: not-allowed;
+            }
+        }
+
+        &.dangerBtn {
+            background: #dc2626;
+            color: #fff;
+
+            &:hover {
+                background: #b91c1c;
+            }
+
+            &:disabled {
+                background: #fca5a5;
+                cursor: not-allowed;
+            }
+        }
+    }
+}
+
+// Verify Transaction Page
+.verifySection {
+    margin-bottom: 24px;
+}
+
+.verifyFormGrid {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 16px;
+    align-items: end;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.verifyButton {
+    padding: 12px 24px;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+        background: #4f46e5;
+    }
+
+    &:disabled {
+        background: #c7d2fe;
+        cursor: not-allowed;
+    }
+}
+
+// Result Card
+.resultCard {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 24px;
+
+    &.confirmed {
+        border-left: 4px solid #10b981;
+    }
+
+    &.pending {
+        border-left: 4px solid #f59e0b;
+    }
+
+    &.notFound {
+        border-left: 4px solid #ef4444;
+    }
+
+    &.error {
+        border-left: 4px solid #6b7280;
+    }
+}
+
+.resultHeader {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .statusIcon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+
+        &.confirmed {
+            background: #d1fae5;
+        }
+
+        &.pending {
+            background: #fef3c7;
+        }
+
+        &.notFound, &.error {
+            background: #fee2e2;
+        }
+    }
+
+    .statusText {
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0 0 4px 0;
+        }
+
+        p {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+        }
+    }
+}
+
+.resultAmount {
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    text-align: center;
+    border: 1px solid #bbf7d0;
+
+    .amountLabel {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .amountValue {
+        font-size: 36px;
+        font-weight: 700;
+        color: #10b981;
+    }
+
+    .amountUsd {
+        font-size: 16px;
+        font-weight: 500;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+}
+
+.resultDetails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.detailItem {
+    .detailLabel {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .detailValue {
+        font-size: 14px;
+        color: #1a1a1a;
+        font-weight: 500;
+        word-break: break-all;
+
+        &.mono {
+            font-family: monospace;
+            font-size: 13px;
+            background: #f3f4f6;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        a {
+            color: #6366f1;
+            text-decoration: none;
+            margin-left: 8px;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.usdValue {
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 400;
+    margin-left: 6px;
+}
+
+// Empty State
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+
+    .emptyIcon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+
+    .emptyText {
+        font-size: 16px;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .emptyHint {
+        font-size: 14px;
+        margin-top: 8px;
+    }
+}
+
+// Transaction Inputs/Outputs Section
+.txSection {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.txSectionTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.txList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.txItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+
+    &:hover {
+        background: #f3f4f6;
+    }
+}
+
+.txAddress {
+    font-family: monospace;
+    font-size: 13px;
+    color: #374151;
+    word-break: break-all;
+    flex: 1;
+    margin-right: 16px;
+}
+
+.txAmount {
+    font-size: 14px;
+    font-weight: 600;
+    color: #10b981;
+    white-space: nowrap;
+}
+
+.showMoreBtn {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #e0e7ff;
+    color: #4338ca;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #c7d2fe;
+    }
+}
+
+.explorerLink {
+    display: inline-block;
+    margin-top: 8px;
+    color: #6366f1;
+    text-decoration: none;
+    font-size: 13px;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

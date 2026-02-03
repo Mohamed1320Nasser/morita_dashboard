@@ -232,6 +232,127 @@ const OrderDetailPage = () => {
           )}
         </Card>
 
+        {/* Account Data Status */}
+        <Card>
+          <h3 className={styles.cardTitle}>Account Data</h3>
+          {order.accountDataStatus?.isSubmitted ? (
+            <>
+              <div className={styles.row}>
+                <span className={styles.label}>Status</span>
+                <span className={styles.value}>
+                  <Badge type="success">Submitted</Badge>
+                </span>
+              </div>
+              <div className={styles.row}>
+                <span className={styles.label}>Submitted At</span>
+                <span className={styles.value}>
+                  {moment(order.accountDataStatus.submittedAt).format('DD/MM/YYYY HH:mm')}
+                </span>
+              </div>
+              <div className={styles.row}>
+                <span className={styles.label}>Submitted By</span>
+                <span className={styles.value}>{order.accountDataStatus.submittedByName || order.accountDataStatus.submittedBy || '-'}</span>
+              </div>
+              <div className={styles.row}>
+                <span className={styles.label}>Viewed</span>
+                <span className={styles.value}>
+                  {order.accountDataStatus.isClaimed ? (
+                    <Badge type="warning">Yes - Claimed</Badge>
+                  ) : (
+                    <Badge type="secondary">Not yet viewed</Badge>
+                  )}
+                </span>
+              </div>
+              {order.accountDataStatus.isClaimed && (
+                <>
+                  <div className={styles.row}>
+                    <span className={styles.label}>Claimed By</span>
+                    <span className={styles.value}>
+                      {order.accountDataStatus.claimedByName || order.accountDataStatus.claimedBy} ({order.accountDataStatus.claimedByRole})
+                    </span>
+                  </div>
+                  <div className={styles.row}>
+                    <span className={styles.label}>Claimed At</span>
+                    <span className={styles.value}>
+                      {moment(order.accountDataStatus.claimedAt).format('DD/MM/YYYY HH:mm')}
+                    </span>
+                  </div>
+                </>
+              )}
+              <div className={styles.securityNote}>
+                ⚠️ Account credentials are encrypted and not visible in admin panel for security.
+              </div>
+            </>
+          ) : (
+            <div className={styles.emptyText}>No account data submitted yet</div>
+          )}
+        </Card>
+
+        {/* Screenshots (merged proof + completion) */}
+        {order.screenshots && order.screenshots.length > 0 && (
+          <Card>
+            <h3 className={styles.cardTitle}>
+              Screenshots ({order.screenshotCount || order.screenshots.length})
+            </h3>
+            <p className={styles.sectionDescription}>Proof screenshots uploaded by worker during the order</p>
+            <div className={styles.screenshotGrid}>
+              {order.screenshots.map((url, index) => (
+                <a
+                  key={index}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.screenshotItem}
+                >
+                  <img src={url} alt={`Screenshot ${index + 1}`} />
+                </a>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Issues */}
+        {order.issues && order.issues.length > 0 && (
+          <Card>
+            <h3 className={styles.cardTitle}>Issues ({order.issues.length})</h3>
+            <div className={styles.issuesList}>
+              {order.issues.map((issue) => (
+                <div key={issue.id} className={styles.issueItem}>
+                  <div className={styles.issueHeader}>
+                    <Badge type={issue.status === 'RESOLVED' ? 'success' : issue.status === 'OPEN' ? 'danger' : 'warning'}>
+                      {issue.status}
+                    </Badge>
+                    <Badge type={
+                      issue.priority === 'URGENT' ? 'danger' :
+                      issue.priority === 'HIGH' ? 'warning' :
+                      issue.priority === 'MEDIUM' ? 'secondary' : 'default'
+                    }>
+                      {issue.priority}
+                    </Badge>
+                    <span className={styles.issueDate}>
+                      {moment(issue.createdAt).format('DD/MM/YYYY HH:mm')}
+                    </span>
+                  </div>
+                  <div className={styles.issueDescription}>{issue.issueDescription}</div>
+                  {issue.reportedBy && (
+                    <div className={styles.issueReporter}>
+                      Reported by: {issue.reportedBy.fullname || issue.reportedBy.discordId}
+                    </div>
+                  )}
+                  {issue.resolution && (
+                    <div className={styles.issueResolution}>
+                      <strong>Resolution:</strong> {issue.resolution}
+                      {issue.resolvedBy && (
+                        <span> (by {issue.resolvedBy.fullname || issue.resolvedBy.discordId})</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* Completion Notes */}
         {order.completionNotes && (
           <Card>

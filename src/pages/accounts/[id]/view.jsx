@@ -167,6 +167,93 @@ const ViewAccount = () => {
                         <span className={styles.label}>Last Updated</span>
                         <span className={styles.value}>{moment(account.updatedAt).format('DD/MM/YYYY')}</span>
                     </div>
+
+                    {/* Customer Info for SOLD accounts */}
+                    {account.status === 'SOLD' && account.soldTo && (
+                        <>
+                            <div className={styles.sectionDivider}>
+                                <span>Customer Information</span>
+                            </div>
+                            <div className={styles.row}>
+                                <span className={styles.label}>Sold To</span>
+                                <span className={styles.value}>{account.soldTo.fullname || 'Unknown'}</span>
+                            </div>
+                            {account.soldTo.email && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Email</span>
+                                    <span className={styles.value}>{account.soldTo.email}</span>
+                                </div>
+                            )}
+                            {account.soldTo.discordId && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Discord ID</span>
+                                    <span className={styles.value}>{account.soldTo.discordId}</span>
+                                </div>
+                            )}
+                            {account.soldAt && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Sold At</span>
+                                    <span className={styles.value}>{moment(account.soldAt).format('DD/MM/YYYY HH:mm')}</span>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Support Info for SOLD accounts */}
+                    {account.status === 'SOLD' && account.soldBy && (
+                        <>
+                            <div className={styles.sectionDivider}>
+                                <span>Support Information</span>
+                            </div>
+                            <div className={styles.row}>
+                                <span className={styles.label}>Delivered By</span>
+                                <span className={styles.value}>{account.soldBy.fullname || 'Unknown'}</span>
+                            </div>
+                            {account.soldBy.email && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Email</span>
+                                    <span className={styles.value}>{account.soldBy.email}</span>
+                                </div>
+                            )}
+                            {account.soldBy.discordId && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Discord ID</span>
+                                    <span className={styles.value}>{account.soldBy.discordId}</span>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Reserved Info for RESERVED accounts */}
+                    {account.status === 'RESERVED' && account.reservedBy && (
+                        <>
+                            <div className={styles.sectionDivider}>
+                                <span>Reservation Information</span>
+                            </div>
+                            <div className={styles.row}>
+                                <span className={styles.label}>Reserved By</span>
+                                <span className={styles.value}>{account.reservedBy.fullname || 'Unknown'}</span>
+                            </div>
+                            {account.reservedBy.discordId && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Discord ID</span>
+                                    <span className={styles.value}>{account.reservedBy.discordId}</span>
+                                </div>
+                            )}
+                            {account.reservedAt && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Reserved At</span>
+                                    <span className={styles.value}>{moment(account.reservedAt).format('DD/MM/YYYY HH:mm')}</span>
+                                </div>
+                            )}
+                            {account.reservationExpiry && (
+                                <div className={styles.row}>
+                                    <span className={styles.label}>Expires At</span>
+                                    <span className={styles.value}>{moment(account.reservationExpiry).format('DD/MM/YYYY HH:mm')}</span>
+                                </div>
+                            )}
+                        </>
+                    )}
                 </Card>
 
                 {/* Account Data Card */}

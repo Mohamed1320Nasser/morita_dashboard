@@ -39,6 +39,21 @@
     color: #1a1a1a;
 }
 
+// Section Divider
+.sectionDivider {
+    margin: 20px 0 8px 0;
+    padding: 12px 0;
+    border-top: 2px solid #e5e7eb;
+
+    span {
+        font-size: 13px;
+        font-weight: 600;
+        color: #6366f1;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
 // JSON Content
 .jsonContent {
     margin: 0;
