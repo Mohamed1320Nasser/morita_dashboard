@@ -1,0 +1,18 @@
+.loyaltyTiers {
+  width: 100%;
+  min-height: 100vh;
+  padding-bottom: 40px;
+
+  .actionsRow {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+
+  .table {
+    width: 100%;
+    overflow-x: auto;
+  }
+}

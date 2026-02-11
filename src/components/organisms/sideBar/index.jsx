@@ -7,7 +7,7 @@ import { LuLayoutDashboard, LuChevronUp, LuChevronDown } from "react-icons/lu";
 import { MdCategory } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
-import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal, IoPersonCircle, IoGift, IoRibbon, IoLink, IoCash, IoCard } from "react-icons/io5";
+import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal, IoPersonCircle, IoGift, IoRibbon, IoLink, IoCash, IoCard, IoTrophy } from "react-icons/io5";
 import { SiBlockchaindotcom } from "react-icons/si";
 import { BsCreditCard2Front } from "react-icons/bs";
 import { RiDiscordFill } from "react-icons/ri";
@@ -41,6 +41,7 @@ const SideBar = () => {
     { label: 'Wallets', icon: <IoWallet />, href: '/wallets' },
     { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
     { label: 'Accounts', icon: <IoPersonCircle />, href: '/accounts' },
+    { label: 'Loyalty Tiers', icon: <IoTrophy />, href: '/loyalty-tiers' },
     {
       label: 'Daily Reward',
       groupKey: 'daily-reward',
