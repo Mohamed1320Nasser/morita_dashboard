@@ -12,6 +12,7 @@ import styles from './charts.module.scss'
  * @param {String} dataKey - Key for value in data (default: 'value')
  * @param {String} nameKey - Key for label in data (default: 'label')
  * @param {Array} colors - Array of colors for bars (optional, uses single color if not provided)
+ * @param {Number} barSize - Width of bars (default: auto)
  */
 const BarChart = ({
   data = [],
@@ -23,7 +24,8 @@ const BarChart = ({
   nameKey = 'label',
   colors = null,
   formatValue = null,
-  formatLabel = null
+  formatLabel = null,
+  barSize = null
 }) => {
   if (!data || data.length === 0) {
     return (
@@ -70,7 +72,7 @@ const BarChart = ({
       <ResponsiveContainer width="100%" height="100%">
         <RechartsBarChart
           data={data}
-          margin={{ top: 20, right: 10, left: 0, bottom: 0 }}
+          margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
         >
           {showGrid && (
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e4e8" />
@@ -90,6 +92,7 @@ const BarChart = ({
             dataKey={dataKey}
             radius={[8, 8, 0, 0]}
             label={<CustomLabel />}
+            maxBarSize={barSize || 100}
           >
             {data.map((entry, index) => (
               <Cell

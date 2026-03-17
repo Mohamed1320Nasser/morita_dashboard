@@ -1,0 +1,2115 @@
+@import '../../styles/var.scss';
+
+.kpisPage {
+  .periodSelector {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+
+    .periodBtn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid #e0e4e8;
+      background: #fff;
+      color: #5a5d61;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: $main;
+        color: $main;
+      }
+
+      &.active {
+        background: $main;
+        border-color: $main;
+        color: #fff;
+      }
+    }
+  }
+
+  .customDateRange {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e0e4e8;
+    flex-wrap: wrap;
+
+    .dateInputGroup {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 200px;
+
+      label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #5a5d61;
+      }
+
+      .dateInput {
+        padding: 0.625rem 0.875rem;
+        border-radius: 8px;
+        border: 1px solid #e0e4e8;
+        background: #fff;
+        color: #12161c;
+        font-size: 0.875rem;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: $main;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: $main;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+      }
+    }
+  }
+
+  .sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #12161c;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .periodBadge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #f1f3f5;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #5a5d61;
+    }
+  }
+
+  .metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+
+    .metricCard {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.75rem 1.5rem;
+      border: 1px solid #eaeef3;
+      display: flex;
+      gap: 1.25rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        border-color: #d1d5db;
+      }
+
+      .metricIcon {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.85rem;
+        flex-shrink: 0;
+      }
+
+      .metricContent {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .metricValue {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #12161c;
+        margin-bottom: 0.35rem;
+        line-height: 1.1;
+      }
+
+      .metricLabel {
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .metricSubtext {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        line-height: 1.5;
+      }
+
+      &.blue {
+        .metricIcon {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        }
+      }
+
+      &.green {
+        .metricIcon {
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+      }
+
+      &.orange {
+        .metricIcon {
+          background: rgba(249, 115, 22, 0.1);
+          color: #f97316;
+        }
+      }
+
+      &.positive {
+        .metricIcon {
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+      }
+
+      &.negative {
+        .metricIcon {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+        }
+      }
+
+      &.neutral {
+        .metricIcon {
+          background: rgba(107, 114, 128, 0.1);
+          color: #6b7280;
+        }
+      }
+    }
+  }
+
+  .chartHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .chartTitle {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #12161c;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chartLegend {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+
+      .legendItem {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #5a5d61;
+
+        .legendColor {
+          width: 12px;
+          height: 12px;
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+
+  .chartContainer {
+    margin-bottom: 1rem;
+    min-height: 300px;
+    position: relative;
+
+    .noData {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 300px;
+      color: #9ca3af;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+  }
+
+  .twoColumnGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .metricsTable {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+
+    .metricRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f1f3f5;
+        transform: translateX(4px);
+      }
+
+      .metricName {
+        font-size: 0.9rem;
+        color: #5a5d61;
+        font-weight: 500;
+      }
+
+      .metricBadge {
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        background: #e0e4e8;
+        color: #12161c;
+        font-size: 0.875rem;
+        font-weight: 600;
+
+        &.success {
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+
+        &.warning {
+          background: rgba(249, 115, 22, 0.1);
+          color: #f97316;
+        }
+
+        &.danger {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+        }
+      }
+    }
+  }
+
+  .tableContainer {
+    overflow-x: auto;
+    margin-top: 1rem;
+  }
+
+  .reasonsTable {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      background: #f8f9fa;
+
+      th {
+        padding: 0.875rem 1rem;
+        text-align: left;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #5a5d61;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e0e4e8;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid #eaeef3;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: #f8f9fa;
+        }
+
+        td {
+          padding: 1rem;
+          font-size: 0.875rem;
+          color: #12161c;
+        }
+      }
+    }
+
+    .username {
+      font-weight: 600;
+      color: #12161c;
+    }
+
+    .typeBadge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+
+      &.ban {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+      }
+
+      &.kick {
+        background: rgba(249, 115, 22, 0.1);
+        color: #f97316;
+      }
+    }
+
+    .reason {
+      color: #6b7280;
+      font-style: italic;
+      max-width: 400px;
+    }
+  }
+
+  // ============================================
+  // REPEAT CUSTOMER SECTION STYLES
+  // ============================================
+
+  .topCustomersTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    thead {
+      background: #f8f9fa;
+      border-bottom: 2px solid #e0e4e8;
+
+      th {
+        padding: 0.875rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #5a5d61;
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid #f0f2f4;
+        transition: background 0.15s ease;
+
+        &:hover {
+          background: #f8f9fa;
+        }
+
+        td {
+          padding: 0.875rem 1rem;
+          color: #12161c;
+        }
+      }
+    }
+
+    .rank {
+      font-weight: 600;
+      color: #8b5cf6;
+      font-size: 1rem;
+    }
+
+    .customerName {
+      font-weight: 500;
+
+      .discordTag {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 0.25rem;
+      }
+    }
+
+    .tierBadge {
+      display: inline-block;
+      padding: 0.25rem 0.625rem;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: white;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .noTier {
+      color: #cbd5e1;
+      font-size: 0.875rem;
+    }
+
+    .orderCount {
+      font-weight: 600;
+      color: #3b82f6;
+      font-size: 0.9375rem;
+    }
+
+    .totalSpent {
+      font-weight: 700;
+      color: #10b981;
+      font-size: 0.9375rem;
+    }
+
+    .lastOrder {
+      color: #64748b;
+      font-size: 0.8125rem;
+    }
+  }
+
+  .distributionLegend {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e4e8;
+
+    .legendRow {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      font-size: 0.875rem;
+
+      .legendLabel {
+        color: #5a5d61;
+      }
+
+      .legendValue {
+        font-weight: 600;
+        color: #12161c;
+      }
+    }
+  }
+
+  .cohortSummary {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.6;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  // Metric card color variants
+  .purple {
+    .metricIcon {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+      color: #8b5cf6;
+    }
+  }
+
+  .comingSoon {
+    text-align: center;
+    padding: 2rem 1.5rem;
+
+    h3 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #12161c;
+    }
+
+    .upcomingList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+
+      .upcomingItem {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.625rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border: 1px dashed #d1d5db;
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #f1f3f5;
+          border-color: $main;
+          color: $main;
+        }
+
+        .upcomingIcon {
+          font-size: 1.25rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .kpisPage {
+    .metricsGrid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+
+      .metricCard {
+        padding: 1.5rem 1.25rem;
+
+        .metricIcon {
+          width: 52px;
+          height: 52px;
+          font-size: 1.6rem;
+        }
+
+        .metricValue {
+          font-size: 1.75rem;
+        }
+      }
+    }
+
+    .twoColumnGrid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .chartHeader {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .chartLegend {
+        width: 100%;
+      }
+    }
+
+    .tableContainer {
+      .reasonsTable {
+        font-size: 0.8rem;
+
+        th,
+        td {
+          padding: 0.75rem 0.625rem;
+        }
+
+        .reason {
+          max-width: 200px;
+        }
+      }
+    }
+
+    .comingSoon {
+      .upcomingList {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .kpisPage {
+    .metricsGrid {
+      grid-template-columns: 1fr;
+    }
+
+    .periodSelector {
+      flex-direction: column;
+
+      .periodBtn {
+        width: 100%;
+      }
+    }
+
+    .customDateRange {
+      flex-direction: column;
+
+      .dateInputGroup {
+        min-width: 100%;
+      }
+    }
+
+    .sectionHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+
+      .periodBadge {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    .tableContainer {
+      .reasonsTable {
+        .reason {
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .supportAgentTable,
+    .unansweredTicketsTable,
+    .responseByTypeTable {
+      font-size: 0.75rem;
+
+      th,
+      td {
+        padding: 0.5rem;
+      }
+    }
+
+    .alertCard {
+      .alertHeader {
+        flex-direction: row;
+        gap: 0.5rem;
+
+        h3 {
+          font-size: 0.95rem;
+        }
+      }
+    }
+
+    .periodControls {
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+
+      .periodSelect,
+      .slaControl {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// ============================================
+// SUPPORT RESPONSE TIME STYLES
+// ============================================
+
+.periodControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .periodSelect {
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #e0e4e8;
+    background: #fff;
+    color: #12161c;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $main;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $main;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  .slaControl {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #5a5d61;
+      white-space: nowrap;
+    }
+
+    .slaInput {
+      width: 80px;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #e0e4e8;
+      background: #fff;
+      color: #12161c;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: $main;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $main;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+    }
+  }
+}
+
+.distributionSummary {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  flex-wrap: wrap;
+
+  .distributionItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .distributionLabel {
+      font-size: 0.875rem;
+      color: #5a5d61;
+      font-weight: 500;
+    }
+
+    .distributionValue {
+      font-size: 0.875rem;
+      color: #3b82f6;
+      font-weight: 700;
+    }
+  }
+}
+
+.supportAgentTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .agentName {
+    div:first-child {
+      font-weight: 600;
+      color: #12161c;
+      margin-bottom: 0.25rem;
+    }
+
+    .discordTag {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+  }
+
+  .ticketCount {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+
+  .avgResponse {
+    font-weight: 600;
+    color: #8b5cf6;
+  }
+
+  .slaRate {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8125rem;
+
+    &.excellent {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    &.good {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    &.needsImprovement {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+  }
+
+  .fastest {
+    color: #10b981;
+    font-weight: 600;
+  }
+
+  .slowest {
+    color: #ef4444;
+    font-weight: 600;
+  }
+}
+
+.alertCard {
+  .alertHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .alertIcon {
+      font-size: 1.5rem;
+      color: #f59e0b;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #12161c;
+    }
+  }
+}
+
+.unansweredTicketsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #fef3c7;
+    border-bottom: 2px solid #fbbf24;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #fffbeb;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .ticketNumber {
+    font-weight: 700;
+    color: #f59e0b;
+    font-size: 0.9375rem;
+  }
+
+  .ticketTypeBadge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+    color: #8b5cf6;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+
+  .timeElapsed {
+    color: #ef4444;
+    font-weight: 600;
+  }
+}
+
+.responseByTypeTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .ticketTypeBadge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+    color: #8b5cf6;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+}
+
+.tableFooter {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #5a5d61;
+  font-weight: 500;
+}
+
+.conversionByTypeTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .conversionRate {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8125rem;
+
+    &.high {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    &.medium {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    &.low {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+  }
+}
+
+.conversionDetailsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.75rem 0.875rem;
+      text-align: left;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 0.875rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .ticketNumber {
+    font-weight: 700;
+    color: #8b5cf6;
+    font-size: 0.9375rem;
+  }
+
+  .serviceName {
+    color: #5a5d61;
+    font-weight: 500;
+  }
+
+  .fastest {
+    color: #10b981;
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .slowest {
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+}
+
+.unconvertedTicketsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #fef3c7;
+    border-bottom: 2px solid #fbbf24;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #fffbeb;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .ticketNumber {
+    font-weight: 700;
+    color: #f59e0b;
+    font-size: 0.9375rem;
+  }
+
+  .ticketTypeBadge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+    color: #8b5cf6;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+
+  .timeElapsed {
+    color: #ef4444;
+    font-weight: 600;
+  }
+}
+
+.peakTimesTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .peakHour {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9375rem;
+  }
+
+  .peakDay {
+    font-weight: 600;
+    color: #8b5cf6;
+  }
+
+  .count {
+    font-weight: 700;
+    color: #3b82f6;
+  }
+}
+
+.replySpeedTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .avgTime {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9375rem;
+  }
+
+  .agentName {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+}
+
+.slowestRepliesTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #fef3c7;
+    border-bottom: 2px solid #fbbf24;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #fffbeb;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .messageText {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #5a5d61;
+    font-size: 0.8125rem;
+  }
+
+  .slowTime {
+    font-weight: 700;
+    color: #ef4444;
+    font-size: 0.9375rem;
+  }
+}
+
+.issuesTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .serviceName {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+
+  .resolverName {
+    font-weight: 600;
+    color: #8b5cf6;
+  }
+
+  .issueRate {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8125rem;
+
+    &.low {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    &.medium {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    &.high {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+  }
+}
+
+.unresolvedIssuesTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #fef3c7;
+    border-bottom: 2px solid #fbbf24;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #fffbeb;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .orderNumber {
+    font-weight: 700;
+    color: #3b82f6;
+    font-size: 0.9375rem;
+  }
+
+  .priorityBadge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+
+    &.low {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    &.medium {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    &.high {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    &.urgent {
+      background: rgba(220, 38, 38, 0.15);
+      color: #dc2626;
+      border: 1px solid rgba(220, 38, 38, 0.4);
+      font-weight: 800;
+    }
+  }
+
+  .issueDesc {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #5a5d61;
+    font-size: 0.8125rem;
+  }
+
+  .ageWarning {
+    font-weight: 700;
+    color: #ef4444;
+  }
+}
+
+// ============================================
+// ORDER COMPLETION TIME STYLES
+// ============================================
+
+.completionTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .serviceName {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+
+  .workerName {
+    font-weight: 600;
+    color: #8b5cf6;
+  }
+
+  .avgTime {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9375rem;
+  }
+
+  .medianTime {
+    font-weight: 600;
+    color: #6366f1;
+    font-size: 0.9375rem;
+  }
+
+  .fastestTime {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9375rem;
+  }
+
+  .slowestTime {
+    font-weight: 700;
+    color: #ef4444;
+    font-size: 0.9375rem;
+  }
+
+  .orderCount {
+    font-weight: 600;
+    color: #6b7280;
+  }
+
+  .count {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+
+  .orderId {
+    font-weight: 700;
+    color: #8b5cf6;
+    font-size: 0.9375rem;
+  }
+
+  .estimatedTime {
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .onTimeRate {
+    font-weight: 600;
+    color: #10b981;
+  }
+
+  .goodEfficiency {
+    color: #10b981;
+    font-weight: 700;
+  }
+
+  .medEfficiency {
+    color: #f59e0b;
+    font-weight: 700;
+  }
+
+  .lowEfficiency {
+    color: #ef4444;
+    font-weight: 700;
+  }
+}
+
+.fastestCompletionsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #ecfdf5;
+    border-bottom: 2px solid #10b981;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #065f46;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f0fdf4;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .orderNumber {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9375rem;
+  }
+
+  .completionTime {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9375rem;
+  }
+}
+
+.slowestCompletionsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #fef3c7;
+    border-bottom: 2px solid #fbbf24;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #92400e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #fffbeb;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .orderNumber {
+    font-weight: 700;
+    color: #f59e0b;
+    font-size: 0.9375rem;
+  }
+
+  .completionTime {
+    font-weight: 700;
+    color: #ef4444;
+    font-size: 0.9375rem;
+  }
+}
+
+// ============================================
+// SERVICE REQUEST STYLES
+// ============================================
+
+.serviceTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+
+  .serviceName {
+    font-weight: 700;
+    color: #3b82f6;
+    font-size: 0.9375rem;
+  }
+
+  .conversionRate {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9375rem;
+  }
+}
+
+// Service Conversion Rate specific styles
+.highConversion {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.medConversion {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.lowConversion {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+// ============================================
+// WORKER PERFORMANCE STYLES
+// ============================================
+
+.workerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  strong {
+    font-weight: 600;
+    color: #12161c;
+  }
+}
+
+.performanceBar {
+  width: 100%;
+  height: 8px;
+  background: #e0e4e8;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .performanceFill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+}
+
+.kpiTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e4e8;
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5a5d61;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #e0e4e8;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #12161c;
+      vertical-align: middle;
+    }
+  }
+}
+
+.kpiHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #12161c;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .kpiDescription {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 400;
+  }
+
+  .periodSelector {
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #e0e4e8;
+    background: #fff;
+    color: #12161c;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $main;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $main;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+}
+
+.chartSection {
+  margin-top: 2rem;
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #12161c;
+    margin-bottom: 1rem;
+  }
+}
+
+.noData {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+// ============================================
+// WORKER ISSUE TRACKING STYLES
+// ============================================
+
+.highIssues {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.urgentBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.highIssueRate {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.medIssueRate {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.lowIssueRate {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.issueDesc {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #5a5d61;
+  font-size: 0.8125rem;
+}
+
+.statusOPEN {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  text-transform: uppercase;
+}
+
+.statusIN_REVIEW {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  text-transform: uppercase;
+}
+
+.statusRESOLVED {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  text-transform: uppercase;
+}
+
+.statusCLOSED {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+  text-transform: uppercase;
+}
+
+.priorityURGENT {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  text-transform: uppercase;
+}
+
+.priorityHIGH {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  text-transform: uppercase;
+}
+
+.priorityMEDIUM {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  text-transform: uppercase;
+}
+
+.priorityLOW {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+  text-transform: uppercase;
+}

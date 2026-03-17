@@ -11,6 +11,8 @@ import styles from './charts.module.scss'
  * @param {Boolean} showGrid - Show grid lines (default: true)
  * @param {String} dataKey - Key for value in data (default: 'value')
  * @param {String} nameKey - Key for label in data (default: 'label')
+ * @param {Boolean} multi - Enable multiple lines (default: false)
+ * @param {Array} lines - Array of line configs [{key, color, name}]
  */
 const LineChart = ({
   data = [],
@@ -21,7 +23,9 @@ const LineChart = ({
   dataKey = 'value',
   nameKey = 'label',
   formatValue = null,
-  formatLabel = null
+  formatLabel = null,
+  multi = false,
+  lines = []
 }) => {
   if (!data || data.length === 0) {
     return (
@@ -36,15 +40,68 @@ const LineChart = ({
       return (
         <div className={styles.customTooltip}>
           <p className={styles.tooltipLabel}>{formatLabel ? formatLabel(label) : label}</p>
-          <p className={styles.tooltipValue} style={{ color }}>
-            {formatValue ? formatValue(payload[0].value) : payload[0].value}
-          </p>
+          {multi ? (
+            // Multiple lines - show all values
+            payload.map((entry, index) => (
+              <p key={index} className={styles.tooltipValue} style={{ color: entry.color }}>
+                <span style={{ marginRight: '8px' }}>{entry.name}:</span>
+                {formatValue ? formatValue(entry.value) : entry.value}
+              </p>
+            ))
+          ) : (
+            // Single line
+            <p className={styles.tooltipValue} style={{ color }}>
+              {formatValue ? formatValue(payload[0].value) : payload[0].value}
+            </p>
+          )}
         </div>
       )
     }
     return null
   }
 
+  // Multi-line chart
+  if (multi && lines.length > 0) {
+    return (
+      <div className={styles.lineChart} style={{ height }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsLineChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            {showGrid && (
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e4e8" />
+            )}
+            <XAxis
+              dataKey={nameKey}
+              tick={{ fill: '#7a7e85', fontSize: 12 }}
+              stroke="#e0e4e8"
+            />
+            <YAxis
+              tick={{ fill: '#7a7e85', fontSize: 12 }}
+              stroke="#e0e4e8"
+              tickFormatter={formatValue}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            {lines.map((line, index) => (
+              <Line
+                key={index}
+                type="monotone"
+                dataKey={line.key}
+                name={line.name}
+                stroke={line.color}
+                strokeWidth={2}
+                dot={{ fill: line.color, r: 3 }}
+                activeDot={{ r: 5 }}
+              />
+            ))}
+          </RechartsLineChart>
+        </ResponsiveContainer>
+      </div>
+    )
+  }
+
+  // Single line chart
   return (
     <div className={styles.lineChart} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">

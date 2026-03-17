@@ -1,0 +1,207 @@
+@import '../../styles/tokens.scss';
+@import '../../styles/mixins.scss';
+
+.kpiSection {
+  @include card;
+  margin-bottom: $space-xl;
+  overflow: hidden;
+
+  @include mobile {
+    margin-bottom: $space-lg;
+  }
+}
+
+.header {
+  @include flex-between;
+  padding: $space-lg $space-xl;
+  background: $bg-primary;
+  border-bottom: 1px solid $border-light;
+  gap: $space-md;
+
+  &--collapsible {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background: $bg-hover;
+    }
+
+    &:active {
+      background: $bg-tertiary;
+    }
+  }
+
+  @include mobile {
+    padding: $space-md;
+    flex-wrap: wrap;
+  }
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  flex: 1;
+  min-width: 0; // Allow text truncation
+
+  @include mobile {
+    gap: $space-sm;
+    flex-basis: 100%;
+    margin-bottom: $space-sm;
+  }
+}
+
+.icon {
+  font-size: $font-2xl;
+  line-height: 1;
+  flex-shrink: 0;
+
+  @include mobile {
+    font-size: $font-xl;
+  }
+}
+
+.titleGroup {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  margin: 0;
+  line-height: $leading-tight;
+
+  @include mobile {
+    font-size: $font-md;
+  }
+}
+
+.description {
+  font-size: $font-sm;
+  color: $text-tertiary;
+  margin: $space-xs 0 0 0;
+  line-height: $leading-normal;
+
+  @include mobile {
+    display: none; // Hide description on mobile to save space
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  flex-shrink: 0;
+
+  @include mobile {
+    gap: $space-sm;
+    flex-basis: 100%;
+    justify-content: flex-end;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+
+  @include mobile {
+    flex: 1;
+  }
+}
+
+.actionButton {
+  @include button-secondary;
+  padding: $space-sm $space-md;
+  font-size: $font-sm;
+
+  &:hover {
+    background: $bg-tertiary;
+    border-color: $border-medium;
+  }
+
+  @include mobile {
+    padding: $space-sm;
+  }
+}
+
+.actionLabel {
+  @include mobile {
+    // Hide button labels on mobile, show only icons
+    display: none;
+  }
+}
+
+.collapseButton {
+  @include button-base;
+  padding: $space-sm;
+  background: transparent;
+  color: $text-secondary;
+  border: none;
+  min-width: 32px;
+  height: 32px;
+
+  &:hover {
+    background: $bg-tertiary;
+    color: $text-primary;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.iconExpanded,
+.iconCollapsed {
+  font-size: $font-xs;
+  transition: transform $transition-base;
+  display: inline-block;
+}
+
+.iconExpanded {
+  transform: rotate(0deg);
+}
+
+.iconCollapsed {
+  transform: rotate(-90deg);
+}
+
+.content {
+  padding: $space-xl;
+  @include fade-in;
+
+  @include mobile {
+    padding: $space-md;
+  }
+}
+
+// ============================================
+// EMPTY STATE (for when section has no data)
+// ============================================
+
+.emptyState {
+  text-align: center;
+  padding: $space-3xl $space-xl;
+  color: $text-tertiary;
+
+  .emptyIcon {
+    font-size: 48px;
+    margin-bottom: $space-md;
+    opacity: 0.5;
+  }
+
+  .emptyTitle {
+    font-size: $font-lg;
+    font-weight: $font-semibold;
+    color: $text-secondary;
+    margin-bottom: $space-sm;
+  }
+
+  .emptyDescription {
+    font-size: $font-base;
+    color: $text-tertiary;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

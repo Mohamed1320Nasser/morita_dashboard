@@ -1,0 +1,184 @@
+@import '../../../styles/tokens.scss';
+@import '../../../styles/mixins.scss';
+
+// ============================================
+// TAB CONTAINER
+// ============================================
+
+.tabContainer {
+  // Container for all tab content
+}
+
+.tabTitle {
+  font-size: $font-2xl;
+  font-weight: $font-bold;
+  color: $text-primary;
+  margin: 0 0 $space-sm 0;
+  line-height: $leading-tight;
+
+  @include mobile {
+    font-size: $font-xl;
+  }
+}
+
+.tabDescription {
+  font-size: $font-base;
+  color: $text-secondary;
+  margin: 0 0 $space-xl 0;
+  line-height: $leading-normal;
+
+  @include mobile {
+    font-size: $font-sm;
+    margin-bottom: $space-lg;
+  }
+}
+
+// ============================================
+// PLACEHOLDER CONTENT
+// (for tabs not yet migrated)
+// ============================================
+
+.placeholder {
+  text-align: center;
+  padding: $space-3xl $space-xl;
+  background: $bg-secondary;
+  border-radius: $radius-lg;
+  border: 2px dashed $border-medium;
+
+  @include mobile {
+    padding: $space-2xl $space-md;
+  }
+}
+
+.placeholderIcon {
+  font-size: 64px;
+  margin-bottom: $space-lg;
+  opacity: 0.6;
+
+  @include mobile {
+    font-size: 48px;
+  }
+}
+
+.placeholder h3 {
+  font-size: $font-xl;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  margin: 0 0 $space-md 0;
+
+  @include mobile {
+    font-size: $font-lg;
+  }
+}
+
+.placeholder p {
+  font-size: $font-base;
+  color: $text-secondary;
+  line-height: $leading-relaxed;
+  margin: 0 0 $space-md 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+
+  @include mobile {
+    font-size: $font-sm;
+  }
+}
+
+.placeholder ul {
+  text-align: left;
+  max-width: 500px;
+  margin: $space-lg auto;
+  padding-left: $space-xl;
+
+  li {
+    font-size: $font-base;
+    color: $text-secondary;
+    line-height: $leading-relaxed;
+    margin-bottom: $space-sm;
+
+    @include mobile {
+      font-size: $font-sm;
+    }
+
+    ul {
+      margin-top: $space-sm;
+      padding-left: $space-lg;
+
+      li {
+        font-size: $font-sm;
+        color: $text-tertiary;
+      }
+    }
+  }
+}
+
+.placeholderNote {
+  margin-top: $space-lg;
+  padding: $space-md;
+  background: rgba($color-info, 0.1);
+  border-left: 4px solid $color-info;
+  border-radius: $radius-sm;
+  font-size: $font-sm !important;
+  font-weight: $font-medium;
+  color: $color-info !important;
+  text-align: left;
+}
+
+// ============================================
+// INFO CARD
+// ============================================
+
+.infoCard {
+  @include card;
+  padding: $space-xl;
+  margin-top: $space-xl;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+
+  h3 {
+    font-size: $font-lg;
+    font-weight: $font-bold;
+    margin: 0 0 $space-md 0;
+  }
+
+  p {
+    font-size: $font-base;
+    line-height: $leading-relaxed;
+    margin: 0 0 $space-md 0;
+    opacity: 0.95;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: $space-lg;
+
+    li {
+      font-size: $font-sm;
+      line-height: $leading-relaxed;
+      margin-bottom: $space-sm;
+      opacity: 0.9;
+
+      strong {
+        font-weight: $font-semibold;
+        opacity: 1;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @include mobile {
+    padding: $space-lg;
+
+    h3 {
+      font-size: $font-md;
+    }
+
+    p, li {
+      font-size: $font-sm;
+    }
+  }
+}

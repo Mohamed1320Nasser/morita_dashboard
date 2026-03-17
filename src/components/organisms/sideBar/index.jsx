@@ -7,7 +7,7 @@ import { LuLayoutDashboard, LuChevronUp, LuChevronDown } from "react-icons/lu";
 import { MdCategory } from "react-icons/md";
 import { LuGamepad2 } from "react-icons/lu";
 import { MdPriceCheck } from "react-icons/md";
-import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal, IoPersonCircle, IoGift, IoRibbon, IoLink, IoCash, IoCard, IoTrophy } from "react-icons/io5";
+import { IoFlashSharp, IoWallet, IoCart, IoPeople, IoStatsChart, IoSettings, IoSwapHorizontal, IoPersonCircle, IoGift, IoRibbon, IoLink, IoCash, IoCard, IoTrophy, IoTrendingUp, IoPeopleCircle } from "react-icons/io5";
 import { SiBlockchaindotcom } from "react-icons/si";
 import { BsCreditCard2Front } from "react-icons/bs";
 import { RiDiscordFill } from "react-icons/ri";
@@ -42,6 +42,17 @@ const SideBar = () => {
     { label: 'Transactions', icon: <IoSwapHorizontal />, href: '/transactions' },
     { label: 'Accounts', icon: <IoPersonCircle />, href: '/accounts' },
     { label: 'Loyalty Tiers', icon: <IoTrophy />, href: '/loyalty-tiers' },
+    {
+      label: 'Referrals',
+      groupKey: 'referrals',
+      icon: <IoPeopleCircle />,
+      links: [
+        { label: 'All Referrals', icon: <IoPeople />, href: '/referrals' },
+        { label: 'Fraud Analytics', icon: <IoStatsChart />, href: '/referrals/fraud-analytics' },
+        { label: 'Reward Settings', icon: <IoGift />, href: '/referral-reward' },
+        { label: 'Reward History', icon: <FaClipboardList />, href: '/referral-reward/rewards' },
+      ]
+    },
     {
       label: 'Daily Reward',
       groupKey: 'daily-reward',
@@ -89,6 +100,7 @@ const SideBar = () => {
     },
 
     // System & Reports
+    { label: 'KPIs', icon: <IoTrendingUp />, href: '/kpis' },
     { label: 'Reports & Analytics', icon: <IoStatsChart />, href: '/reports' },
     { label: 'Service Analytics', icon: <IoStatsChart />, href: '/service-analytics' },
     { label: 'System Settings', icon: <IoSettings />, href: '/settings' },

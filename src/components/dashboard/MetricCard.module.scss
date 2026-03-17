@@ -1,0 +1,224 @@
+@import '../../styles/tokens.scss';
+@import '../../styles/mixins.scss';
+
+.metricCard {
+  @include card;
+  position: relative;
+  padding: $space-lg;
+  transition: all $transition-base;
+
+  // Color Variants
+  &--success {
+    @include metric-card-accent($color-success);
+  }
+
+  &--warning {
+    @include metric-card-accent($color-warning);
+  }
+
+  &--danger {
+    @include metric-card-accent($color-danger);
+  }
+
+  &--info {
+    @include metric-card-accent($color-info);
+  }
+
+  &--community {
+    @include metric-card-accent($color-community);
+  }
+
+  &--support {
+    @include metric-card-accent($color-support);
+  }
+
+  &--operations {
+    @include metric-card-accent($color-operations);
+  }
+
+  &--financial {
+    @include metric-card-accent($color-financial);
+  }
+
+  // Size Variants
+  &--small {
+    padding: $space-md;
+
+    .label {
+      font-size: $font-xs;
+    }
+
+    .value {
+      font-size: $font-xl;
+    }
+  }
+
+  &--large {
+    padding: $space-xl;
+
+    .value {
+      font-size: $font-4xl;
+    }
+  }
+
+  // Interactive State
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+      border-color: $color-info;
+
+      .clickHint {
+        opacity: 1;
+      }
+    }
+
+    &:active {
+      transform: translateY(-1px);
+    }
+  }
+
+  // Loading State
+  &--loading {
+    pointer-events: none;
+  }
+}
+
+.icon {
+  font-size: $font-2xl;
+  margin-bottom: $space-sm;
+  opacity: 0.8;
+}
+
+.content {
+  flex: 1;
+}
+
+.label {
+  font-size: $font-sm;
+  font-weight: $font-medium;
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $space-xs;
+}
+
+.value {
+  font-size: $font-3xl;
+  font-weight: $font-bold;
+  color: $text-primary;
+  line-height: $leading-tight;
+  margin-bottom: $space-sm;
+  word-break: break-word;
+
+  @include mobile {
+    font-size: $font-2xl;
+  }
+}
+
+.trend {
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  font-size: $font-sm;
+  font-weight: $font-medium;
+  margin-top: $space-sm;
+
+  &--up {
+    color: $color-success;
+
+    .trendValue::before {
+      content: '↗ ';
+    }
+  }
+
+  &--down {
+    color: $color-danger;
+
+    .trendValue::before {
+      content: '↘ ';
+    }
+  }
+
+  &--neutral {
+    color: $text-secondary;
+
+    .trendValue::before {
+      content: '→ ';
+    }
+  }
+}
+
+.trendValue {
+  font-weight: $font-semibold;
+}
+
+.trendComparison {
+  color: $text-tertiary;
+  font-weight: $font-normal;
+  font-size: $font-xs;
+}
+
+.footer {
+  margin-top: $space-md;
+  padding-top: $space-md;
+  border-top: 1px solid $border-light;
+  font-size: $font-sm;
+  color: $text-tertiary;
+}
+
+.clickHint {
+  position: absolute;
+  top: $space-md;
+  right: $space-md;
+  font-size: $font-lg;
+  color: $color-info;
+  opacity: 0;
+  transition: opacity $transition-base;
+}
+
+// ============================================
+// SKELETON LOADING STATE
+// ============================================
+
+.skeleton {
+  .skeletonLabel,
+  .skeletonValue,
+  .skeletonTrend {
+    @include skeleton-loading;
+    border-radius: $radius-sm;
+  }
+
+  .skeletonLabel {
+    width: 60%;
+    height: 14px;
+    margin-bottom: $space-sm;
+  }
+
+  .skeletonValue {
+    width: 80%;
+    height: 32px;
+    margin-bottom: $space-md;
+  }
+
+  .skeletonTrend {
+    width: 40%;
+    height: 12px;
+  }
+}
+
+// ============================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================
+
+@include mobile {
+  .metricCard {
+    padding: $space-md;
+  }
+
+  .icon {
+    font-size: $font-xl;
+  }
+}

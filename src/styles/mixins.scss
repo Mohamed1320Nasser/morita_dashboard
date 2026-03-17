@@ -1,0 +1,348 @@
+// ============================================
+// MIXINS - Reusable Style Patterns
+// ============================================
+
+@import './tokens.scss';
+
+// ============================================
+// RESPONSIVE BREAKPOINTS
+// ============================================
+
+@mixin mobile {
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$breakpoint-tablet}) and (max-width: #{$breakpoint-desktop - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$breakpoint-desktop}) {
+    @content;
+  }
+}
+
+@mixin wide {
+  @media (min-width: #{$breakpoint-wide}) {
+    @content;
+  }
+}
+
+// ============================================
+// LAYOUT UTILITIES
+// ============================================
+
+@mixin container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 $space-md;
+
+  @include desktop {
+    padding: 0 $space-xl;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin grid-auto-fit($min-width: 250px, $gap: $space-md) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+  gap: $gap;
+}
+
+// ============================================
+// CARD PATTERNS
+// ============================================
+
+@mixin card {
+  background: $bg-primary;
+  border: 1px solid $border-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+@mixin card-hover {
+  transition: all $transition-base;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    border-color: $color-info;
+  }
+}
+
+@mixin card-interactive {
+  @include card;
+  @include card-hover;
+}
+
+// ============================================
+// TEXT UTILITIES
+// ============================================
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ============================================
+// VISUAL EFFECTS
+// ============================================
+
+@mixin focus-ring($color: $color-info) {
+  outline: 2px solid $color;
+  outline-offset: 2px;
+}
+
+@mixin skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    $bg-secondary 0%,
+    $bg-tertiary 50%,
+    $bg-secondary 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-wave {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// ============================================
+// SCROLLBAR STYLING
+// ============================================
+
+@mixin custom-scrollbar($width: 8px) {
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $bg-secondary;
+    border-radius: $radius-sm;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-medium;
+    border-radius: $radius-sm;
+
+    &:hover {
+      background: $border-dark;
+    }
+  }
+}
+
+// ============================================
+// METRIC CARD SPECIFIC
+// ============================================
+
+@mixin metric-card-accent($color) {
+  border-left: 4px solid $color;
+}
+
+@mixin trend-indicator($direction) {
+  @if $direction == 'up' {
+    color: $color-success;
+    &::before {
+      content: '↗';
+      margin-right: 4px;
+    }
+  } @else if $direction == 'down' {
+    color: $color-danger;
+    &::before {
+      content: '↘';
+      margin-right: 4px;
+    }
+  } @else {
+    color: $text-secondary;
+    &::before {
+      content: '→';
+      margin-right: 4px;
+    }
+  }
+}
+
+// ============================================
+// TABLE PATTERNS
+// ============================================
+
+@mixin table-base {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: $bg-secondary;
+    border-bottom: 2px solid $border-light;
+
+    th {
+      padding: $space-md;
+      text-align: left;
+      font-weight: $font-semibold;
+      font-size: $font-sm;
+      color: $text-primary;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $border-light;
+
+      &:hover {
+        background: $bg-hover;
+      }
+
+      td {
+        padding: $space-md;
+        font-size: $font-base;
+        color: $text-secondary;
+      }
+    }
+  }
+}
+
+@mixin table-responsive {
+  @include mobile {
+    display: block;
+    overflow-x: auto;
+    @include custom-scrollbar;
+  }
+}
+
+// ============================================
+// BUTTON PATTERNS
+// ============================================
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-base;
+  font-weight: $font-medium;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: $color-info;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: darken($color-info, 10%);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background: $bg-secondary;
+  color: $text-primary;
+  border: 1px solid $border-light;
+
+  &:hover:not(:disabled) {
+    background: $bg-tertiary;
+  }
+}
+
+// ============================================
+// BADGE PATTERNS
+// ============================================
+
+@mixin badge($color: $color-info) {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  font-size: $font-xs;
+  font-weight: $font-medium;
+  background: rgba($color, 0.1);
+  color: darken($color, 20%);
+}
+
+// ============================================
+// ANIMATION UTILITIES
+// ============================================
+
+@mixin fade-in($duration: $transition-base) {
+  animation: fadeIn $duration ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@mixin slide-in-up($duration: $transition-slow) {
+  animation: slideInUp $duration ease;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@mixin pulse($duration: 2s) {
+  animation: pulse $duration ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

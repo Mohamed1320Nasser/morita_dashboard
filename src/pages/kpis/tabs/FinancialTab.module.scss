@@ -1,0 +1,347 @@
+@import '../../../styles/tokens.scss';
+@import '../../../styles/mixins.scss';
+
+.financialTab {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $space-lg;
+
+  @include mobile {
+    padding: $space-md;
+  }
+}
+
+.tabHeader {
+  margin-bottom: $space-xl;
+
+  .tabTitle {
+    font-size: $font-3xl;
+    font-weight: $font-bold;
+    color: $text-primary;
+    margin: 0 0 $space-sm 0;
+  }
+
+  .tabDescription {
+    font-size: $font-md;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+// ============================================
+// CONTROLS & FILTERS
+// ============================================
+
+.controls {
+  display: flex;
+  gap: $space-lg;
+  margin-bottom: $space-lg;
+  flex-wrap: wrap;
+  align-items: center;
+
+  @include mobile {
+    flex-direction: column;
+    gap: $space-md;
+    align-items: stretch;
+  }
+}
+
+.periodSelector {
+  display: flex;
+  gap: $space-xs;
+  background: $bg-secondary;
+  padding: $space-xs;
+  border-radius: $radius-md;
+
+  :global(button) {
+    padding: $space-sm $space-md;
+    border: none;
+    background: transparent;
+    color: $text-secondary;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $bg-hover;
+      color: $text-primary;
+    }
+  }
+
+  @include mobile {
+    width: 100%;
+
+    :global(button) {
+      flex: 1;
+      padding: $space-sm;
+      font-size: $font-xs;
+    }
+  }
+}
+
+.periodSelector :global(button.active) {
+  background: $bg-primary;
+  color: $color-info;
+  box-shadow: $shadow-sm;
+}
+
+// ============================================
+// METRICS GRID
+// ============================================
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metricCard {
+  @include card;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-lg;
+  transition: all $transition-base;
+  cursor: default;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  .metricIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $radius-md;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .metricContent {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .metricValue {
+    font-size: $font-2xl;
+    font-weight: $font-bold;
+    color: $text-primary;
+    margin-bottom: $space-xs;
+    line-height: $leading-tight;
+  }
+
+  .metricLabel {
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    color: $text-secondary;
+    margin-bottom: 2px;
+  }
+
+  .metricSubtext {
+    font-size: $font-xs;
+    color: $text-tertiary;
+  }
+
+  // Color variants
+  &.blue .metricIcon {
+    background: rgba(59, 130, 246, 0.1);
+    color: $color-info;
+  }
+
+  &.green .metricIcon {
+    background: rgba(16, 185, 129, 0.1);
+    color: $color-success;
+  }
+
+  &.red .metricIcon {
+    background: rgba(239, 68, 68, 0.1);
+    color: $color-danger;
+  }
+}
+
+// ============================================
+// SYSTEM WALLET CARD
+// ============================================
+
+.walletCard {
+  padding: $space-lg;
+  background: #f0fdf4;
+  border-radius: $radius-md;
+  margin-bottom: $space-lg;
+  border: 1px solid #86efac;
+}
+
+.walletHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include mobile {
+    flex-direction: column;
+    gap: $space-sm;
+    align-items: flex-start;
+  }
+}
+
+.walletLabel {
+  font-weight: $font-semibold;
+  color: #166534;
+  font-size: $font-md;
+}
+
+.walletBalance {
+  font-size: $font-2xl;
+  font-weight: $font-bold;
+  color: $color-success;
+}
+
+// ============================================
+// EXPENSE BREAKDOWN
+// ============================================
+
+.sectionTitle {
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  margin: 0 0 $space-md 0;
+}
+
+.expenseGrid {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.expenseItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-md;
+  background: $bg-secondary;
+  border-radius: $radius-sm;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $bg-hover;
+  }
+
+  &.total {
+    background: rgba(59, 130, 246, 0.05);
+    border: 2px solid $color-info;
+    margin-top: $space-sm;
+    font-weight: $font-semibold;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.08);
+    }
+  }
+}
+
+.expenseName {
+  font-size: $font-sm;
+  color: $text-secondary;
+  font-weight: $font-medium;
+}
+
+.expenseValue {
+  font-size: $font-md;
+  color: $text-primary;
+  font-weight: $font-semibold;
+}
+
+// ============================================
+// NO DATA STATES
+// ============================================
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: $text-tertiary;
+  font-size: $font-sm;
+  font-style: italic;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: $text-secondary;
+  font-size: $font-md;
+}
+
+.noDataCard {
+  text-align: center;
+  padding: $space-3xl $space-xl;
+  color: $text-tertiary;
+  background: $bg-secondary;
+  border-radius: $radius-md;
+  margin: $space-lg 0;
+}
+
+.noDataIcon {
+  font-size: 64px;
+  margin-bottom: $space-md;
+}
+
+.noDataTitle {
+  font-size: $font-lg;
+  margin-bottom: $space-sm;
+  color: $text-secondary;
+}
+
+.noDataText {
+  font-size: $font-sm;
+  margin: 0;
+}
+
+// ============================================
+// INSIGHTS CARD
+// ============================================
+
+.insightTitle {
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  margin: 0 0 $space-md 0;
+}
+
+.insightText {
+  font-size: $font-sm;
+  color: $text-secondary;
+  margin: 0 0 $space-md 0;
+  line-height: $leading-relaxed;
+}
+
+.insightList {
+  margin: 0;
+  padding-left: $space-lg;
+
+  :global(li) {
+    font-size: $font-sm;
+    color: $text-secondary;
+    margin-bottom: $space-sm;
+    line-height: $leading-relaxed;
+
+    :global(strong) {
+      color: $text-primary;
+      font-weight: $font-semibold;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

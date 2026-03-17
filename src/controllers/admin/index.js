@@ -378,4 +378,38 @@ export default {
             return { success: false, error: err }
         }
     },
+
+    // Referral Management
+    getAllReferrals: async (query) => {
+        try {
+            const response = await getData(`/referral/admin/all${query ? `?${query}` : ''}`);
+            const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
+            return { success: true, data: payload }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
+
+    getReferralAnalytics: async () => {
+        try {
+            const response = await getData('/referral/admin/fraud-analytics');
+            const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
+            return { success: true, data: payload }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
+
+    getReferralNetwork: async (userId) => {
+        try {
+            const response = await getData(`/referral/admin/network/${userId}`);
+            const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
+            return { success: true, data: payload }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
 }

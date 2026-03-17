@@ -1,0 +1,152 @@
+@import '../../styles/tokens.scss';
+@import '../../styles/mixins.scss';
+
+.tabNavigation {
+  position: relative;
+  background: $bg-primary;
+  border-bottom: 1px solid $border-light;
+  margin-bottom: $space-xl;
+
+  @include mobile {
+    // On mobile, this becomes a scrollable horizontal list
+    overflow-x: auto;
+    @include custom-scrollbar(4px);
+    margin-bottom: $space-lg;
+  }
+}
+
+.tabList {
+  display: flex;
+  gap: $space-sm;
+  padding: 0 $space-md;
+
+  @include desktop {
+    padding: 0 $space-xl;
+    gap: $space-md;
+  }
+
+  @include mobile {
+    // Prevent tabs from wrapping on mobile
+    flex-wrap: nowrap;
+    min-width: min-content;
+  }
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-md $space-lg;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: $font-base;
+  font-weight: $font-medium;
+  color: $text-secondary;
+  transition: all $transition-base;
+  position: relative;
+  white-space: nowrap;
+
+  // Remove default button styles
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text-primary;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  // Active state
+  &--active {
+    color: $tab-active-color;
+    font-weight: $font-semibold;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: $tab-active-color;
+      border-radius: $radius-sm $radius-sm 0 0;
+    }
+  }
+
+  @include mobile {
+    padding: $space-md;
+    font-size: $font-sm;
+  }
+}
+
+.icon {
+  font-size: $font-lg;
+  line-height: 1;
+
+  @include mobile {
+    font-size: $font-md;
+  }
+}
+
+.label {
+  @include mobile {
+    // Hide labels on very small screens, show only icons
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+}
+
+.badge {
+  @include badge($color-danger);
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-xs;
+  font-weight: $font-bold;
+}
+
+// ============================================
+// MOBILE BOTTOM NAVIGATION (Future Enhancement)
+// ============================================
+
+@media (max-width: 600px) {
+  // Can be converted to fixed bottom navigation for mobile
+  .tabNavigation--mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: $z-fixed;
+    border-top: 1px solid $border-light;
+    border-bottom: none;
+    box-shadow: $shadow-lg;
+
+    .tabList {
+      justify-content: space-around;
+      padding: $space-sm 0;
+    }
+
+    .tab {
+      flex-direction: column;
+      padding: $space-sm;
+      gap: 2px;
+
+      &--active::after {
+        top: 0;
+        bottom: auto;
+      }
+    }
+
+    .label {
+      display: block;
+      font-size: $font-xs;
+    }
+  }
+}
