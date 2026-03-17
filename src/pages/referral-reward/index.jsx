@@ -16,14 +16,23 @@ const ReferralRewardConfigPage = () => {
 
     const [config, setConfig] = useState({
         isEnabled: true,
-        rewardAmount: 5,
-        firstReferralBonus: 0,
-        milestoneBonus: false,
-        milestone10Bonus: 0,
-        milestone50Bonus: 0,
-        milestone100Bonus: 0,
+        rewardMode: 'HYBRID',
+        perReferralEnabled: true,
+        perReferralAmount: 1.00,
+        milestonesEnabled: true,
+        milestones: [
+            { count: 5, reward: 5, type: 'BONUS' },
+            { count: 10, reward: 15, type: 'BONUS' },
+            { count: 25, reward: 50, type: 'BONUS' },
+            { count: 50, reward: 150, type: 'BONUS' },
+            { count: 100, reward: 400, type: 'BONUS' },
+        ],
         requireOnboarding: true,
+        minimumRetentionRate: 70,
+        minimumDaysInServer: 7,
+        countOnlyActive: true,
         maxRewardsPerDay: 10,
+        cooldownMinutes: 5,
         notifyDiscord: true,
         notifyDM: true,
         currencyName: '$',
@@ -40,14 +49,23 @@ const ReferralRewardConfigPage = () => {
                 if (configRes && configRes.success) {
                     setConfig({
                         isEnabled: configRes.data.isEnabled ?? true,
-                        rewardAmount: configRes.data.rewardAmount || 5,
-                        firstReferralBonus: configRes.data.firstReferralBonus || 0,
-                        milestoneBonus: configRes.data.milestoneBonus ?? false,
-                        milestone10Bonus: configRes.data.milestone10Bonus || 0,
-                        milestone50Bonus: configRes.data.milestone50Bonus || 0,
-                        milestone100Bonus: configRes.data.milestone100Bonus || 0,
+                        rewardMode: configRes.data.rewardMode || 'HYBRID',
+                        perReferralEnabled: configRes.data.perReferralEnabled ?? true,
+                        perReferralAmount: configRes.data.perReferralAmount || 1.00,
+                        milestonesEnabled: configRes.data.milestonesEnabled ?? true,
+                        milestones: configRes.data.milestones || [
+                            { count: 5, reward: 5, type: 'BONUS' },
+                            { count: 10, reward: 15, type: 'BONUS' },
+                            { count: 25, reward: 50, type: 'BONUS' },
+                            { count: 50, reward: 150, type: 'BONUS' },
+                            { count: 100, reward: 400, type: 'BONUS' },
+                        ],
                         requireOnboarding: configRes.data.requireOnboarding ?? true,
+                        minimumRetentionRate: configRes.data.minimumRetentionRate || 70,
+                        minimumDaysInServer: configRes.data.minimumDaysInServer || 7,
+                        countOnlyActive: configRes.data.countOnlyActive ?? true,
                         maxRewardsPerDay: configRes.data.maxRewardsPerDay || 10,
+                        cooldownMinutes: configRes.data.cooldownMinutes || 5,
                         notifyDiscord: configRes.data.notifyDiscord ?? true,
                         notifyDM: configRes.data.notifyDM ?? true,
                         currencyName: configRes.data.currencyName || '$',
@@ -76,14 +94,42 @@ const ReferralRewardConfigPage = () => {
         setConfig(prev => ({ ...prev, [field]: !prev[field] }))
     }
 
+    const handleAddMilestone = () => {
+        const newMilestone = { count: 10, reward: 10, type: 'BONUS' }
+        setConfig(prev => ({
+            ...prev,
+            milestones: [...prev.milestones, newMilestone].sort((a, b) => a.count - b.count)
+        }))
+    }
+
+    const handleUpdateMilestone = (index, field, value) => {
+        const updated = [...config.milestones]
+        updated[index] = { ...updated[index], [field]: value }
+        if (field === 'count') {
+            updated.sort((a, b) => a.count - b.count)
+        }
+        setConfig(prev => ({ ...prev, milestones: updated }))
+    }
+
+    const handleRemoveMilestone = (index) => {
+        setConfig(prev => ({
+            ...prev,
+            milestones: prev.milestones.filter((_, i) => i !== index)
+        }))
+    }
+
     const handleSave = async () => {
         // Validation
-        if (config.rewardAmount <= 0) {
-            notify('Reward amount must be greater than 0')
+        if (config.perReferralEnabled && config.perReferralAmount <= 0) {
+            notify('Per-referral amount must be greater than 0')
             return
         }
         if (config.maxRewardsPerDay < 1) {
             notify('Max rewards per day must be at least 1')
+            return
+        }
+        if (config.milestonesEnabled && (!config.milestones || config.milestones.length === 0)) {
+            notify('Please add at least one milestone or disable milestones')
             return
         }
 
@@ -91,14 +137,21 @@ const ReferralRewardConfigPage = () => {
             setSaving(true)
             const res = await referralRewardController.updateConfig({
                 isEnabled: config.isEnabled,
-                rewardAmount: Number(config.rewardAmount),
-                firstReferralBonus: Number(config.firstReferralBonus),
-                milestoneBonus: config.milestoneBonus,
-                milestone10Bonus: Number(config.milestone10Bonus),
-                milestone50Bonus: Number(config.milestone50Bonus),
-                milestone100Bonus: Number(config.milestone100Bonus),
+                rewardMode: config.rewardMode,
+                perReferralEnabled: config.perReferralEnabled,
+                perReferralAmount: Number(config.perReferralAmount),
+                milestonesEnabled: config.milestonesEnabled,
+                milestones: config.milestones.map(m => ({
+                    count: Number(m.count),
+                    reward: Number(m.reward),
+                    type: m.type
+                })),
                 requireOnboarding: config.requireOnboarding,
+                minimumRetentionRate: Number(config.minimumRetentionRate),
+                minimumDaysInServer: Number(config.minimumDaysInServer),
+                countOnlyActive: config.countOnlyActive,
                 maxRewardsPerDay: Number(config.maxRewardsPerDay),
+                cooldownMinutes: Number(config.cooldownMinutes),
                 notifyDiscord: config.notifyDiscord,
                 notifyDM: config.notifyDM,
                 currencyName: config.currencyName,
@@ -163,102 +216,145 @@ const ReferralRewardConfigPage = () => {
                             </div>
                         </div>
 
-                        {/* Base Reward Settings */}
+                        {/* Reward Mode Selection */}
                         <div className={styles.formSection}>
-                            <div className={styles.sectionTitle}>Base Reward Settings</div>
-                            <div className={styles.formGrid}>
-                                <div className={styles.formGroup}>
-                                    <label>Reward Amount per Referral</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={config.rewardAmount}
-                                        onChange={(e) => handleChange('rewardAmount', e.target.value)}
-                                    />
-                                    <span className={styles.hint}>Amount given for each successful referral</span>
+                            <div className={styles.sectionTitle}>Reward Mode</div>
+                            <div className={styles.rewardModeSelector}>
+                                <div
+                                    className={`${styles.modeOption} ${config.rewardMode === 'PER_REFERRAL' ? styles.active : ''}`}
+                                    onClick={() => handleChange('rewardMode', 'PER_REFERRAL')}
+                                >
+                                    <div className={styles.modeIcon}>💰</div>
+                                    <div className={styles.modeName}>Per-Referral Only</div>
+                                    <div className={styles.modeDesc}>Pay a fixed amount for each referral</div>
                                 </div>
-                                <div className={styles.formGroup}>
-                                    <label>First Referral Bonus</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={config.firstReferralBonus}
-                                        onChange={(e) => handleChange('firstReferralBonus', e.target.value)}
-                                    />
-                                    <span className={styles.hint}>Extra bonus for user's first successful referral</span>
+                                <div
+                                    className={`${styles.modeOption} ${config.rewardMode === 'MILESTONE' ? styles.active : ''}`}
+                                    onClick={() => handleChange('rewardMode', 'MILESTONE')}
+                                >
+                                    <div className={styles.modeIcon}>🎯</div>
+                                    <div className={styles.modeName}>Milestone Only</div>
+                                    <div className={styles.modeDesc}>Pay bonuses at referral goals</div>
                                 </div>
-                                <div className={styles.formGroup}>
-                                    <label>Max Rewards Per Day</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={config.maxRewardsPerDay}
-                                        onChange={(e) => handleChange('maxRewardsPerDay', e.target.value)}
-                                    />
-                                    <span className={styles.hint}>Maximum rewards a user can earn per day</span>
+                                <div
+                                    className={`${styles.modeOption} ${config.rewardMode === 'HYBRID' ? styles.active : ''}`}
+                                    onClick={() => handleChange('rewardMode', 'HYBRID')}
+                                >
+                                    <div className={styles.modeIcon}>🚀</div>
+                                    <div className={styles.modeName}>Hybrid (Recommended)</div>
+                                    <div className={styles.modeDesc}>Combine both approaches</div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Milestone Bonuses */}
-                        <div className={styles.formSection}>
-                            <div className={styles.sectionTitle}>Milestone Bonuses</div>
-                            <div className={styles.checkboxGroup}>
-                                <input
-                                    type="checkbox"
-                                    checked={config.milestoneBonus}
-                                    onChange={() => handleToggle('milestoneBonus')}
-                                />
-                                <span>Enable milestone bonuses for reaching referral goals</span>
-                            </div>
-
-                            {config.milestoneBonus && (
-                                <div className={styles.milestoneSection}>
-                                    <div className={styles.milestoneTitle}>🎯 Milestone Rewards</div>
+                        {/* Per-Referral Settings */}
+                        {(config.rewardMode === 'PER_REFERRAL' || config.rewardMode === 'HYBRID') && (
+                            <div className={styles.formSection}>
+                                <div className={styles.sectionTitle}>💰 Per-Referral Rewards</div>
+                                <div className={styles.checkboxGroup} style={{ marginBottom: '16px' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={config.perReferralEnabled}
+                                        onChange={() => handleToggle('perReferralEnabled')}
+                                    />
+                                    <span>Enable per-referral rewards</span>
+                                </div>
+                                {config.perReferralEnabled && (
                                     <div className={styles.formGrid}>
                                         <div className={styles.formGroup}>
-                                            <label>10 Referrals Bonus</label>
+                                            <label>Reward Amount per Referral</label>
                                             <input
                                                 type="number"
                                                 min="0"
                                                 step="0.01"
-                                                value={config.milestone10Bonus}
-                                                onChange={(e) => handleChange('milestone10Bonus', e.target.value)}
+                                                value={config.perReferralAmount}
+                                                onChange={(e) => handleChange('perReferralAmount', e.target.value)}
                                             />
-                                            <span className={styles.hint}>Bonus when user reaches 10 referrals</span>
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>50 Referrals Bonus</label>
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                value={config.milestone50Bonus}
-                                                onChange={(e) => handleChange('milestone50Bonus', e.target.value)}
-                                            />
-                                            <span className={styles.hint}>Bonus when user reaches 50 referrals</span>
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label>100 Referrals Bonus</label>
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                value={config.milestone100Bonus}
-                                                onChange={(e) => handleChange('milestone100Bonus', e.target.value)}
-                                            />
-                                            <span className={styles.hint}>Bonus when user reaches 100 referrals</span>
+                                            <span className={styles.hint}>Amount given for each successful referral (supports decimals)</span>
                                         </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        )}
 
-                        {/* Restrictions */}
+                        {/* Milestone Bonuses */}
+                        {(config.rewardMode === 'MILESTONE' || config.rewardMode === 'HYBRID') && (
+                            <div className={styles.formSection}>
+                                <div className={styles.sectionTitle}>🎯 Milestone Bonuses</div>
+                                <div className={styles.checkboxGroup} style={{ marginBottom: '16px' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={config.milestonesEnabled}
+                                        onChange={() => handleToggle('milestonesEnabled')}
+                                    />
+                                    <span>Enable milestone bonuses</span>
+                                </div>
+
+                                {config.milestonesEnabled && (
+                                    <div className={styles.milestoneBuilder}>
+                                        <div className={styles.milestoneList}>
+                                            {config.milestones.map((milestone, index) => (
+                                                <div key={index} className={styles.milestoneRow}>
+                                                    <div className={styles.milestoneInputs}>
+                                                        <div className={styles.inputGroup}>
+                                                            <label>Referrals</label>
+                                                            <input
+                                                                type="number"
+                                                                min="1"
+                                                                value={milestone.count}
+                                                                onChange={(e) => handleUpdateMilestone(index, 'count', e.target.value)}
+                                                                style={{ width: '100px' }}
+                                                            />
+                                                        </div>
+                                                        <span className={styles.arrow}>→</span>
+                                                        <div className={styles.inputGroup}>
+                                                            <label>Reward</label>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                step="0.01"
+                                                                value={milestone.reward}
+                                                                onChange={(e) => handleUpdateMilestone(index, 'reward', e.target.value)}
+                                                                style={{ width: '120px' }}
+                                                            />
+                                                        </div>
+                                                        <div className={styles.inputGroup}>
+                                                            <label>Type</label>
+                                                            <select
+                                                                value={milestone.type}
+                                                                onChange={(e) => handleUpdateMilestone(index, 'type', e.target.value)}
+                                                                style={{ width: '100px' }}
+                                                            >
+                                                                <option value="BONUS">Bonus</option>
+                                                                <option value="TOTAL">Total</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className={styles.removeBtn}
+                                                        onClick={() => handleRemoveMilestone(index)}
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className={styles.addMilestoneBtn}
+                                            onClick={handleAddMilestone}
+                                        >
+                                            + Add Milestone
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Quality & Restrictions */}
                         <div className={styles.formSection}>
-                            <div className={styles.sectionTitle}>Restrictions</div>
+                            <div className={styles.sectionTitle}>Quality Requirements & Restrictions</div>
                             <div className={styles.formGrid}>
                                 <div className={styles.formGroup}>
                                     <label>Onboarding Requirement</label>
@@ -268,8 +364,60 @@ const ReferralRewardConfigPage = () => {
                                             checked={config.requireOnboarding}
                                             onChange={() => handleToggle('requireOnboarding')}
                                         />
-                                        <span>Require referred user to complete onboarding before giving reward</span>
+                                        <span>Require onboarding before reward</span>
                                     </div>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Count Only Active Members</label>
+                                    <div className={styles.checkboxGroup}>
+                                        <input
+                                            type="checkbox"
+                                            checked={config.countOnlyActive}
+                                            onChange={() => handleToggle('countOnlyActive')}
+                                        />
+                                        <span>Only count active members for milestones</span>
+                                    </div>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Minimum Retention Rate (%)</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={config.minimumRetentionRate}
+                                        onChange={(e) => handleChange('minimumRetentionRate', e.target.value)}
+                                    />
+                                    <span className={styles.hint}>Minimum % of referrals that must stay</span>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Minimum Days in Server</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={config.minimumDaysInServer}
+                                        onChange={(e) => handleChange('minimumDaysInServer', e.target.value)}
+                                    />
+                                    <span className={styles.hint}>Days required to count as successful</span>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Max Rewards Per Day</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={config.maxRewardsPerDay}
+                                        onChange={(e) => handleChange('maxRewardsPerDay', e.target.value)}
+                                    />
+                                    <span className={styles.hint}>Maximum rewards per user per day</span>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Cooldown (minutes)</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={config.cooldownMinutes}
+                                        onChange={(e) => handleChange('cooldownMinutes', e.target.value)}
+                                    />
+                                    <span className={styles.hint}>Time between rewards</span>
                                 </div>
                             </div>
                         </div>
@@ -286,7 +434,7 @@ const ReferralRewardConfigPage = () => {
                                             checked={config.notifyDiscord}
                                             onChange={() => handleToggle('notifyDiscord')}
                                         />
-                                        <span>Send notification to referral channel on successful referral</span>
+                                        <span>Notify in channel</span>
                                     </div>
                                 </div>
                                 <div className={styles.formGroup}>
@@ -297,7 +445,7 @@ const ReferralRewardConfigPage = () => {
                                             checked={config.notifyDM}
                                             onChange={() => handleToggle('notifyDM')}
                                         />
-                                        <span>Send DM to referrer when reward is given</span>
+                                        <span>Send DM to referrer</span>
                                     </div>
                                 </div>
                             </div>
@@ -308,7 +456,7 @@ const ReferralRewardConfigPage = () => {
                             <div className={styles.sectionTitle}>Display Settings</div>
                             <div className={styles.formGrid}>
                                 <div className={styles.formGroup}>
-                                    <label>Currency Name</label>
+                                    <label>Currency Symbol</label>
                                     <input
                                         type="text"
                                         value={config.currencyName}

@@ -10,20 +10,26 @@ import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
 import moment from 'moment'
-import { IoPeopleCircle, IoGift, IoPersonCircle, IoStatsChart } from 'react-icons/io5'
+import { IoPeopleCircle, IoGift, IoPersonCircle, IoStatsChart, IoCheckmarkCircle, IoCloseCircle } from 'react-icons/io5'
 
 const ReferralNetworkPage = () => {
     const router = useRouter()
     const { userId } = router.query
     const [loading, setLoading] = useState(true)
     const [network, setNetwork] = useState(null)
+    const [filter, setFilter] = useState('all')
 
     useEffect(() => {
         if (!userId) return
 
         const fetchNetwork = async () => {
             try {
-                const res = await adminController.getReferralNetwork(userId)
+                const queryParams = new URLSearchParams()
+                if (filter && filter !== 'all') queryParams.append('filter', filter)
+                const query = queryParams.toString()
+                const url = query ? `${userId}?${query}` : userId
+
+                const res = await adminController.getReferralNetwork(url)
 
                 if (res && res.success && res.data) {
                     setNetwork(res.data)
@@ -37,7 +43,7 @@ const ReferralNetworkPage = () => {
             }
         }
         fetchNetwork()
-    }, [userId])
+    }, [userId, filter])
 
     if (loading) return <Loading />
 
@@ -87,19 +93,33 @@ const ReferralNetworkPage = () => {
                     </div>
                     <div className={styles.statCard}>
                         <div className={`${styles.statIcon} ${styles.green}`}>
+                            <IoCheckmarkCircle />
+                        </div>
+                        <div className={styles.statValue}>{network.user?.activeCount || 0}</div>
+                        <div className={styles.statLabel}>Active (In Server)</div>
+                    </div>
+                    <div className={styles.statCard}>
+                        <div className={`${styles.statIcon} ${styles.red}`}>
+                            <IoCloseCircle />
+                        </div>
+                        <div className={styles.statValue}>{network.user?.leftCount || 0}</div>
+                        <div className={styles.statLabel}>Left Server</div>
+                    </div>
+                    <div className={styles.statCard}>
+                        <div className={`${styles.statIcon} ${styles.blue}`}>
+                            <IoStatsChart />
+                        </div>
+                        <div className={styles.statValue}>{(network.user?.retentionRate || 0).toFixed(0)}%</div>
+                        <div className={styles.statLabel}>Retention Rate</div>
+                    </div>
+                    <div className={styles.statCard}>
+                        <div className={`${styles.statIcon} ${styles.orange}`}>
                             <IoGift />
                         </div>
                         <div className={styles.statValue}>
                             ${network.user?.totalRewards?.toFixed(2) || '0.00'}
                         </div>
                         <div className={styles.statLabel}>Total Rewards</div>
-                    </div>
-                    <div className={styles.statCard}>
-                        <div className={`${styles.statIcon} ${styles.orange}`}>
-                            <IoPeopleCircle />
-                        </div>
-                        <div className={styles.statValue}>{network.directReferrals?.length || 0}</div>
-                        <div className={styles.statLabel}>Direct Referrals</div>
                     </div>
                 </div>
 
@@ -137,16 +157,58 @@ const ReferralNetworkPage = () => {
                 {/* Network Tree */}
                 <Card>
                     <div style={{ padding: '20px' }}>
-                        <h3
-                            style={{
-                                marginBottom: '20px',
-                                fontSize: '18px',
-                                fontWeight: '600',
-                                color: '#1a1a1a',
-                            }}
-                        >
-                            Direct Referrals ({network.directReferrals?.length || 0})
-                        </h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <h3
+                                style={{
+                                    fontSize: '18px',
+                                    fontWeight: '600',
+                                    color: '#1a1a1a',
+                                    margin: 0,
+                                }}
+                            >
+                                Direct Referrals ({network.filteredCount || 0} {network.filteredCount !== network.totalCount ? `/ ${network.totalCount}` : ''})
+                            </h3>
+                        </div>
+
+                        {/* Filters */}
+                        <div className={styles.filters} style={{ marginBottom: '20px' }}>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'all' ? styles.active : ''}`}
+                                onClick={() => setFilter('all')}
+                            >
+                                All
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'active' ? styles.active : ''}`}
+                                onClick={() => setFilter('active')}
+                            >
+                                Active
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'left' ? styles.active : ''}`}
+                                onClick={() => setFilter('left')}
+                            >
+                                Left
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'rewarded' ? styles.active : ''}`}
+                                onClick={() => setFilter('rewarded')}
+                            >
+                                Rewarded
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'pending' ? styles.active : ''}`}
+                                onClick={() => setFilter('pending')}
+                            >
+                                Pending
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${filter === 'not_onboarded' ? styles.active : ''}`}
+                                onClick={() => setFilter('not_onboarded')}
+                            >
+                                Not Onboarded
+                            </button>
+                        </div>
 
                         {network.directReferrals && network.directReferrals.length > 0 ? (
                             <div className={styles.networkTree}>
@@ -172,12 +234,17 @@ const ReferralNetworkPage = () => {
                                                 </div>
                                             </div>
                                             <div style={{ display: 'flex', gap: '8px' }}>
-                                                {referral.rewardGiven ? (
-                                                    <Badge type="success">Rewarded</Badge>
+                                                {referral.hasLeftServer ? (
+                                                    <Badge type="danger">Left Server</Badge>
+                                                ) : referral.rewardGiven ? (
+                                                    <Badge type="success">Active</Badge>
                                                 ) : referral.onboardedAt ? (
                                                     <Badge type="warning">Pending</Badge>
                                                 ) : (
                                                     <Badge type="info">Not Onboarded</Badge>
+                                                )}
+                                                {referral.daysInServer !== undefined && referral.rewardGiven && (
+                                                    <Badge type="info">{referral.daysInServer}d in server</Badge>
                                                 )}
                                             </div>
                                         </div>
