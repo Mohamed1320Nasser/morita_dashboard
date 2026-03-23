@@ -1,0 +1,327 @@
+@import '../../../../styles/var.scss';
+
+.payoutForm {
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .formGroup {
+    .labelRow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+
+      label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .tooltip {
+        position: relative;
+        display: inline-flex;
+        cursor: help;
+        color: #9ca3af;
+        font-size: 1rem;
+
+        &:hover .tooltipText {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .tooltipText {
+          position: absolute;
+          bottom: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%) translateY(4px);
+          background: #1f2937;
+          color: white;
+          padding: 0.5rem 0.75rem;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          white-space: nowrap;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.2s ease;
+          z-index: 10;
+          font-weight: 400;
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: #1f2937;
+          }
+        }
+      }
+    }
+
+    .inputWrapper {
+      position: relative;
+      margin-bottom: 0.75rem;
+
+      .percentInput {
+        width: 100%;
+        padding: 0.875rem 3rem 0.875rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1f2937;
+        transition: all 0.2s ease;
+        background: #ffffff;
+
+        &:focus {
+          outline: none;
+          border-color: $main;
+          box-shadow: 0 0 0 3px rgba($main, 0.1);
+        }
+
+        &:hover:not(:focus) {
+          border-color: #d1d5db;
+        }
+      }
+
+      .percentSymbol {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #6b7280;
+        pointer-events: none;
+      }
+    }
+
+    .progressBar {
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+
+      .progressFill {
+        height: 100%;
+        transition: width 0.3s ease;
+        border-radius: 4px;
+
+        &.worker {
+          background: linear-gradient(90deg, #3b82f6, #2563eb);
+        }
+
+        &.support {
+          background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+        }
+
+        &.system {
+          background: linear-gradient(90deg, #10b981, #059669);
+        }
+      }
+    }
+
+    .preview {
+      font-size: 0.75rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+  }
+
+  .totalSummary {
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+
+    &.valid {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+      border: 2px solid #10b981;
+    }
+
+    &.invalid {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+      border: 2px solid #ef4444;
+    }
+
+    .summaryContent {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .summaryLabel {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6b7280;
+      }
+
+      .summaryValue {
+        font-size: 1.75rem;
+        font-weight: 700;
+      }
+    }
+
+    &.valid .summaryValue {
+      color: #10b981;
+    }
+
+    &.invalid .summaryValue {
+      color: #ef4444;
+    }
+
+    .validationMessage {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #dc2626;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &::before {
+        content: '⚠️';
+      }
+    }
+  }
+
+  .formActions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+
+    .saveButton {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 2rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+
+      svg {
+        font-size: 1.125rem;
+      }
+
+      &:not(:disabled) {
+        background: $main;
+        color: white;
+        box-shadow: 0 4px 12px rgba($main, 0.3);
+
+        &:hover {
+          background: darken($main, 8%);
+          box-shadow: 0 6px 16px rgba($main, 0.4);
+          transform: translateY(-2px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+      &:disabled {
+        background: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+
+  .chartWrapper {
+    width: 100%;
+    max-width: 300px;
+    height: 300px;
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 300px;
+
+    .legendItem {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:hover,
+      &.active {
+        background: #f3f4f6;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .legendLabel {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .colorDot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+
+          &.worker {
+            background: #3b82f6;
+          }
+
+          &.support {
+            background: #8b5cf6;
+          }
+
+          &.system {
+            background: #10b981;
+          }
+        }
+
+        span {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #374151;
+        }
+      }
+
+      .legendValue {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #1f2937;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .payoutForm {
+    .formGrid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+}

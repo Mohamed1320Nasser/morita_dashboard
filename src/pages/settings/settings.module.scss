@@ -3,6 +3,33 @@
 .settings {
   padding-bottom: 2rem;
 
+  .settingsGrid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 1.5rem;
+    align-items: start;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr;
+    }
+
+    .mainColumn {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sideColumn {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      @media (max-width: 1200px) {
+        order: -1;
+      }
+    }
+  }
+
   .sectionHeader {
     display: flex;
     gap: 1rem;
@@ -13,7 +40,7 @@
       width: 48px;
       height: 48px;
       border-radius: 12px;
-      background: rgba($main, 0.1);
+      background: linear-gradient(135deg, rgba($main, 0.15), rgba($main, 0.08));
       color: $main;
       display: flex;
       align-items: center;
@@ -23,468 +50,58 @@
     }
 
     .sectionTitle {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #12161c;
-      margin: 0 0 0.25rem 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0 0 0.35rem 0;
     }
 
     .sectionDescription {
-      font-size: 0.85rem;
-      color: #7a7e85;
-      margin: 0;
-    }
-  }
-
-  .payoutGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-
-    .payoutItem {
-      label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #5a5d61;
-        margin-bottom: 0.5rem;
-      }
-
-      .inputGroup {
-        position: relative;
-
-        input {
-          width: 100%;
-          padding: 0.75rem 3rem 0.75rem 0.75rem;
-          border: 1px solid #e0e4e8;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          transition: border-color 0.2s ease;
-
-          &:focus {
-            outline: none;
-            border-color: $main;
-          }
-        }
-
-        .inputSuffix {
-          position: absolute;
-          right: 0.75rem;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #7a7e85;
-          font-weight: 600;
-          pointer-events: none;
-        }
-      }
-
-      .helperText {
-        font-size: 0.75rem;
-        color: #9ca3af;
-        margin-top: 0.25rem;
-      }
-    }
-  }
-
-  .payoutSummary {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-
-    .summaryRow {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-
-      span:first-child {
-        color: #7a7e85;
-        font-weight: 500;
-      }
-
-      .totalValue {
-        font-size: 1.25rem;
-        font-weight: 700;
-      }
-    }
-
-    .warningText {
-      margin-top: 0.75rem;
-      padding: 0.5rem;
-      background: rgba(239, 68, 68, 0.05);
-      border-left: 3px solid #ef4444;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      color: #ef4444;
-    }
-  }
-
-  .actionButtons {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    padding-top: 1rem;
-    border-top: 1px solid #eaeef3;
-
-    button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.875rem 2rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.2s ease;
-      border: none;
-      cursor: pointer;
-      background: $main;
-      color: white;
-      box-shadow: 0 2px 8px rgba($main, 0.2);
-
-      svg {
-        font-size: 1.1rem;
-      }
-
-      &:hover:not(:disabled) {
-        background: darken($main, 8%);
-        box-shadow: 0 4px 12px rgba($main, 0.3);
-        transform: translateY(-1px);
-      }
-
-      &:active:not(:disabled) {
-        transform: translateY(0);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        box-shadow: none;
-      }
-    }
-  }
-
-  .servicesList {
-    .serviceItem {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.875rem 0;
-      border-bottom: 1px solid #eaeef3;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      .serviceName {
-        font-size: 0.9rem;
-        color: #12161c;
-        font-weight: 500;
-      }
-    }
-
-    .emptyState {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: #9ca3af;
-      font-size: 0.9rem;
-    }
-  }
-
-  .infoGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-
-    .infoItem {
-      .infoLabel {
-        font-size: 0.8rem;
-        color: #7a7e85;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-      }
-
-      .infoValue {
-        font-size: 0.95rem;
-        color: #12161c;
-        font-weight: 600;
-      }
-    }
-  }
-
-  .infoBox {
-    h4 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #12161c;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: 0.9rem;
-      color: #7a7e85;
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-
-      li {
-        padding: 0.5rem 0;
-        padding-left: 1.5rem;
-        font-size: 0.85rem;
-        color: #7a7e85;
-        line-height: 1.5;
-        position: relative;
-
-        &:before {
-          content: '•';
-          position: absolute;
-          left: 0.5rem;
-          color: $main;
-          font-weight: bold;
-        }
-      }
-    }
-  }
-
-  // Discord Channel Management Styles
-  .discordActions {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-
-    button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.875rem 1.75rem;
-      border-radius: 10px;
-      font-weight: 600;
       font-size: 0.875rem;
-      transition: all 0.2s ease;
-      border: none;
-      cursor: pointer;
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
 
-      svg {
-        font-size: 1.1rem;
-      }
+  .payoutContainer {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+    align-items: start;
 
-      // Primary button (Refresh)
-      &.btn-primary,
-      &:first-child {
-        background: $main;
-        color: white;
-        box-shadow: 0 2px 8px rgba($main, 0.2);
+    @media (max-width: 968px) {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
 
-        &:hover:not(:disabled) {
-          background: darken($main, 8%);
-          box-shadow: 0 4px 12px rgba($main, 0.3);
-          transform: translateY(-1px);
-        }
-      }
+    .payoutFormSection {
+      min-width: 0;
+    }
 
-      // Secondary buttons
-      &.btn-secondary {
-        background: white;
-        color: #6b7280;
-        border: 1.5px solid #e5e7eb;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    .payoutChartSection {
+      position: sticky;
+      top: 2rem;
 
-        &:hover:not(:disabled) {
-          background: #f9fafb;
-          border-color: #d1d5db;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-          transform: translateY(-1px);
-        }
-      }
-
-      &:active:not(:disabled) {
-        transform: translateY(0);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        box-shadow: none;
+      @media (max-width: 968px) {
+        position: static;
       }
     }
   }
 
-  .discordStatus {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-
-    .statusGrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-
-      .statusItem {
-        .statusLabel {
-          font-size: 0.8rem;
-          color: #7a7e85;
-          margin-bottom: 0.5rem;
-          font-weight: 500;
-        }
-
-        .statusValue {
-          font-size: 0.95rem;
-          color: #12161c;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-      }
-    }
-  }
-
-  // Channel Cards Styles
   .channelsList {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 
-    .channelCard {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 1.25rem;
-      transition: all 0.2s ease;
-
-      &:hover {
-        border-color: #d1d5db;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      }
-
-      .channelHeader {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1rem;
-        gap: 1rem;
-
-        .channelInfo {
-          flex: 1;
-
-          .channelName {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #12161c;
-            margin: 0 0 0.25rem 0;
-          }
-
-          .channelDesc {
-            font-size: 0.8rem;
-            color: #7a7e85;
-            margin: 0;
-          }
-        }
-
-        .channelStatus {
-          flex-shrink: 0;
-        }
-      }
-
-      .channelDetails {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 0.75rem;
-        padding: 1rem;
-        background: #f9fafb;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-
-        .detailItem {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-
-          .detailLabel {
-            font-size: 0.7rem;
-            color: #9ca3af;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.025em;
-          }
-
-          .detailValue {
-            font-size: 0.85rem;
-            color: #374151;
-            font-weight: 500;
-            word-break: break-all;
-          }
-        }
-      }
-
-      .channelActions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.75rem;
-
-        button {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          padding: 0.75rem 1.5rem;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          transition: all 0.2s ease;
-          border: none;
-          cursor: pointer;
-          background: $main;
-          color: white;
-          box-shadow: 0 2px 6px rgba($main, 0.2);
-
-          svg {
-            font-size: 1rem;
-          }
-
-          &:hover:not(:disabled) {
-            background: darken($main, 8%);
-            box-shadow: 0 3px 10px rgba($main, 0.3);
-            transform: translateY(-1px);
-          }
-
-          &:active:not(:disabled) {
-            transform: translateY(0);
-          }
-
-          &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            box-shadow: none;
-          }
-        }
-      }
-    }
-
     .emptyState {
       text-align: center;
-      padding: 3rem 1rem;
+      padding: 3rem 1.5rem;
       color: #9ca3af;
-      font-size: 0.9rem;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .settings {
-    .payoutGrid,
-    .infoGrid {
-      grid-template-columns: 1fr;
+      font-size: 0.9375rem;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 2px dashed #e5e7eb;
     }
   }
 }

@@ -101,7 +101,7 @@ const FinancialTab = () => {
 
         {loading ? (
           <div className={styles.loading}>Loading financial data...</div>
-        ) : financialOverview && summary && Object.keys(summary).length > 0 ? (
+        ) : financialOverview && summary ? (
           <>
             {/* Summary Metrics Grid */}
             <div className={styles.metricsGrid}>

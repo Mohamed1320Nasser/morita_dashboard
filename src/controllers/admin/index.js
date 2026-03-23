@@ -231,6 +231,17 @@ export default {
         }
     },
 
+    getUserProfile: async (userId) => {
+        try {
+            const response = await getData(`/api/admin/users/${userId}/profile`);
+            const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
+            return { success: true, data: payload }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
+
     updateUserRole: async (userId, role) => {
         try {
             const response = await putData(`/api/admin/users/${userId}/role`, { role });

@@ -1,0 +1,153 @@
+@import '../../../../styles/var.scss';
+
+.systemInfoContainer {
+  .infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .infoCard {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transform: translateY(-2px);
+      }
+
+      .infoIcon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba($main, 0.1);
+        color: $main;
+        border-radius: 10px;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+
+      .infoContent {
+        flex: 1;
+
+        .infoLabel {
+          font-size: 0.75rem;
+          color: #6b7280;
+          font-weight: 500;
+          margin-bottom: 0.25rem;
+        }
+
+        .infoValue {
+          font-size: 0.9375rem;
+          color: #1f2937;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .quickLinksSection {
+    .quickLinksTitle {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .quickLinksGrid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .quickLinkCard {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        background: #ffffff;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+
+        &:hover {
+          border-color: var(--link-color);
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.02), rgba(59, 130, 246, 0.01));
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+          transform: translateX(4px);
+
+          .linkArrow {
+            transform: translateX(4px);
+            opacity: 1;
+          }
+
+          .linkIcon {
+            transform: scale(1.1);
+          }
+        }
+
+        &:active {
+          transform: translateX(2px);
+        }
+
+        .linkIcon {
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(59, 130, 246, 0.1);
+          border-radius: 10px;
+          font-size: 1.375rem;
+          flex-shrink: 0;
+          transition: all 0.2s ease;
+        }
+
+        .linkContent {
+          flex: 1;
+
+          .linkLabel {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+          }
+
+          .linkDescription {
+            font-size: 0.8125rem;
+            color: #6b7280;
+            font-weight: 400;
+          }
+        }
+
+        .linkArrow {
+          font-size: 1.125rem;
+          color: #9ca3af;
+          opacity: 0.6;
+          transition: all 0.2s ease;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .systemInfoContainer {
+    .infoGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
