@@ -8,7 +8,7 @@ import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
 import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
-import { IoWallet, IoCart, IoTrendingUp, IoPeople } from 'react-icons/io5'
+import { IoWallet, IoCart, IoTrendingUp, IoPeople, IoArrowUp, IoArrowDown, IoCash } from 'react-icons/io5'
 import { FaChartLine, FaExclamationTriangle } from 'react-icons/fa'
 import moment from 'moment'
 
@@ -27,17 +27,17 @@ const DashboardPage = () => {
           adminController.getSystemHealth(),
         ])
 
-        if (statsRes && statsRes.success) {
+        if (statsRes && !statsRes.error && statsRes.data) {
           setStats(statsRes.data)
         } else {
-          notify(statsRes?.error?.message || 'Failed to load statistics')
+          notify('Failed to load statistics')
         }
 
-        if (activityRes && activityRes.success) {
+        if (activityRes && !activityRes.error && activityRes.data) {
           setActivity(activityRes.data || [])
         }
 
-        if (healthRes && healthRes.success) {
+        if (healthRes && !healthRes.error && healthRes.data) {
           setHealth(healthRes.data)
         }
       } catch (e) {
@@ -53,6 +53,17 @@ const DashboardPage = () => {
   const formatCurrency = (amount) => {
     const num = parseFloat(amount) || 0
     return `$${num.toFixed(2)}`
+  }
+
+  const renderGrowth = (growth) => {
+    if (!growth || growth === 0) return null
+    const isPositive = growth > 0
+    return (
+      <div className={`${styles.growth} ${isPositive ? styles.positive : styles.negative}`}>
+        {isPositive ? <IoArrowUp /> : <IoArrowDown />}
+        {Math.abs(growth).toFixed(1)}%
+      </div>
+    )
   }
 
   const getActivityIcon = (type) => {
@@ -115,7 +126,10 @@ const DashboardPage = () => {
               <IoCart />
             </div>
             <div className={styles.statContent}>
-              <div className={styles.statValue}>{stats?.orders?.total || 0}</div>
+              <div className={styles.statHeader}>
+                <div className={styles.statValue}>{stats?.orders?.total || 0}</div>
+                {renderGrowth(stats?.orders?.growth)}
+              </div>
               <div className={styles.statLabel}>Total Orders</div>
               <div className={styles.statSubtext}>
                 {stats?.orders?.today || 0} today • {stats?.orders?.thisMonth || 0} this month
@@ -128,7 +142,10 @@ const DashboardPage = () => {
               <IoTrendingUp />
             </div>
             <div className={styles.statContent}>
-              <div className={styles.statValue}>{formatCurrency(stats?.revenue?.total || 0)}</div>
+              <div className={styles.statHeader}>
+                <div className={styles.statValue}>{formatCurrency(stats?.revenue?.total || 0)}</div>
+                {renderGrowth(stats?.revenue?.growth)}
+              </div>
               <div className={styles.statLabel}>Total Revenue</div>
               <div className={styles.statSubtext}>
                 {formatCurrency(stats?.revenue?.today || 0)} today • {formatCurrency(stats?.revenue?.thisMonth || 0)} this month
@@ -138,13 +155,16 @@ const DashboardPage = () => {
 
           <div className={`${styles.statCard} ${styles.purple}`}>
             <div className={styles.statIcon}>
-              <IoWallet />
+              <IoCash />
             </div>
             <div className={styles.statContent}>
-              <div className={styles.statValue}>{formatCurrency(stats?.wallets?.totalBalance || 0)}</div>
-              <div className={styles.statLabel}>Total Balance</div>
+              <div className={styles.statHeader}>
+                <div className={styles.statValue}>{formatCurrency(stats?.profit?.net || 0)}</div>
+                {renderGrowth(stats?.profit?.growth)}
+              </div>
+              <div className={styles.statLabel}>Net Profit</div>
               <div className={styles.statSubtext}>
-                {stats?.wallets?.total || 0} wallets • {formatCurrency(stats?.wallets?.totalPendingBalance || 0)} pending
+                {stats?.profit?.margin?.toFixed(1) || 0}% margin • {formatCurrency(stats?.profit?.thisMonth || 0)} this month
               </div>
             </div>
           </div>
@@ -154,10 +174,13 @@ const DashboardPage = () => {
               <IoPeople />
             </div>
             <div className={styles.statContent}>
-              <div className={styles.statValue}>{stats?.users?.total || 0}</div>
+              <div className={styles.statHeader}>
+                <div className={styles.statValue}>{stats?.users?.total || 0}</div>
+                {renderGrowth(stats?.users?.growth)}
+              </div>
               <div className={styles.statLabel}>Total Users</div>
               <div className={styles.statSubtext}>
-                {stats?.users?.activeCustomers || 0} customers • {stats?.users?.activeWorkers || 0} workers
+                {stats?.users?.active || 0} active • {stats?.users?.newThisMonth || 0} new this month
               </div>
             </div>
           </div>

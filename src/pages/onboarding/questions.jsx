@@ -24,6 +24,7 @@ const QuestionsPage = () => {
     // Form state
     const [question, setQuestion] = useState('')
     const [fieldType, setFieldType] = useState('TEXT')
+    const [fieldKey, setFieldKey] = useState('NONE')
     const [placeholder, setPlaceholder] = useState('')
     const [required, setRequired] = useState(true)
     const [minLength, setMinLength] = useState('')
@@ -53,6 +54,7 @@ const QuestionsPage = () => {
             setSelectedQuestion(q)
             setQuestion(q.question)
             setFieldType(q.fieldType)
+            setFieldKey(q.fieldKey || 'NONE')
             setPlaceholder(q.placeholder || '')
             setRequired(q.required)
             setMinLength(q.minLength || '')
@@ -62,6 +64,7 @@ const QuestionsPage = () => {
             setSelectedQuestion(null)
             setQuestion('')
             setFieldType('TEXT')
+            setFieldKey('NONE')
             setPlaceholder('')
             setRequired(true)
             setMinLength('')
@@ -83,6 +86,7 @@ const QuestionsPage = () => {
             const data = {
                 question,
                 fieldType,
+                fieldKey,
                 placeholder: placeholder || undefined,
                 required,
                 minLength: minLength ? parseInt(minLength) : undefined,
@@ -244,6 +248,11 @@ const QuestionsPage = () => {
                                     <div style={{ fontWeight: 600, marginBottom: 4 }}>{q.question}</div>
                                     <div style={{ fontSize: 13, color: '#666' }}>
                                         <span style={{ marginRight: 12 }}>Type: {q.fieldType}</span>
+                                        {q.fieldKey && q.fieldKey !== 'NONE' && (
+                                            <span style={{ marginRight: 12, color: '#0a7', fontWeight: 500 }}>
+                                                → {q.fieldKey}
+                                            </span>
+                                        )}
                                         <span style={{ marginRight: 12 }}>Required: {q.required ? 'Yes' : 'No'}</span>
                                         <span>Status: {q.isActive ? '✅ Active' : '❌ Inactive'}</span>
                                     </div>
@@ -395,6 +404,29 @@ const QuestionsPage = () => {
                                         <option value="TEXT">Short Text</option>
                                         <option value="TEXTAREA">Long Text (Paragraph)</option>
                                     </select>
+                                </div>
+
+                                <div className={grid.span2}>
+                                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>Saves To Profile Field</label>
+                                    <select
+                                        value={fieldKey}
+                                        onChange={(e) => setFieldKey(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: 12,
+                                            border: '1px solid #ddd',
+                                            borderRadius: 8,
+                                            fontSize: 14
+                                        }}
+                                    >
+                                        <option value="NONE">Nothing (informational only)</option>
+                                        <option value="FULLNAME">Full Name</option>
+                                        <option value="EMAIL">Email (validated)</option>
+                                        <option value="PHONE">Phone (validated)</option>
+                                    </select>
+                                    <span style={{ display: 'block', marginTop: 6, fontSize: 12, color: '#666' }}>
+                                        Links this answer to the customer&apos;s profile. Email and Phone are format-checked before registration. Each field can only be used by one active question.
+                                    </span>
                                 </div>
 
                                 <div className={grid.span2}>

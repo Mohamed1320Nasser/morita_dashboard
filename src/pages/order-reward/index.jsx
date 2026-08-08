@@ -39,12 +39,12 @@ const OrderRewardConfigPage = () => {
                     setConfig({
                         isEnabled: configRes.data.isEnabled ?? false,
                         rewardType: configRes.data.rewardType || 'PERCENTAGE',
-                        fixedAmount: configRes.data.fixedAmount || 5,
-                        percentage: configRes.data.percentage || 2,
-                        minReward: configRes.data.minReward || 1,
-                        maxReward: configRes.data.maxReward || 50,
-                        minOrderAmount: configRes.data.minOrderAmount || 20,
-                        firstOrderBonus: configRes.data.firstOrderBonus || 0,
+                        fixedAmount: configRes.data.fixedAmount ?? 5,
+                        percentage: configRes.data.percentage ?? 2,
+                        minReward: configRes.data.minReward ?? 1,
+                        maxReward: configRes.data.maxReward ?? 50,
+                        minOrderAmount: configRes.data.minOrderAmount ?? 20,
+                        firstOrderBonus: configRes.data.firstOrderBonus ?? 0,
                         notifyDiscord: configRes.data.notifyDiscord ?? true,
                         currencyName: configRes.data.currencyName || '$',
                     })

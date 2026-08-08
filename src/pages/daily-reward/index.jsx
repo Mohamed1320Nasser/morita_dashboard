@@ -32,8 +32,8 @@ const DailyRewardConfigPage = () => {
                 const res = await dailyRewardController.getConfig()
                 if (res && res.success) {
                     setConfig({
-                        minAmount: res.data.minAmount || 1,
-                        maxAmount: res.data.maxAmount || 5,
+                        minAmount: res.data.minAmount ?? 1,
+                        maxAmount: res.data.maxAmount ?? 5,
                         cooldownHours: res.data.cooldownHours || 24,
                         isEnabled: res.data.isEnabled ?? true,
                         currencyName: res.data.currencyName || '$',
@@ -63,12 +63,19 @@ const DailyRewardConfigPage = () => {
 
     const handleSave = async () => {
         // Validation
-        if (config.minAmount < 1) {
-            notify('Min amount must be at least 1')
+        const minAmount = Number(config.minAmount)
+        const maxAmount = Number(config.maxAmount)
+
+        if (isNaN(minAmount) || minAmount < 0) {
+            notify('Min amount must be 0 or greater')
             return
         }
-        if (config.maxAmount < config.minAmount) {
-            notify('Max amount must be greater than min amount')
+        if (isNaN(maxAmount) || maxAmount < 0) {
+            notify('Max amount must be 0 or greater')
+            return
+        }
+        if (maxAmount < minAmount) {
+            notify('Max amount must be greater than or equal to min amount')
             return
         }
         if (config.cooldownHours < 1 || config.cooldownHours > 168) {
@@ -152,21 +159,23 @@ const DailyRewardConfigPage = () => {
                                     <label>Minimum Amount</label>
                                     <input
                                         type="number"
-                                        min="1"
+                                        min="0"
+                                        step="0.01"
                                         value={config.minAmount}
                                         onChange={(e) => handleChange('minAmount', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Minimum reward amount users can receive</span>
+                                    <span className={styles.hint}>Minimum reward amount users can receive (decimals allowed, e.g. 0.5)</span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Maximum Amount</label>
                                     <input
                                         type="number"
-                                        min="1"
+                                        min="0"
+                                        step="0.01"
                                         value={config.maxAmount}
                                         onChange={(e) => handleChange('maxAmount', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Maximum reward amount users can receive</span>
+                                    <span className={styles.hint}>Maximum reward amount users can receive (decimals allowed, e.g. 2.5)</span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Cooldown (Hours)</label>

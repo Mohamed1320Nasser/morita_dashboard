@@ -2,11 +2,40 @@ import axios from 'axios'
 // import customAlert from '@/components/tmp/alert'
 import { API } from '@/const'
 import { ForberidenAlert } from '@/components/atoms/alerts'
-import { getToken } from '@/utils/storage'
+import { getToken, clearAuth } from '@/utils/storage'
 
 const instance = axios.create({
   baseURL: API,
 })
+
+const LOGIN_PATH = '/login'
+
+let redirectingToLogin = false
+
+const handleUnauthorized = () => {
+  if (typeof window === 'undefined') return
+  if (redirectingToLogin) return
+  if (window.location.pathname === LOGIN_PATH) return
+
+  redirectingToLogin = true
+  clearAuth()
+  window.location.replace(LOGIN_PATH)
+}
+
+const isAuthRequest = (url = '') => url.includes('/auth/')
+
+const onUnauthorizedResponse = (error) => {
+  if (
+    error.response?.status === 401 &&
+    !isAuthRequest(error.config?.url || '')
+  ) {
+    handleUnauthorized()
+  }
+  return Promise.reject(error)
+}
+
+axios.interceptors.response.use(res => res, onUnauthorizedResponse)
+instance.interceptors.response.use(res => res, onUnauthorizedResponse)
 
 const headers = {
   "Accept-Language": "*",

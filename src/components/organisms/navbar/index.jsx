@@ -91,7 +91,7 @@ const Navbar = () => {
           </div>
           <div className={styles.useSide}>
             <NavBtn newNotification />
-            {user && <div onClick={() => setMenu(!menu)}><User role={user.role} img={user.profile.url ? `${Site}/cdn/${user.profile.folder}/${user.profile.title}` : '/images/user/2.png'} name={user.fullname} /> </div>}
+            {user && <div onClick={() => setMenu(!menu)}><User role={user.role} img={user.profile.url ? `${Site}/cdn/${user.profile.folder}/${user.profile.title}` : '/images/user/default.svg'} name={user.fullname} /> </div>}
             {menu &&
               <div className="userMenu" ref={userMenuRef}>
                 <button onClick={handleLogout}><BiLogOut /> Logout</button>
