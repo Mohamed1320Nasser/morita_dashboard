@@ -8,8 +8,14 @@ import { notify } from '@/config/error'
 const CONDITION_TYPES = [
   { value: '', label: 'No Condition (Always Applied)' },
   { value: 'price_range', label: 'Price Range' },
-  { value: 'custom_field', label: 'Custom Field' },
   { value: 'quantity_range', label: 'Quantity Range' },
+]
+
+// custom_field is not offered: nothing populates the custom conditions the
+// calculator compares against, so such a modifier can never apply. Existing
+// records still load and display so they can be edited or switched over.
+const LEGACY_CONDITION_TYPES = [
+  { value: 'custom_field', label: 'Custom Field (unsupported)' },
 ]
 
 const ModifierFormModal = ({ show, modifier, pricingMethod, onHide, onSubmit }) => {
@@ -460,7 +466,11 @@ const ModifierFormModal = ({ show, modifier, pricingMethod, onHide, onSubmit }) 
               value={formData.conditionType}
               onChange={(e) => handleChange('conditionType', e.target.value)}
             >
-              {CONDITION_TYPES.map(type => (
+              {CONDITION_TYPES.concat(
+                LEGACY_CONDITION_TYPES.filter(
+                  type => type.value === formData.conditionType
+                )
+              ).map(type => (
                 <option key={type.value} value={type.value}>
                   {type.label}
                 </option>
