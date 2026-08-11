@@ -66,20 +66,33 @@ const DailyRewardConfigPage = () => {
         const minAmount = Number(config.minAmount)
         const maxAmount = Number(config.maxAmount)
 
-        if (isNaN(minAmount) || minAmount < 0) {
-            notify('Min amount must be 0 or greater')
+        // Decimals are welcome (0.5, 0.25), but the column stores two places,
+        // so reject anything finer here rather than let the API return a raw
+        // validation error. An empty field must not quietly become zero.
+        const isValidAmount = (raw, value) =>
+            String(raw).trim() !== "" &&
+            Number.isFinite(value) &&
+            value >= 0 &&
+            Number(value.toFixed(2)) === value
+
+        if (!isValidAmount(config.minAmount, minAmount)) {
+            notify('Min amount must be 0 or greater, with at most 2 decimal places')
             return
         }
-        if (isNaN(maxAmount) || maxAmount < 0) {
-            notify('Max amount must be 0 or greater')
+        if (!isValidAmount(config.maxAmount, maxAmount)) {
+            notify('Max amount must be 0 or greater, with at most 2 decimal places')
             return
         }
         if (maxAmount < minAmount) {
             notify('Max amount must be greater than or equal to min amount')
             return
         }
-        if (config.cooldownHours < 1 || config.cooldownHours > 168) {
-            notify('Cooldown must be between 1 and 168 hours')
+
+        // Cooldown counts whole hours; isInteger also rules out NaN and blanks.
+        const cooldownHours = Number(config.cooldownHours)
+
+        if (!Number.isInteger(cooldownHours) || cooldownHours < 1 || cooldownHours > 168) {
+            notify('Cooldown must be a whole number between 1 and 168 hours')
             return
         }
 

@@ -12,6 +12,9 @@ import InputBox from '@/components/molecules/inputBox/inputBox'
 import grid from '@/components/forms/forms.module.scss'
 import DeleteConfirmModal from '@/components/shared/DeleteConfirmModal'
 
+// Discord rejects modal input labels longer than this.
+const DISCORD_LABEL_LIMIT = 45
+
 const QuestionsPage = () => {
     const [pageLoading, setPageLoading] = useState(true)
     const [questions, setQuestions] = useState([])
@@ -386,6 +389,17 @@ const QuestionsPage = () => {
                                         value={question}
                                         valueChange={setQuestion}
                                     />
+                                    <div style={{
+                                        marginTop: 6,
+                                        fontSize: 13,
+                                        color: question.length > DISCORD_LABEL_LIMIT ? '#b45309' : '#6b7280'
+                                    }}>
+                                        {question.length}/{DISCORD_LABEL_LIMIT} characters
+                                        {question.length > DISCORD_LABEL_LIMIT && (
+                                            <> — Discord shortens the label to <strong>{DISCORD_LABEL_LIMIT}</strong> characters.
+                                            The full question is shown inside the input box instead.</>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className={grid.span2}>

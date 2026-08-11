@@ -111,14 +111,25 @@ const SideBar = () => {
   const [openGroupKey, setOpenGroupKey] = useState(null);
   const groupRefs = useRef({});
 
+  const lastPathRef = useRef(null);
+
+  // Reveal the group holding the current page, but only when the route
+  // actually changes. `links` is rebuilt every render, so reacting to it
+  // would re-open the group immediately after the user collapsed it.
   useEffect(() => {
-    for (const link of links) {
-      if (link.links && Array.isArray(link.links)) {
-        if (link.links.some(sublink => sublink.href === router.pathname)) {
-          setOpenGroupKey(link.groupKey);
-          break;
-        }
-      }
+    if (lastPathRef.current === router.pathname) {
+      return;
+    }
+    lastPathRef.current = router.pathname;
+
+    const activeGroup = links.find(
+      link =>
+        Array.isArray(link.links) &&
+        link.links.some(sublink => sublink.href === router.pathname)
+    );
+
+    if (activeGroup) {
+      setOpenGroupKey(activeGroup.groupKey);
     }
   }, [links, router.pathname]);
 
