@@ -166,10 +166,14 @@ const OrderRewardClaimsPage = () => {
                                             render: (item) => (
                                                 <div className={styles.orderCell}>
                                                     <div className={styles.orderNumber}>
-                                                        #{item.order?.orderNumber || '-'}
+                                                        {item.grantType === 'MANUAL'
+                                                            ? 'Granted by hand'
+                                                            : `#${item.order?.orderNumber || '-'}`}
                                                     </div>
                                                     <div className={styles.orderValue}>
-                                                        Value: {formatAmount(item.orderAmount)}
+                                                        {item.grantType === 'MANUAL'
+                                                            ? (item.reason || 'No reason given')
+                                                            : `Value: ${formatAmount(item.orderAmount)}`}
                                                     </div>
                                                 </div>
                                             )
@@ -185,14 +189,27 @@ const OrderRewardClaimsPage = () => {
                                             )
                                         },
                                         {
-                                            key: 'isFirstOrder',
-                                            header: 'First Order',
+                                            key: 'grantType',
+                                            header: 'Type',
                                             flex: 1,
-                                            render: (item) => item.isFirstOrder ? (
+                                            render: (item) => item.grantType === 'MANUAL' ? (
+                                                <div>
+                                                    <span className={`${styles.badge} ${styles.manual}`}>
+                                                        Manual
+                                                    </span>
+                                                    {item.grantedBy && (
+                                                        <div className={styles.orderValue}>
+                                                            by {item.grantedBy.discordUsername || item.grantedBy.discordId}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : item.isFirstOrder ? (
                                                 <span className={`${styles.badge} ${styles.firstOrder}`}>
                                                     First Order
                                                 </span>
-                                            ) : '-'
+                                            ) : (
+                                                <span className={styles.orderValue}>Automatic</span>
+                                            )
                                         },
                                         {
                                             key: 'claimedAt',

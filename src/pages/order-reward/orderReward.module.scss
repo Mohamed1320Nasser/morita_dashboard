@@ -305,6 +305,11 @@
         background: rgba(139, 92, 246, 0.1);
         color: #8b5cf6;
     }
+
+    &.manual {
+        background: rgba(245, 158, 11, 0.12);
+        color: #b45309;
+    }
 }
 
 .emptyState {
