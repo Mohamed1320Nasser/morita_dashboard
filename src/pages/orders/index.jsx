@@ -284,6 +284,29 @@ const OrdersPage = () => {
                     ),
                 },
                 {
+                  key: 'services',
+                  header: 'Service',
+                  className: 'services',
+                  flex: 1.2,
+                  render: (o) => {
+                    // order.service is the primary only; services[] has them all.
+                    const names = (o.services || [])
+                      .map((link) => link?.service?.name)
+                      .filter(Boolean)
+                    if (names.length === 0 && o.service?.name) names.push(o.service.name)
+                    if (names.length === 0) return <span style={{ color: '#9ca3af' }}>-</span>
+
+                    return (
+                      <span title={names.join(', ')} style={{ color: '#12161c' }}>
+                        {names[0]}
+                        {names.length > 1 && (
+                          <span style={{ color: '#6b7280' }}> +{names.length - 1}</span>
+                        )}
+                      </span>
+                    )
+                  },
+                },
+                {
                   key: 'value',
                   header: 'Value',
                   className: 'value',

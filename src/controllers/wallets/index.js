@@ -3,15 +3,18 @@ import { getData, postData, putData, patchData } from '../../constant/axiosClon'
 export default {
     getAllWallets: async (query) => {
         try {
-            const response = await getData(`/api/admin/wallets${query ? `?${query}` : ''}`);
-            console.log('[getAllWallets] Raw response:', response);
+            const response = await getData(`/admin/wallets${query ? `?${query}` : ''}`);
+
+            // getData resolves to false on failure; without this the Array.isArray
+            // guard below still passes, showing an empty list instead of an error.
+            if (response === false) {
+                return { success: false, error: { message: 'Could not reach the server. Please try again.' } }
+            }
 
             // Handle double-nested response: response.data.data
             const payload = response?.data?.data || response?.data || response
-            console.log('[getAllWallets] Payload:', payload);
 
             const list = payload?.list || payload?.wallets || (Array.isArray(payload) ? payload : [])
-            console.log('[getAllWallets] List:', list);
 
             if (Array.isArray(list)) {
                 return {
@@ -37,7 +40,7 @@ export default {
 
     getWalletById: async (id) => {
         try {
-            const response = await getData(`/api/admin/wallets/${id}`);
+            const response = await getData(`/admin/wallets/${id}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: { wallet: payload } }
         } catch (err) {
@@ -49,7 +52,7 @@ export default {
     getWalletTransactions: async (walletId, query) => {
         try {
             console.log('[getWalletTransactions] Fetching for wallet:', walletId, 'query:', query);
-            const response = await getData(`/api/admin/wallets/${walletId}/transactions${query ? `?${query}` : ''}`);
+            const response = await getData(`/admin/wallets/${walletId}/transactions${query ? `?${query}` : ''}`);
             console.log('[getWalletTransactions] Raw response:', response);
 
             // Handle triple-nested response
@@ -83,7 +86,7 @@ export default {
 
     addBalance: async (walletId, data) => {
         try {
-            const response = await postData(`/api/admin/wallets/${walletId}/add-balance`, data);
+            const response = await postData(`/admin/wallets/${walletId}/add-balance`, data);
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -93,7 +96,7 @@ export default {
 
     adjustBalance: async (walletId, data) => {
         try {
-            const response = await postData(`/api/admin/wallets/${walletId}/adjust`, data);
+            const response = await postData(`/admin/wallets/${walletId}/adjust`, data);
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -103,7 +106,7 @@ export default {
 
     toggleWalletStatus: async (walletId, isActive) => {
         try {
-            const response = await putData(`/api/admin/wallets/${walletId}/status`, { isActive });
+            const response = await putData(`/admin/wallets/${walletId}/status`, { isActive });
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -113,7 +116,7 @@ export default {
 
     getSystemWallet: async () => {
         try {
-            const response = await getData('/api/admin/wallets/system');
+            const response = await getData('/admin/wallets/system');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: { systemWallet: payload } }
         } catch (err) {
@@ -124,7 +127,7 @@ export default {
 
     getWalletStats: async () => {
         try {
-            const response = await getData('/api/admin/wallets/stats');
+            const response = await getData('/admin/wallets/stats');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: { stats: payload } }
         } catch (err) {

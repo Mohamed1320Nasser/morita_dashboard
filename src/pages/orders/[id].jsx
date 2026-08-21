@@ -103,6 +103,14 @@ const OrderDetailPage = () => {
   if (pageLoading) return <Loading />
   if (!order) return null
 
+  // An order can cover several services; order.service is only the primary.
+  const serviceNames = (order.services || [])
+    .map((link) => link?.service?.name)
+    .filter(Boolean)
+  if (serviceNames.length === 0 && order.service?.name) {
+    serviceNames.push(order.service.name)
+  }
+
   return (
     <div className={styles.viewPage}>
       <PageHead current="Orders">
@@ -207,8 +215,8 @@ const OrderDetailPage = () => {
               <span className={styles.value}>{order.currency}</span>
             </div>
             <div className={styles.row}>
-              <span className={styles.label}>Service</span>
-              <span className={styles.value}>{order.service?.name || '-'}</span>
+              <span className={styles.label}>{serviceNames.length > 1 ? 'Services' : 'Service'}</span>
+              <span className={styles.value}>{serviceNames.join(', ') || '-'}</span>
             </div>
           </Card>
         </div>
@@ -217,8 +225,8 @@ const OrderDetailPage = () => {
         <Card>
           <h3 className={styles.cardTitle}>Service & Job Details</h3>
           <div className={styles.row}>
-            <span className={styles.label}>Service</span>
-            <span className={styles.value}>{order.service?.name || '-'}</span>
+            <span className={styles.label}>{serviceNames.length > 1 ? 'Services' : 'Service'}</span>
+            <span className={styles.value}>{serviceNames.join(', ') || '-'}</span>
           </div>
           {order.jobDetails && (
             <div className={styles.jobDetailsBlock}>

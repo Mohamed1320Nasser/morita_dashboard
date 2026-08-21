@@ -20,7 +20,7 @@ export default {
     },
     getRevenueChartData: async () => {
         try {
-            const response = await getData('/api/admin/dashboard/revenue-chart');
+            const response = await getData('/admin/dashboard/revenue-chart');
             return response
         } catch (err) {
             console.log(err)
@@ -28,7 +28,7 @@ export default {
     },
     getOrderStats: async () => {
         try {
-            const response = await getData('/api/admin/dashboard/order-stats');
+            const response = await getData('/admin/dashboard/order-stats');
             return response
         } catch (err) {
             console.log(err)

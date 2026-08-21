@@ -1,10 +1,14 @@
 import { getData, postData, putData } from '../../constant/axiosClon'
 
+// getData resolves to `false` on transport/auth failure rather than throwing,
+// so callers must reject it explicitly or a dead backend renders as empty data.
+const REQUEST_FAILED = 'Could not reach the server. Please try again.'
+
 export default {
     // Dashboard Statistics
     getDashboardStats: async () => {
         try {
-            const response = await getData('/api/admin/system/dashboard/stats');
+            const response = await getData('/dashboard/stats');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -15,7 +19,7 @@ export default {
 
     getRecentActivity: async () => {
         try {
-            const response = await getData('/api/admin/system/dashboard/activity');
+            const response = await getData('/dashboard/activity');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -26,7 +30,7 @@ export default {
 
     getSystemHealth: async () => {
         try {
-            const response = await getData('/api/admin/system/health');
+            const response = await getData('/dashboard/health');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -39,11 +43,13 @@ export default {
     getAllOrders: async (query) => {
         try {
             const response = await getData(`/admin/orders${query ? `?${query}` : ''}`);
-            // Triple-nested unwrapping for admin endpoints
+
+            if (response === false) {
+                return { success: false, error: { message: REQUEST_FAILED } }
+            }
+
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             const list = payload?.list || payload?.orders || (Array.isArray(payload) ? payload : [])
-
-            console.log('[getAllOrders] Response:', { response, payload, list });
 
             return {
                 success: true,
@@ -66,6 +72,9 @@ export default {
     getOrderStats: async () => {
         try {
             const response = await getData('/admin/orders/stats');
+            if (response === false) {
+                return { success: false, error: { message: REQUEST_FAILED } }
+            }
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -138,7 +147,7 @@ export default {
     // Transaction Management
     getAllTransactions: async (query) => {
         try {
-            const response = await getData(`/api/admin/transactions${query ? `?${query}` : ''}`);
+            const response = await getData(`/admin/transactions${query ? `?${query}` : ''}`);
             // Triple-nested unwrapping for admin endpoints
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             const list = payload?.list || payload?.transactions || (Array.isArray(payload) ? payload : [])
@@ -165,7 +174,7 @@ export default {
 
     getTransactionStats: async () => {
         try {
-            const response = await getData('/api/admin/transactions/stats');
+            const response = await getData('/admin/transactions/stats');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -177,7 +186,7 @@ export default {
     // User Management
     getAllUsers: async (query) => {
         try {
-            const response = await getData(`/api/admin/users${query ? `?${query}` : ''}`);
+            const response = await getData(`/admin/users${query ? `?${query}` : ''}`);
             console.log('[getAllUsers] Raw response:', response);
 
             // Handle double-nested response: response.data.data
@@ -211,7 +220,7 @@ export default {
 
     getUserStats: async () => {
         try {
-            const response = await getData('/api/admin/users/stats');
+            const response = await getData('/admin/users/stats');
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -222,7 +231,7 @@ export default {
 
     getUserById: async (userId) => {
         try {
-            const response = await getData(`/api/admin/users/${userId}`);
+            const response = await getData(`/admin/users/${userId}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: { user: payload } }
         } catch (err) {
@@ -233,7 +242,7 @@ export default {
 
     getUserProfile: async (userId) => {
         try {
-            const response = await getData(`/api/admin/users/${userId}/profile`);
+            const response = await getData(`/admin/users/${userId}/profile`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -244,7 +253,7 @@ export default {
 
     updateUserRole: async (userId, role) => {
         try {
-            const response = await putData(`/api/admin/users/${userId}/role`, { role });
+            const response = await putData(`/admin/users/${userId}/role`, { role });
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -259,7 +268,7 @@ export default {
             if (params.startDate && params.endDate) {
                 queryString = `?startDate=${params.startDate}&endDate=${params.endDate}`;
             }
-            const response = await getData(`/api/admin/services/stats/overview${queryString}`);
+            const response = await getData(`/admin/services/stats/overview${queryString}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -278,7 +287,7 @@ export default {
             if (params.sortBy) queryParams.append('sortBy', params.sortBy);
 
             const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-            const response = await getData(`/api/admin/services/stats/top-services${queryString}`);
+            const response = await getData(`/admin/services/stats/top-services${queryString}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -293,7 +302,7 @@ export default {
             if (params.startDate && params.endDate) {
                 queryString = `?startDate=${params.startDate}&endDate=${params.endDate}`;
             }
-            const response = await getData(`/api/admin/services/stats/service/${serviceId}${queryString}`);
+            const response = await getData(`/admin/services/stats/service/${serviceId}${queryString}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -311,7 +320,7 @@ export default {
             if (params.serviceIds) queryParams.append('serviceIds', params.serviceIds);
 
             const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-            const response = await getData(`/api/admin/services/stats/revenue-trend${queryString}`);
+            const response = await getData(`/admin/services/stats/revenue-trend${queryString}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -326,7 +335,7 @@ export default {
             if (params.startDate && params.endDate) {
                 queryString = `?startDate=${params.startDate}&endDate=${params.endDate}`;
             }
-            const response = await getData(`/api/admin/services/stats/categories${queryString}`);
+            const response = await getData(`/admin/services/stats/categories${queryString}`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -338,7 +347,7 @@ export default {
     // Service Modifiers
     getServiceModifiers: async (serviceId) => {
         try {
-            const response = await getData(`/api/admin/services/${serviceId}/modifiers`);
+            const response = await getData(`/admin/services/${serviceId}/modifiers`);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -349,7 +358,7 @@ export default {
 
     createServiceModifier: async (serviceId, data) => {
         try {
-            const response = await postData(`/api/admin/services/${serviceId}/modifiers`, data);
+            const response = await postData(`/admin/services/${serviceId}/modifiers`, data);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -360,7 +369,7 @@ export default {
 
     updateServiceModifier: async (serviceId, modifierId, data) => {
         try {
-            const response = await putData(`/api/admin/services/${serviceId}/modifiers/${modifierId}`, data);
+            const response = await putData(`/admin/services/${serviceId}/modifiers/${modifierId}`, data);
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -371,7 +380,7 @@ export default {
 
     deleteServiceModifier: async (serviceId, modifierId) => {
         try {
-            const response = await deleteData(`/api/admin/services/${serviceId}/modifiers/${modifierId}`);
+            const response = await deleteData(`/admin/services/${serviceId}/modifiers/${modifierId}`);
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -381,7 +390,7 @@ export default {
 
     toggleServiceModifier: async (serviceId, modifierId) => {
         try {
-            const response = await putData(`/api/admin/services/${serviceId}/modifiers/${modifierId}/toggle`, {});
+            const response = await putData(`/admin/services/${serviceId}/modifiers/${modifierId}/toggle`, {});
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {

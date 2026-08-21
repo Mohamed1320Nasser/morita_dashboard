@@ -4,6 +4,11 @@ export default {
     getAllServices: async (query) => {
         try {
             const response = await getData(`/services${query ? `?${query}` : ''}`);
+            // getData resolves to false on failure; without this the Array.isArray
+            // guard below still passes, showing an empty list instead of an error.
+            if (response === false) {
+                return { success: false, error: { message: 'Could not reach the server. Please try again.' } }
+            }
             // Backend returns { list, total, page, limit, totalPages }
             const data = response?.data || response
             const list = data?.list || data?.List || (Array.isArray(data) ? data : [])

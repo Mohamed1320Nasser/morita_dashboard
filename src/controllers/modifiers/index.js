@@ -4,7 +4,7 @@ export default {
     getAllModifiers: async (query) => {
         try {
             const queryString = typeof query === 'string' ? query : new URLSearchParams(query).toString()
-            const url = `/api/admin/pricing/modifiers${queryString ? `?${queryString}` : ''}`
+            const url = `/admin/pricing/modifiers${queryString ? `?${queryString}` : ''}`
 
             console.log('[modifiersController] Fetching:', url)
             const response = await getData(url)
@@ -48,7 +48,7 @@ export default {
 
     getModifierById: async (id) => {
         try {
-            const response = await getData(`/api/admin/pricing/modifiers/${id}`)
+            const response = await getData(`/admin/pricing/modifiers/${id}`)
             console.log('[modifiersController] getModifierById response:', response)
 
             let payload = response
@@ -79,7 +79,7 @@ export default {
 
     createModifier: async (data) => {
         try {
-            const response = await postData('/api/admin/pricing/modifiers', data)
+            const response = await postData('/admin/pricing/modifiers', data)
             console.log('[modifiersController] createModifier response:', response)
             return { success: true, data: { modifier: response } }
         } catch (err) {
@@ -122,7 +122,7 @@ export default {
 
     updateModifier: async (id, data) => {
         try {
-            const response = await patchData(`/api/admin/pricing/modifiers/${id}`, data)
+            const response = await patchData(`/admin/pricing/modifiers/${id}`, data)
             console.log('[modifiersController] updateModifier response:', response)
             return { success: true, data: { modifier: response } }
         } catch (err) {
@@ -165,7 +165,7 @@ export default {
 
     deleteModifier: async (id) => {
         try {
-            const response = await deleteData(`/api/admin/pricing/modifiers/${id}`)
+            const response = await deleteData(`/admin/pricing/modifiers/${id}`)
             return { success: true, data: response }
         } catch (err) {
             console.error('[modifiersController] deleteModifier error:', err)

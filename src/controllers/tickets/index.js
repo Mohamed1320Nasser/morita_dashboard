@@ -76,8 +76,15 @@ export default {
     getTicketStats: async () => {
         try {
             const response = await getData('/tickets/stats')
-            if (response && response.data) {
-                return { success: true, data: response.data }
+            if (response === false) {
+                return { success: false, error: { message: 'Could not reach the server' } }
+            }
+            // The controller wraps its own { success, data } inside the API
+            // envelope, so the counts sit one level deeper than the list
+            // endpoints put theirs.
+            const payload = response?.data?.data || response?.data
+            if (payload) {
+                return { success: true, data: payload }
             }
             return { success: false, error: { message: 'Failed to fetch stats' } }
         } catch (err) {
