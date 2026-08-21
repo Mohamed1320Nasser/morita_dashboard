@@ -1086,9 +1086,9 @@ const OperationsTab = () => {
             </div>
             <div className={styles.metricContent}>
               <div className={styles.metricValue}>{workerIssuesSummary.totalIssues || 0}</div>
-              <div className={styles.metricLabel}>Total Worker Issues</div>
+              <div className={styles.metricLabel}>Customer Complaints</div>
               <div className={styles.metricSubtext}>
-                {workerIssuesSummary.openIssues || 0} open, {workerIssuesSummary.resolvedIssues || 0} resolved
+                {workerIssuesSummary.openIssues || 0} open, {(workerIssuesSummary.resolvedIssues || 0) + (workerIssuesSummary.closedIssues || 0)} closed
               </div>
             </div>
           </div>
@@ -1112,7 +1112,7 @@ const OperationsTab = () => {
               <div className={styles.metricValue}>
                 {workerIssuesSummary.avgIssuesPerWorker ? workerIssuesSummary.avgIssuesPerWorker.toFixed(1) : 0}
               </div>
-              <div className={styles.metricLabel}>Avg Issues/Worker</div>
+              <div className={styles.metricLabel}>Avg Complaints/Worker</div>
               <div className={styles.metricSubtext}>{workerIssuesSummary.totalWorkers || 0} total workers</div>
             </div>
           </div>
@@ -1136,19 +1136,19 @@ const OperationsTab = () => {
         {/* Worker Statistics */}
         {workerStatsData.length > 0 && (
           <Card>
-            <h3 className={styles.chartTitle}>Workers with Issues</h3>
+            <h3 className={styles.chartTitle}>Customer Complaints by Worker</h3>
             <div className={styles.tableContainer}>
               <table className={styles.compactTable}>
                 <thead>
                   <tr>
                     <th>Worker</th>
-                    <th>Total Issues</th>
+                    <th>Complaints</th>
                     <th>Open</th>
-                    <th>Resolved</th>
+                    <th>Closed</th>
                     <th>Urgent</th>
                     <th>Avg Resolution</th>
-                    <th>Issue Rate (%)</th>
-                    <th>Last Issue</th>
+                    <th>Complaint Rate</th>
+                    <th>Last Complaint</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1168,8 +1168,10 @@ const OperationsTab = () => {
                           ? `${worker.avgResolutionHours.toFixed(1)}h`
                           : 'N/A'}
                       </td>
-                      <td className={worker.issueRate > 50 ? styles.warningText : ''}>
-                        {worker.issueRate.toFixed(1)}%
+                      <td className={worker.issueRate > 20 ? styles.warningText : ''}>
+                        {typeof worker.issueRate === 'number'
+                          ? `${worker.issueRate.toFixed(1)}% (${worker.ordersWithIssues}/${worker.ordersInPeriod})`
+                          : 'N/A'}
                       </td>
                       <td>{moment(worker.lastIssueDate).format('MMM DD, YYYY')}</td>
                     </tr>

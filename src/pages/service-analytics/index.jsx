@@ -259,6 +259,10 @@ const ServiceAnalyticsPage = () => {
         {/* Top Services Table */}
         <Card>
           <h3 className={styles.chartTitle}>Top Performing Services</h3>
+          <p className={styles.chartNote}>
+            On multi-service orders the value is split evenly across the services, so revenue totals
+            stay accurate but a single service&apos;s figure is an estimate.
+          </p>
           <div className={styles.tableContainer}>
             <table className={styles.servicesTable}>
               <thead>
