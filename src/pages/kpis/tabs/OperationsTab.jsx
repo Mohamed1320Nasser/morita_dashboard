@@ -6,6 +6,7 @@ import BarChart from '../../../components/atoms/charts/BarChart'
 import PieChart from '../../../components/atoms/charts/PieChart'
 import kpiController from '../../../controllers/kpi'
 import DateRange, { toQuery } from '../../../components/molecules/dateRange'
+import workerFeedbackController from '../../../controllers/workerFeedback'
 import { notify } from '../../../config/error'
 import moment from 'moment'
 import {
@@ -38,6 +39,7 @@ const OperationsTab = () => {
   // Worker Performance State
   const [workerPerformance, setWorkerPerformance] = useState(null)
   const [workerRange, setWorkerRange] = useState({ preset: 'this_month' })
+  const [feedbackList, setFeedbackList] = useState([])
 
   // Worker Issues State
   const [workerIssues, setWorkerIssues] = useState(null)
@@ -57,7 +59,8 @@ const OperationsTab = () => {
       fetchServiceRequests(),
       fetchServiceConversion(),
       fetchWorkerPerformance(),
-      fetchWorkerIssues()
+      fetchWorkerIssues(),
+      fetchWorkerFeedback()
     ])
     setLoading(false)
   }
@@ -149,6 +152,24 @@ const OperationsTab = () => {
       }
     } catch (error) {
       notify({ message: 'Error loading worker performance data', type: 'error' })
+    }
+  }
+
+  const fetchWorkerFeedback = async () => {
+    const res = await workerFeedbackController.list({ limit: 25 })
+    if (res?.success) {
+      setFeedbackList(res.data?.list || [])
+    }
+  }
+
+  const removeFeedback = async (id) => {
+    const res = await workerFeedbackController.remove(id)
+    if (res?.success) {
+      setFeedbackList((current) => current.filter((item) => item.id !== id))
+      notify({ message: 'Feedback removed', type: 'success' })
+      fetchWorkerPerformance()
+    } else {
+      notify({ message: 'Could not remove feedback', type: 'error' })
     }
   }
 
@@ -920,6 +941,8 @@ const OperationsTab = () => {
                     <th>Active</th>
                     <th>Avg Time</th>
                     <th>Success Rate</th>
+                    <th>Customer Rating</th>
+                    <th>Staff Feedback</th>
                     <th>Revenue</th>
                     <th>Avg Order Value</th>
                   </tr>
@@ -939,6 +962,38 @@ const OperationsTab = () => {
                           {worker.successRate.toFixed(1)}%
                         </span>
                       </td>
+                      <td>
+                        {typeof worker.avgCustomerRating === 'number' ? (
+                          <span
+                            className={
+                              worker.avgCustomerRating >= 4
+                                ? styles.successText
+                                : worker.avgCustomerRating >= 3
+                                ? styles.warningText
+                                : styles.errorText
+                            }
+                          >
+                            {worker.avgCustomerRating.toFixed(1)}★ ({worker.ratedOrders})
+                          </span>
+                        ) : (
+                          <span className={styles.mutedText}>—</span>
+                        )}
+                      </td>
+                      <td>
+                        {worker.staffPraise || worker.staffWarnings || worker.staffNotes ? (
+                          <>
+                            {worker.staffPraise > 0 && (
+                              <span className={styles.successText}>🌟 {worker.staffPraise} </span>
+                            )}
+                            {worker.staffWarnings > 0 && (
+                              <span className={styles.errorText}>⚠️ {worker.staffWarnings} </span>
+                            )}
+                            {worker.staffNotes > 0 && <span>📝 {worker.staffNotes}</span>}
+                          </>
+                        ) : (
+                          <span className={styles.mutedText}>—</span>
+                        )}
+                      </td>
                       <td className={styles.successText}>${worker.revenue.toFixed(2)}</td>
                       <td>${worker.avgOrderValue.toFixed(2)}</td>
                     </tr>
@@ -948,6 +1003,74 @@ const OperationsTab = () => {
             </div>
           </Card>
         )}
+
+        {/* Staff-written feedback behind the counts in the table above */}
+        <Card>
+          <h3 className={styles.chartTitle}>Staff Feedback</h3>
+          <p className={styles.chartNote}>
+            Recorded by support and admins with <code>/worker-feedback</code>. Separate from
+            customer complaints, which appear under Worker Issue Tracking.
+          </p>
+
+          {feedbackList.length > 0 ? (
+            <div className={styles.tableContainer}>
+              <table className={styles.compactTable}>
+                <thead>
+                  <tr>
+                    <th>Worker</th>
+                    <th>Type</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>By</th>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {feedbackList.map((item) => (
+                    <tr key={item.id}>
+                      <td className={styles.workerName}>
+                        {item.worker?.fullname || item.worker?.discordUsername || '—'}
+                      </td>
+                      <td>
+                        {item.type === 'PRAISE' && (
+                          <span className={styles.successText}>🌟 Praise</span>
+                        )}
+                        {item.type === 'WARNING' && (
+                          <span className={styles.errorText}>⚠️ Warning</span>
+                        )}
+                        {item.type === 'NOTE' && <span>📝 Note</span>}
+                      </td>
+                      <td>{item.rating ? `${item.rating}★` : <span className={styles.mutedText}>—</span>}</td>
+                      <td>{item.comment}</td>
+                      <td>{item.author?.fullname || item.author?.discordUsername || '—'}</td>
+                      <td>
+                        {item.order?.orderNumber ? (
+                          `#${item.order.orderNumber}`
+                        ) : (
+                          <span className={styles.mutedText}>—</span>
+                        )}
+                      </td>
+                      <td>{moment(item.createdAt).format('MMM DD, YYYY')}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className={styles.linkButton}
+                          onClick={() => removeFeedback(item.id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className={styles.emptyState}>No staff feedback recorded yet.</div>
+          )}
+        </Card>
       </KPISection>
 
       {/* ============================================

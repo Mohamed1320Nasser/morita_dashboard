@@ -699,6 +699,61 @@
 }
 
 .reasonsTable,
+// Referenced throughout the tables in this tab but never defined, so the
+// figures they mark were rendering in the default colour.
+.successText {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.warningText {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.errorText {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.mutedText {
+  color: #9ca3af;
+}
+
+.chartNote {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: -0.75rem 0 1rem;
+  line-height: 1.5;
+
+  code {
+    background: #f3f4f6;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.95em;
+  }
+}
+
+.emptyState {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #dc2626;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .compactTable {
   width: 100%;
   border-collapse: collapse;
