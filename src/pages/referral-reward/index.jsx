@@ -366,6 +366,10 @@ const ReferralRewardConfigPage = () => {
                                         />
                                         <span>Require onboarding before reward</span>
                                     </div>
+                                    <span className={styles.hint}>
+                                        The invited member must finish onboarding before the referrer is
+                                        paid. The reward is held, not cancelled.
+                                    </span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Count Only Active Members</label>
@@ -387,7 +391,11 @@ const ReferralRewardConfigPage = () => {
                                         value={config.minimumRetentionRate}
                                         onChange={(e) => handleChange('minimumRetentionRate', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Minimum % of referrals that must stay</span>
+                                    <span className={styles.hint}>
+                                        If a referrer's invitees drop below this percentage, their rewards
+                                        stop. Only applies once they have 5 or more referrals. Set to 0 to
+                                        turn off.
+                                    </span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Minimum Days in Server</label>
@@ -397,7 +405,10 @@ const ReferralRewardConfigPage = () => {
                                         value={config.minimumDaysInServer}
                                         onChange={(e) => handleChange('minimumDaysInServer', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Days required to count as successful</span>
+                                    <span className={styles.hint}>
+                                        The invited member must stay this many days before the reward is
+                                        paid. Anyone who leaves is never paid. Set to 0 to pay immediately.
+                                    </span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Max Rewards Per Day</label>
@@ -407,7 +418,10 @@ const ReferralRewardConfigPage = () => {
                                         value={config.maxRewardsPerDay}
                                         onChange={(e) => handleChange('maxRewardsPerDay', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Maximum rewards per user per day</span>
+                                    <span className={styles.hint}>
+                                        Hard ceiling on how many rewards one referrer can earn in a day.
+                                        Further referrals are refused until tomorrow.
+                                    </span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Cooldown (minutes)</label>
@@ -417,7 +431,11 @@ const ReferralRewardConfigPage = () => {
                                         value={config.cooldownMinutes}
                                         onChange={(e) => handleChange('cooldownMinutes', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Time between rewards</span>
+                                    <span className={styles.hint}>
+                                        Minimum gap between two rewards for the same referrer. Blocks
+                                        someone inviting many accounts in quick succession. Set to 0 to
+                                        turn off.
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -436,6 +454,10 @@ const ReferralRewardConfigPage = () => {
                                         />
                                         <span>Notify in channel</span>
                                     </div>
+                                    <span className={styles.hint}>
+                                        Not yet connected — referral rewards do not post to a channel
+                                        regardless of this setting.
+                                    </span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Direct Message Notification</label>
@@ -447,6 +469,10 @@ const ReferralRewardConfigPage = () => {
                                         />
                                         <span>Send DM to referrer</span>
                                     </div>
+                                    <span className={styles.hint}>
+                                        Not yet connected — no direct message is sent regardless of this
+                                        setting.
+                                    </span>
                                 </div>
                             </div>
                         </div>

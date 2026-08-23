@@ -4,6 +4,7 @@ import Card from '../../../components/atoms/cards'
 import LineChart from '../../../components/atoms/charts/LineChart'
 import BarChart from '../../../components/atoms/charts/BarChart'
 import kpiController from '../../../controllers/kpi'
+import DateRange, { toQuery } from '../../../components/molecules/dateRange'
 import { notify } from '../../../config/error'
 import moment from 'moment'
 import {
@@ -19,26 +20,26 @@ import styles from './SupportTab.module.scss'
 const SupportTab = () => {
   // Support Response Time State
   const [supportResponseTime, setSupportResponseTime] = useState(null)
-  const [supportPeriod, setSupportPeriod] = useState('monthly')
+  const [supportRange, setSupportRange] = useState({ preset: 'this_month' })
   const [slaTarget, setSlaTarget] = useState(15)
 
   // Ticket Conversion State
   const [ticketConversion, setTicketConversion] = useState(null)
-  const [conversionPeriod, setConversionPeriod] = useState('monthly')
+  const [conversionRange, setConversionRange] = useState({ preset: 'this_month' })
 
   // Peak Times State
   const [peakTimes, setPeakTimes] = useState(null)
-  const [peakTimesPeriod, setPeakTimesPeriod] = useState('monthly')
+  const [peakTimesRange, setPeakTimesRange] = useState({ preset: 'this_month' })
 
   // Reply Speed State
   const [replySpeed, setReplySpeed] = useState(null)
-  const [replySpeedPeriod, setReplySpeedPeriod] = useState('monthly')
+  const [replySpeedRange, setReplySpeedRange] = useState({ preset: 'this_month' })
 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchAllSupportKPIs()
-  }, [supportPeriod, slaTarget, conversionPeriod, peakTimesPeriod, replySpeedPeriod])
+  }, [supportRange, slaTarget, conversionRange, peakTimesRange, replySpeedRange])
 
   const fetchAllSupportKPIs = async () => {
     setLoading(true)
@@ -58,7 +59,7 @@ const SupportTab = () => {
   const fetchSupportResponseTime = async () => {
     try {
       const res = await kpiController.getSupportResponseTime({
-        period: supportPeriod,
+        period: supportRange,
         slaTarget
       })
 
@@ -78,7 +79,7 @@ const SupportTab = () => {
 
   const fetchTicketConversion = async () => {
     try {
-      const res = await kpiController.getTicketToOrderConversion({ period: conversionPeriod })
+      const res = await kpiController.getTicketToOrderConversion(toQuery(conversionRange))
 
       if (res && res.error === false) {
         setTicketConversion(res.data)
@@ -96,7 +97,7 @@ const SupportTab = () => {
 
   const fetchPeakTimes = async () => {
     try {
-      const res = await kpiController.getPeakTicketTimes({ period: peakTimesPeriod })
+      const res = await kpiController.getPeakTicketTimes(toQuery(peakTimesRange))
 
       if (res && res.error === false) {
         setPeakTimes(res.data)
@@ -114,7 +115,7 @@ const SupportTab = () => {
 
   const fetchReplySpeed = async () => {
     try {
-      const res = await kpiController.getSupportReplySpeed({ period: replySpeedPeriod })
+      const res = await kpiController.getSupportReplySpeed(toQuery(replySpeedRange))
 
       if (res && res.error === false) {
         setReplySpeed(res.data)
@@ -182,38 +183,7 @@ const SupportTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={supportPeriod === 'daily' ? styles.active : ''}
-              onClick={() => setSupportPeriod('daily')}
-            >
-              Daily
-            </button>
-            <button
-              className={supportPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setSupportPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={supportPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setSupportPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={supportPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setSupportPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-            <button
-              className={supportPeriod === 'yearly' ? styles.active : ''}
-              onClick={() => setSupportPeriod('yearly')}
-            >
-              Yearly
-            </button>
-          </div>
+          <DateRange value={supportRange} onChange={setSupportRange} />
 
           <div className={styles.slaControl}>
             <label htmlFor="slaTarget">SLA Target (minutes):</label>
@@ -469,38 +439,7 @@ const SupportTab = () => {
       >
         {/* Period Selector */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={conversionPeriod === 'daily' ? styles.active : ''}
-              onClick={() => setConversionPeriod('daily')}
-            >
-              Daily
-            </button>
-            <button
-              className={conversionPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setConversionPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={conversionPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setConversionPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={conversionPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setConversionPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-            <button
-              className={conversionPeriod === 'yearly' ? styles.active : ''}
-              onClick={() => setConversionPeriod('yearly')}
-            >
-              Yearly
-            </button>
-          </div>
+          <DateRange value={conversionRange} onChange={setConversionRange} />
         </div>
 
         {/* Primary Metrics */}
@@ -657,38 +596,7 @@ const SupportTab = () => {
       >
         {/* Period Selector */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={peakTimesPeriod === 'daily' ? styles.active : ''}
-              onClick={() => setPeakTimesPeriod('daily')}
-            >
-              Daily
-            </button>
-            <button
-              className={peakTimesPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setPeakTimesPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={peakTimesPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setPeakTimesPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={peakTimesPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setPeakTimesPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-            <button
-              className={peakTimesPeriod === 'yearly' ? styles.active : ''}
-              onClick={() => setPeakTimesPeriod('yearly')}
-            >
-              Yearly
-            </button>
-          </div>
+          <DateRange value={peakTimesRange} onChange={setPeakTimesRange} />
         </div>
 
         {/* Hourly Distribution */}
@@ -777,38 +685,7 @@ const SupportTab = () => {
       >
         {/* Period Selector */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={replySpeedPeriod === 'daily' ? styles.active : ''}
-              onClick={() => setReplySpeedPeriod('daily')}
-            >
-              Daily
-            </button>
-            <button
-              className={replySpeedPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setReplySpeedPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={replySpeedPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setReplySpeedPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={replySpeedPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setReplySpeedPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-            <button
-              className={replySpeedPeriod === 'yearly' ? styles.active : ''}
-              onClick={() => setReplySpeedPeriod('yearly')}
-            >
-              Yearly
-            </button>
-          </div>
+          <DateRange value={replySpeedRange} onChange={setReplySpeedRange} />
         </div>
 
         {/* Primary Metrics */}

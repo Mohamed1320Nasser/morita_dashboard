@@ -272,7 +272,7 @@ const ServiceAnalyticsPage = () => {
                   <th>Category</th>
                   <th>Orders</th>
                   <th>Revenue</th>
-                  <th>Avg Value</th>
+                  <th>Avg Completed</th>
                   <th>Completion Rate</th>
                   <th>Action</th>
                 </tr>
@@ -346,7 +346,7 @@ const ServiceAnalyticsPage = () => {
                   <th>Orders</th>
                   <th>% of Total</th>
                   <th>Revenue</th>
-                  <th>Avg Value</th>
+                  <th>Avg Completed</th>
                   <th>Completion Rate</th>
                 </tr>
               </thead>

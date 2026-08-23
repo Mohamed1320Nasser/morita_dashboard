@@ -19,6 +19,9 @@ const DailyRewardConfigPage = () => {
         minAmount: 1,
         maxAmount: 5,
         cooldownHours: 24,
+        reminderEnabled: true,
+        reminderAfterHours: 24,
+        reminderChannelId: '',
         isEnabled: true,
         currencyName: '$',
         currencyEmoji: '',
@@ -35,6 +38,9 @@ const DailyRewardConfigPage = () => {
                         minAmount: res.data.minAmount ?? 1,
                         maxAmount: res.data.maxAmount ?? 5,
                         cooldownHours: res.data.cooldownHours || 24,
+                        reminderEnabled: res.data.reminderEnabled ?? true,
+                        reminderAfterHours: res.data.reminderAfterHours || 24,
+                        reminderChannelId: res.data.reminderChannelId || '',
                         isEnabled: res.data.isEnabled ?? true,
                         currencyName: res.data.currencyName || '$',
                         currencyEmoji: res.data.currencyEmoji || '',
@@ -102,6 +108,9 @@ const DailyRewardConfigPage = () => {
                 minAmount: Number(config.minAmount),
                 maxAmount: Number(config.maxAmount),
                 cooldownHours: Number(config.cooldownHours),
+                reminderEnabled: config.reminderEnabled,
+                reminderAfterHours: Number(config.reminderAfterHours),
+                reminderChannelId: config.reminderChannelId || '',
                 isEnabled: config.isEnabled,
                 currencyName: config.currencyName,
                 currencyEmoji: config.currencyEmoji,
@@ -200,6 +209,62 @@ const DailyRewardConfigPage = () => {
                                         onChange={(e) => handleChange('cooldownHours', e.target.value)}
                                     />
                                     <span className={styles.hint}>Hours between claims (1-168)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.formSection}>
+                            <div className={styles.sectionTitle}>New Member Reminder</div>
+                            <div className={styles.formGrid}>
+                                <div className={styles.formGroup}>
+                                    <label>Remind New Members</label>
+                                    <div className={styles.toggleGroup}>
+                                        <div
+                                            className={`${styles.toggle} ${config.reminderEnabled ? styles.active : ''}`}
+                                            onClick={() =>
+                                                handleChange('reminderEnabled', !config.reminderEnabled)
+                                            }
+                                        >
+                                            <div className={styles.toggleHandle} />
+                                        </div>
+                                        <span className={styles.toggleLabel}>
+                                            {config.reminderEnabled ? 'Reminder is On' : 'Reminder is Off'}
+                                        </span>
+                                    </div>
+                                    <span className={styles.hint}>
+                                        Sent once per member, and never to someone who has already
+                                        claimed.
+                                    </span>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Remind After (Hours)</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="168"
+                                        value={config.reminderAfterHours}
+                                        onChange={(e) =>
+                                            handleChange('reminderAfterHours', e.target.value)
+                                        }
+                                    />
+                                    <span className={styles.hint}>
+                                        How long after joining to send the reminder (1-168)
+                                    </span>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Reminder Channel ID</label>
+                                    <input
+                                        type="text"
+                                        value={config.reminderChannelId}
+                                        placeholder="Leave blank to send a DM"
+                                        onChange={(e) =>
+                                            handleChange('reminderChannelId', e.target.value)
+                                        }
+                                    />
+                                    <span className={styles.hint}>
+                                        A channel mention reaches everyone; a DM is private but is
+                                        blocked by members who have DMs turned off.
+                                    </span>
                                 </div>
                             </div>
                         </div>

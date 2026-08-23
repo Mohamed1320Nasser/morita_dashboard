@@ -5,6 +5,7 @@ import LineChart from '../../../components/atoms/charts/LineChart'
 import BarChart from '../../../components/atoms/charts/BarChart'
 import PieChart from '../../../components/atoms/charts/PieChart'
 import kpiController from '../../../controllers/kpi'
+import DateRange, { toQuery } from '../../../components/molecules/dateRange'
 import { notify } from '../../../config/error'
 import moment from 'moment'
 import {
@@ -20,24 +21,21 @@ import styles from './CommunityTab.module.scss'
 const CommunityTab = () => {
   // Member Growth State
   const [memberGrowth, setMemberGrowth] = useState(null)
-  const [selectedPeriod, setSelectedPeriod] = useState('monthly')
-  const [isCustomRange, setIsCustomRange] = useState(false)
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+  const [growthRange, setGrowthRange] = useState({ preset: 'this_month' })
 
   // Repeat Customers State
   const [repeatCustomers, setRepeatCustomers] = useState(null)
-  const [repeatPeriod, setRepeatPeriod] = useState('all')
+  const [repeatRange, setRepeatRange] = useState({ preset: 'all' })
 
   // Discord Engagement State
   const [discordEngagement, setDiscordEngagement] = useState(null)
-  const [engagementPeriod, setEngagementPeriod] = useState('monthly')
+  const [engagementRange, setEngagementRange] = useState({ preset: 'this_month' })
 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchAllCommunityKPIs()
-  }, [selectedPeriod, isCustomRange, startDate, endDate, repeatPeriod, engagementPeriod])
+  }, [growthRange, repeatRange, engagementRange])
 
   const fetchAllCommunityKPIs = async () => {
     setLoading(true)
@@ -55,12 +53,7 @@ const CommunityTab = () => {
 
   const fetchMemberGrowth = async () => {
     try {
-      let params = { period: selectedPeriod }
-      if (isCustomRange && startDate && endDate) {
-        params = { startDate, endDate }
-      }
-
-      const res = await kpiController.getMemberGrowth(params)
+      const res = await kpiController.getMemberGrowth(toQuery(growthRange))
 
       if (res && res.error === false) {
         setMemberGrowth(res.data)
@@ -85,16 +78,11 @@ const CommunityTab = () => {
   }
 
   const getPeriodText = () => {
-    if (isCustomRange && startDate && endDate) {
-      return `${moment(startDate).format('MMM DD')} - ${moment(endDate).format('MMM DD')}`
-    }
-    switch (selectedPeriod) {
-      case 'daily': return 'Last 24 Hours'
-      case 'weekly': return 'Last 7 Days'
-      case 'monthly': return 'Last 30 Days'
-      case 'yearly': return 'Last 12 Months'
-      default: return selectedPeriod
-    }
+    const query = toQuery(growthRange)
+    if (!query.startDate) return 'All time'
+    return `${moment(query.startDate).format('MMM DD')} - ${moment(
+      query.endDate || new Date()
+    ).format('MMM DD')}`
   }
 
   // ============================================
@@ -103,7 +91,7 @@ const CommunityTab = () => {
 
   const fetchRepeatCustomers = async () => {
     try {
-      const res = await kpiController.getRepeatCustomers({ period: repeatPeriod })
+      const res = await kpiController.getRepeatCustomers(toQuery(repeatRange))
 
       if (res && res.error === false) {
         setRepeatCustomers(res.data)
@@ -121,7 +109,7 @@ const CommunityTab = () => {
 
   const fetchDiscordEngagement = async () => {
     try {
-      const res = await kpiController.getDiscordEngagement({ period: engagementPeriod })
+      const res = await kpiController.getDiscordEngagement(toQuery(engagementRange))
 
       if (res && res.error === false) {
         setDiscordEngagement(res.data)
@@ -176,59 +164,7 @@ const CommunityTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={!isCustomRange && selectedPeriod === 'daily' ? styles.active : ''}
-              onClick={() => { setIsCustomRange(false); setSelectedPeriod('daily') }}
-            >
-              Daily
-            </button>
-            <button
-              className={!isCustomRange && selectedPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => { setIsCustomRange(false); setSelectedPeriod('weekly') }}
-            >
-              Weekly
-            </button>
-            <button
-              className={!isCustomRange && selectedPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => { setIsCustomRange(false); setSelectedPeriod('monthly') }}
-            >
-              Monthly
-            </button>
-            <button
-              className={!isCustomRange && selectedPeriod === 'yearly' ? styles.active : ''}
-              onClick={() => { setIsCustomRange(false); setSelectedPeriod('yearly') }}
-            >
-              Yearly
-            </button>
-          </div>
-
-          <div className={styles.customRange}>
-            <label>
-              <input
-                type="checkbox"
-                checked={isCustomRange}
-                onChange={(e) => setIsCustomRange(e.target.checked)}
-              />
-              Custom Range
-            </label>
-            {isCustomRange && (
-              <>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className={styles.dateInput}
-                />
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className={styles.dateInput}
-                />
-              </>
-            )}
-          </div>
+          <DateRange value={growthRange} onChange={setGrowthRange} />
         </div>
 
         {/* Primary KPI Cards */}
@@ -440,32 +376,7 @@ const CommunityTab = () => {
       >
         {/* Period Selector for Repeat Customers */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={repeatPeriod === 'all' ? styles.active : ''}
-              onClick={() => setRepeatPeriod('all')}
-            >
-              All Time
-            </button>
-            <button
-              className={repeatPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setRepeatPeriod('monthly')}
-            >
-              Last 30 Days
-            </button>
-            <button
-              className={repeatPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setRepeatPeriod('quarterly')}
-            >
-              Last 90 Days
-            </button>
-            <button
-              className={repeatPeriod === 'yearly' ? styles.active : ''}
-              onClick={() => setRepeatPeriod('yearly')}
-            >
-              Last Year
-            </button>
-          </div>
+          <DateRange value={repeatRange} onChange={setRepeatRange} />
         </div>
 
         {/* Primary Metrics */}
@@ -601,26 +512,7 @@ const CommunityTab = () => {
       >
         {/* Period Selector */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={engagementPeriod === 'daily' ? styles.active : ''}
-              onClick={() => setEngagementPeriod('daily')}
-            >
-              Daily
-            </button>
-            <button
-              className={engagementPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setEngagementPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={engagementPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setEngagementPeriod('monthly')}
-            >
-              Monthly
-            </button>
-          </div>
+          <DateRange value={engagementRange} onChange={setEngagementRange} />
         </div>
 
         {/* Primary Metrics */}

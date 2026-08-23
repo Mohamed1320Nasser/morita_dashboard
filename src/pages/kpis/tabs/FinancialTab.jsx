@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { KPISection } from '../../../components/dashboard'
 import Card from '../../../components/atoms/cards'
 import kpiController from '../../../controllers/kpi'
+import DateRange, { toQuery } from '../../../components/molecules/dateRange'
 import { notify } from '../../../config/error'
 import { IoCash, IoTrendingUp, IoWallet, IoStatsChart } from 'react-icons/io5'
 import styles from './FinancialTab.module.scss'
@@ -12,19 +13,17 @@ import styles from './FinancialTab.module.scss'
  */
 const FinancialTab = () => {
   const [financialOverview, setFinancialOverview] = useState(null)
-  const [financialPeriod, setFinancialPeriod] = useState('monthly')
+  const [financialRange, setFinancialRange] = useState({ preset: 'this_month' })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchFinancialOverview()
-  }, [financialPeriod])
+  }, [financialRange])
 
   const fetchFinancialOverview = async () => {
     setLoading(true)
     try {
-      const res = await kpiController.getFinancialOverview({
-        period: financialPeriod
-      })
+      const res = await kpiController.getFinancialOverview(toQuery(financialRange))
 
       if (res && res.error === false) {
         setFinancialOverview(res.data || {})
@@ -65,38 +64,7 @@ const FinancialTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={financialPeriod === 'daily' ? 'active' : ''}
-              onClick={() => setFinancialPeriod('daily')}
-            >
-              Daily
-            </button>
-            <button
-              className={financialPeriod === 'weekly' ? 'active' : ''}
-              onClick={() => setFinancialPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={financialPeriod === 'monthly' ? 'active' : ''}
-              onClick={() => setFinancialPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={financialPeriod === 'quarterly' ? 'active' : ''}
-              onClick={() => setFinancialPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-            <button
-              className={financialPeriod === 'yearly' ? 'active' : ''}
-              onClick={() => setFinancialPeriod('yearly')}
-            >
-              Yearly
-            </button>
-          </div>
+          <DateRange value={financialRange} onChange={setFinancialRange} />
         </div>
 
         {loading ? (

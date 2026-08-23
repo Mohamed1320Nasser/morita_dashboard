@@ -5,6 +5,7 @@ import LineChart from '../../../components/atoms/charts/LineChart'
 import BarChart from '../../../components/atoms/charts/BarChart'
 import PieChart from '../../../components/atoms/charts/PieChart'
 import kpiController from '../../../controllers/kpi'
+import DateRange, { toQuery } from '../../../components/molecules/dateRange'
 import { notify } from '../../../config/error'
 import moment from 'moment'
 import {
@@ -20,33 +21,33 @@ import styles from './OperationsTab.module.scss'
 const OperationsTab = () => {
   // Order Issues State
   const [orderIssues, setOrderIssues] = useState(null)
-  const [orderIssuesPeriod, setOrderIssuesPeriod] = useState('monthly')
+  const [orderIssuesRange, setOrderIssuesRange] = useState({ preset: 'this_month' })
 
   // Order Completion Time State
   const [completionTime, setCompletionTime] = useState(null)
-  const [completionTimePeriod, setCompletionTimePeriod] = useState('monthly')
+  const [completionTimeRange, setCompletionTimeRange] = useState({ preset: 'this_month' })
 
   // Service Requests State
   const [serviceRequests, setServiceRequests] = useState(null)
-  const [serviceRequestsPeriod, setServiceRequestsPeriod] = useState('monthly')
+  const [serviceRequestsRange, setServiceRequestsRange] = useState({ preset: 'this_month' })
 
   // Service Conversion State
   const [serviceConversion, setServiceConversion] = useState(null)
-  const [serviceConversionPeriod, setServiceConversionPeriod] = useState('monthly')
+  const [serviceConversionRange, setServiceConversionRange] = useState({ preset: 'this_month' })
 
   // Worker Performance State
   const [workerPerformance, setWorkerPerformance] = useState(null)
-  const [workerPeriod, setWorkerPeriod] = useState('monthly')
+  const [workerRange, setWorkerRange] = useState({ preset: 'this_month' })
 
   // Worker Issues State
   const [workerIssues, setWorkerIssues] = useState(null)
-  const [workerIssuesPeriod, setWorkerIssuesPeriod] = useState('monthly')
+  const [workerIssuesRange, setWorkerIssuesRange] = useState({ preset: 'this_month' })
 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchAllOperationsKPIs()
-  }, [orderIssuesPeriod, completionTimePeriod, serviceRequestsPeriod, serviceConversionPeriod, workerPeriod, workerIssuesPeriod])
+  }, [orderIssuesRange, completionTimeRange, serviceRequestsRange, serviceConversionRange, workerRange, workerIssuesRange])
 
   const fetchAllOperationsKPIs = async () => {
     setLoading(true)
@@ -67,7 +68,7 @@ const OperationsTab = () => {
 
   const fetchOrderIssues = async () => {
     try {
-      const res = await kpiController.getOrderIssues({ period: orderIssuesPeriod })
+      const res = await kpiController.getOrderIssues(toQuery(orderIssuesRange))
 
       if (res && res.error === false) {
         setOrderIssues(res.data)
@@ -85,7 +86,7 @@ const OperationsTab = () => {
 
   const fetchCompletionTime = async () => {
     try {
-      const res = await kpiController.getOrderCompletionTime({ period: completionTimePeriod })
+      const res = await kpiController.getOrderCompletionTime(toQuery(completionTimeRange))
 
       if (res && res.error === false) {
         setCompletionTime(res.data)
@@ -103,7 +104,7 @@ const OperationsTab = () => {
 
   const fetchServiceRequests = async () => {
     try {
-      const res = await kpiController.getServiceRequests({ period: serviceRequestsPeriod })
+      const res = await kpiController.getServiceRequests(toQuery(serviceRequestsRange))
 
       if (res && res.error === false) {
         setServiceRequests(res.data)
@@ -121,7 +122,7 @@ const OperationsTab = () => {
 
   const fetchServiceConversion = async () => {
     try {
-      const res = await kpiController.getServiceRequestConversion({ period: serviceConversionPeriod })
+      const res = await kpiController.getServiceRequestConversion(toQuery(serviceConversionRange))
 
       if (res && res.error === false) {
         setServiceConversion(res.data)
@@ -139,7 +140,7 @@ const OperationsTab = () => {
 
   const fetchWorkerPerformance = async () => {
     try {
-      const res = await kpiController.getWorkerPerformance({ period: workerPeriod })
+      const res = await kpiController.getWorkerPerformance(toQuery(workerRange))
 
       if (res && res.error === false) {
         setWorkerPerformance(res.data)
@@ -157,7 +158,7 @@ const OperationsTab = () => {
 
   const fetchWorkerIssues = async () => {
     try {
-      const res = await kpiController.getWorkerIssues({ period: workerIssuesPeriod })
+      const res = await kpiController.getWorkerIssues(toQuery(workerIssuesRange))
 
       if (res && res.error === false) {
         setWorkerIssues(res.data)
@@ -228,26 +229,7 @@ const OperationsTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={orderIssuesPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setOrderIssuesPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={orderIssuesPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setOrderIssuesPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={orderIssuesPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setOrderIssuesPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-          </div>
+          <DateRange value={orderIssuesRange} onChange={setOrderIssuesRange} />
         </div>
 
         {/* Primary Metrics */}
@@ -403,26 +385,7 @@ const OperationsTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={completionTimePeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setCompletionTimePeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={completionTimePeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setCompletionTimePeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={completionTimePeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setCompletionTimePeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-          </div>
+          <DateRange value={completionTimeRange} onChange={setCompletionTimeRange} />
         </div>
 
         {/* Primary Metrics */}
@@ -610,26 +573,7 @@ const OperationsTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={serviceRequestsPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setServiceRequestsPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={serviceRequestsPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setServiceRequestsPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={serviceRequestsPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setServiceRequestsPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-          </div>
+          <DateRange value={serviceRequestsRange} onChange={setServiceRequestsRange} />
         </div>
 
         {/* Primary Metrics */}
@@ -748,26 +692,7 @@ const OperationsTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={serviceConversionPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setServiceConversionPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={serviceConversionPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setServiceConversionPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={serviceConversionPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setServiceConversionPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-          </div>
+          <DateRange value={serviceConversionRange} onChange={setServiceConversionRange} />
         </div>
 
         {/* Primary Metrics */}
@@ -923,26 +848,7 @@ const OperationsTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={workerPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setWorkerPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={workerPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setWorkerPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={workerPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setWorkerPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-          </div>
+          <DateRange value={workerRange} onChange={setWorkerRange} />
         </div>
 
         {/* Primary Metrics */}
@@ -1056,26 +962,7 @@ const OperationsTab = () => {
       >
         {/* Period Controls */}
         <div className={styles.controls}>
-          <div className={styles.periodSelector}>
-            <button
-              className={workerIssuesPeriod === 'weekly' ? styles.active : ''}
-              onClick={() => setWorkerIssuesPeriod('weekly')}
-            >
-              Weekly
-            </button>
-            <button
-              className={workerIssuesPeriod === 'monthly' ? styles.active : ''}
-              onClick={() => setWorkerIssuesPeriod('monthly')}
-            >
-              Monthly
-            </button>
-            <button
-              className={workerIssuesPeriod === 'quarterly' ? styles.active : ''}
-              onClick={() => setWorkerIssuesPeriod('quarterly')}
-            >
-              Quarterly
-            </button>
-          </div>
+          <DateRange value={workerIssuesRange} onChange={setWorkerIssuesRange} />
         </div>
 
         {/* Primary Metrics */}
