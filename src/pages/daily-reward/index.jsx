@@ -72,21 +72,21 @@ const DailyRewardConfigPage = () => {
         const minAmount = Number(config.minAmount)
         const maxAmount = Number(config.maxAmount)
 
-        // Decimals are welcome (0.5, 0.25), but the column stores two places,
-        // so reject anything finer here rather than let the API return a raw
+        // The column stores eight places, so micro-rewards like 0.00007 are
+        // valid. Reject anything finer rather than let the API return a raw
         // validation error. An empty field must not quietly become zero.
         const isValidAmount = (raw, value) =>
             String(raw).trim() !== "" &&
             Number.isFinite(value) &&
             value >= 0 &&
-            Number(value.toFixed(2)) === value
+            Number(value.toFixed(8)) === value
 
         if (!isValidAmount(config.minAmount, minAmount)) {
-            notify('Min amount must be 0 or greater, with at most 2 decimal places')
+            notify('Min amount must be 0 or greater, with at most 8 decimal places')
             return
         }
         if (!isValidAmount(config.maxAmount, maxAmount)) {
-            notify('Max amount must be 0 or greater, with at most 2 decimal places')
+            notify('Max amount must be 0 or greater, with at most 8 decimal places')
             return
         }
         if (maxAmount < minAmount) {
@@ -182,22 +182,22 @@ const DailyRewardConfigPage = () => {
                                     <input
                                         type="number"
                                         min="0"
-                                        step="0.01"
+                                        step="any"
                                         value={config.minAmount}
                                         onChange={(e) => handleChange('minAmount', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Minimum reward amount users can receive (decimals allowed, e.g. 0.5)</span>
+                                    <span className={styles.hint}>Minimum reward amount users can receive (up to 8 decimals, e.g. 0.00007)</span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Maximum Amount</label>
                                     <input
                                         type="number"
                                         min="0"
-                                        step="0.01"
+                                        step="any"
                                         value={config.maxAmount}
                                         onChange={(e) => handleChange('maxAmount', e.target.value)}
                                     />
-                                    <span className={styles.hint}>Maximum reward amount users can receive (decimals allowed, e.g. 2.5)</span>
+                                    <span className={styles.hint}>Maximum reward amount users can receive (up to 8 decimals, e.g. 0.0004)</span>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>Cooldown (Hours)</label>

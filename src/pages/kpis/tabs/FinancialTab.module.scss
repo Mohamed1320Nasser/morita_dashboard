@@ -345,3 +345,179 @@
     }
   }
 }
+
+.expenseHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-md;
+  flex-wrap: wrap;
+}
+
+.expenseHint {
+  color: $text-secondary;
+  font-size: $font-sm;
+  margin: $space-xs 0 $space-md;
+}
+
+.addExpenseButton {
+  padding: $space-sm $space-md;
+  background: $color-financial;
+  color: #fff;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  cursor: pointer;
+  transition: opacity $transition-fast;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.expenseForm {
+  padding: $space-md;
+  background: $bg-secondary;
+  border: 1px solid $border-light;
+  border-radius: $radius-md;
+  margin-bottom: $space-lg;
+}
+
+.expenseFormGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: $space-md;
+  margin-bottom: $space-md;
+}
+
+.expenseField {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  label {
+    font-size: $font-xs;
+    font-weight: $font-semibold;
+    color: $text-secondary;
+    text-transform: uppercase;
+  }
+
+  input,
+  select {
+    padding: $space-sm;
+    background: $bg-primary;
+    border: 1px solid $border-medium;
+    border-radius: $radius-sm;
+    color: $text-primary;
+    font-size: $font-sm;
+    font-family: $font-primary;
+
+    &:focus {
+      outline: none;
+      border-color: $color-info;
+    }
+  }
+}
+
+.expenseFieldWide {
+  grid-column: 1 / -1;
+}
+
+.saveExpenseButton {
+  padding: $space-sm $space-lg;
+  background: $color-success;
+  color: #fff;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  cursor: pointer;
+  transition: opacity $transition-fast;
+
+  &:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.expenseTable {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.expenseRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-md;
+  background: $bg-secondary;
+  border-radius: $radius-sm;
+  transition: background $transition-fast;
+  flex-wrap: wrap;
+
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+.expenseRowMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.expenseRowCategory {
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  color: $color-financial;
+  text-transform: uppercase;
+}
+
+.expenseRowDescription {
+  font-size: $font-sm;
+  color: $text-primary;
+  word-break: break-word;
+}
+
+.expenseRowMeta {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.expenseRowDate {
+  font-size: $font-xs;
+  color: $text-tertiary;
+  font-family: $font-mono;
+}
+
+.expenseRowAmount {
+  font-size: $font-md;
+  font-weight: $font-bold;
+  color: $color-danger;
+  font-family: $font-mono;
+}
+
+.deleteExpenseButton {
+  padding: 4px $space-sm;
+  background: transparent;
+  color: $color-danger;
+  border: 1px solid $color-danger;
+  border-radius: $radius-sm;
+  font-size: $font-xs;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+  }
+}
