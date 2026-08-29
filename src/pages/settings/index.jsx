@@ -7,7 +7,7 @@ import PageHead from '@/components/templates/pageHead'
 import Loading from '@/components/atoms/loading'
 import Modal from '@/components/atoms/modal'
 import { notify } from '@/config/error'
-import { IoWallet, IoWarning } from 'react-icons/io5'
+import { IoWallet, IoWarning, IoImage } from 'react-icons/io5'
 import { FaDiscord } from 'react-icons/fa'
 import discordController from '@/controllers/discord'
 import payoutConfigController from '@/controllers/payoutConfig'
@@ -16,6 +16,7 @@ import PayoutDistributionChart from './components/PayoutConfiguration/PayoutDist
 import SystemInfoCard from './components/SystemInfo/SystemInfoCard'
 import DiscordStatus from './components/DiscordManagement/DiscordStatus'
 import ChannelCard from './components/DiscordManagement/ChannelCard'
+import BrandingCard from './components/Branding/BrandingCard'
 
 const SettingsPage = () => {
   const [pageLoading, setPageLoading] = useState(true)
@@ -245,6 +246,22 @@ const SettingsPage = () => {
                   <PayoutDistributionChart config={payoutConfig} />
                 </div>
               </div>
+            </Card>
+
+            <Card>
+              <div className={styles.sectionHeader}>
+                <div className={styles.sectionIcon}>
+                  <IoImage />
+                </div>
+                <div>
+                  <h3 className={styles.sectionTitle}>Branding</h3>
+                  <p className={styles.sectionDescription}>
+                    Banner and thumbnail images used across Discord bot messages
+                  </p>
+                </div>
+              </div>
+
+              <BrandingCard />
             </Card>
 
             <Card>
