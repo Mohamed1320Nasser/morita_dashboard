@@ -178,10 +178,95 @@
     gap: 12px;
 }
 
-.jsonError {
-    color: #ef4444;
-    font-size: 12px;
+.dataRows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin-top: 4px;
+}
+
+.dataRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.dataKey,
+.dataValue {
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    min-width: 0;
+    transition: border-color 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: #6366f1;
+    }
+
+    &::placeholder {
+        color: #9ca3af;
+    }
+}
+
+.dataRemove {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    color: #9ca3af;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+}
+
+.addRowButton {
+    align-self: flex-start;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #4b5563;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+}
+
+.dataHint {
+    margin-top: 8px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+    .dataRow {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "key remove"
+            "value value";
+    }
+
+    .dataKey { grid-area: key; }
+    .dataValue { grid-area: value; }
+    .dataRemove { grid-area: remove; }
 }
 
 .required {

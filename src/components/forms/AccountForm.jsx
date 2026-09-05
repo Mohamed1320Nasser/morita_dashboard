@@ -17,6 +17,66 @@ const ACCOUNT_STATUSES = [
     { value: 'SOLD', label: 'Sold' },
 ]
 
+
+// Existing accounts hold arbitrary JSON, so the rows have to survive a
+// round trip through it. Arrays become a comma-separated string, which is
+// how the bot renders them anyway; nested objects flatten to "parent.child"
+// so nothing already saved is silently dropped by the editor.
+const objectToRows = (data) => {
+    if (!data || typeof data !== 'object') return []
+
+    const rows = []
+    Object.entries(data).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+            rows.push({ key, value: value.join(', ') })
+        } else if (value && typeof value === 'object') {
+            Object.entries(value).forEach(([subKey, subValue]) => {
+                rows.push({ key: `${key}.${subKey}`, value: String(subValue ?? '') })
+            })
+        } else {
+            rows.push({ key, value: String(value ?? '') })
+        }
+    })
+    return rows
+}
+
+// A value the admin typed as a number or yes/no is stored as one, so the bot
+// formats it the way it always has - thousands separators, checkmarks - rather
+// than printing every field as a plain string.
+const coerce = (raw) => {
+    const value = raw.trim()
+    if (value === '') return ''
+    if (/^-?\d+(\.\d+)?$/.test(value)) return Number(value)
+    if (/^(true|yes)$/i.test(value)) return true
+    if (/^(false|no)$/i.test(value)) return false
+    if (value.includes(',')) {
+        const parts = value.split(',').map(v => v.trim()).filter(Boolean)
+        if (parts.length > 1) return parts
+    }
+    return value
+}
+
+const rowsToObject = (rows) => {
+    const result = {}
+    rows.forEach(({ key, value }) => {
+        const name = key.trim()
+        if (!name) return
+
+        if (name.includes('.')) {
+            const [parent, ...rest] = name.split('.')
+            const child = rest.join('.')
+            if (!result[parent] || typeof result[parent] !== 'object' || Array.isArray(result[parent])) {
+                result[parent] = {}
+            }
+            result[parent][child] = coerce(value)
+            return
+        }
+
+        result[name] = coerce(value)
+    })
+    return result
+}
+
 const AccountForm = ({
     initial = {},
     submitting = false,
@@ -33,13 +93,12 @@ const AccountForm = ({
         source: initial.source || '',
         category: initial.category || '',
         status: initial.status || 'IN_STOCK',
-        accountData: initial.accountData ? JSON.stringify(initial.accountData, null, 2) : '',
     })
 
+    const [dataRows, setDataRows] = useState(objectToRows(initial.accountData))
     const [existingImages, setExistingImages] = useState(initial.images || [])
     const [newImages, setNewImages] = useState([])
     const [deleteImageIds, setDeleteImageIds] = useState([])
-    const [jsonError, setJsonError] = useState('')
 
     const lastInitialRef = useRef(JSON.stringify(initial))
 
@@ -54,8 +113,8 @@ const AccountForm = ({
                 source: initial.source || '',
                 category: initial.category || '',
                 status: initial.status || 'IN_STOCK',
-                accountData: initial.accountData ? JSON.stringify(initial.accountData, null, 2) : '',
             })
+            setDataRows(objectToRows(initial.accountData))
             setExistingImages(initial.images || [])
             setNewImages([])
             setDeleteImageIds([])
@@ -66,18 +125,16 @@ const AccountForm = ({
         setForm(prev => ({ ...prev, [key]: value }))
     }
 
-    const handleAccountDataChange = (value) => {
-        setForm(prev => ({ ...prev, accountData: value }))
-        if (value.trim()) {
-            try {
-                JSON.parse(value)
-                setJsonError('')
-            } catch (e) {
-                setJsonError('Invalid JSON format')
-            }
-        } else {
-            setJsonError('')
-        }
+    const updateRow = (index, field, value) => {
+        setDataRows(prev => prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)))
+    }
+
+    const addRow = () => {
+        setDataRows(prev => [...prev, { key: '', value: '' }])
+    }
+
+    const removeRow = (index) => {
+        setDataRows(prev => prev.filter((_, i) => i !== index))
     }
 
     const handleFileSelect = (e) => {
@@ -110,26 +167,13 @@ const AccountForm = ({
     }
 
     const handleSubmit = () => {
-        if (jsonError) {
-            alert('Please fix the JSON error before submitting')
-            return
-        }
-
         const activeExistingImages = existingImages.filter(img => !deleteImageIds.includes(img.id))
         if (activeExistingImages.length === 0 && newImages.length === 0) {
             alert('At least one image is required')
             return
         }
 
-        let accountDataParsed = null
-        if (form.accountData.trim()) {
-            try {
-                accountDataParsed = JSON.parse(form.accountData)
-            } catch (e) {
-                alert('Invalid JSON in account data')
-                return
-            }
-        }
+        const accountDataParsed = rowsToObject(dataRows)
 
         const formData = new FormData()
         formData.append('name', form.name)
@@ -138,7 +182,7 @@ const AccountForm = ({
         if (form.source) formData.append('source', form.source)
         formData.append('category', form.category)
         formData.append('status', form.status)
-        if (accountDataParsed) {
+        if (Object.keys(accountDataParsed).length > 0) {
             formData.append('accountData', JSON.stringify(accountDataParsed))
         }
 
@@ -241,15 +285,49 @@ const AccountForm = ({
 
                 {/* Account Data Section */}
                 <div className={styles.section}>
-                    <div className={styles.sectionTitle}>Account Data (JSON)</div>
+                    <div className={styles.sectionTitle}>Account Details</div>
                     <div className={styles.fieldGroup}>
-                        <label>Custom account data (stats, items, etc.)</label>
-                        <textarea
-                            value={form.accountData}
-                            onChange={(e) => handleAccountDataChange(e.target.value)}
-                            placeholder='{"stats": {"attack": 99}, "items": ["dragon scimitar"]}'
-                        />
-                        {jsonError && <div className={styles.jsonError}>{jsonError}</div>}
+                        <label>Shown to customers on the account listing</label>
+
+                        {dataRows.length > 0 && (
+                            <div className={styles.dataRows}>
+                                {dataRows.map((row, index) => (
+                                    <div key={index} className={styles.dataRow}>
+                                        <input
+                                            type="text"
+                                            className={styles.dataKey}
+                                            value={row.key}
+                                            onChange={(e) => updateRow(index, 'key', e.target.value)}
+                                            placeholder="Label (e.g. Combat Level)"
+                                        />
+                                        <input
+                                            type="text"
+                                            className={styles.dataValue}
+                                            value={row.value}
+                                            onChange={(e) => updateRow(index, 'value', e.target.value)}
+                                            placeholder="Value (e.g. 126)"
+                                        />
+                                        <button
+                                            type="button"
+                                            className={styles.dataRemove}
+                                            onClick={() => removeRow(index)}
+                                            title="Remove this detail"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <button type="button" className={styles.addRowButton} onClick={addRow}>
+                            + Add detail
+                        </button>
+
+                        <div className={styles.dataHint}>
+                            Separate several values with commas to show them as a list.
+                            Numbers and yes/no are recognised automatically.
+                        </div>
                     </div>
                 </div>
 
