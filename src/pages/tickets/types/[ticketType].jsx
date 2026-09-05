@@ -47,6 +47,8 @@ const TicketTypeSettingsPage = () => {
     const [footerText, setFooterText] = useState('')
     const [bannerUrl, setBannerUrl] = useState('')
     const [embedColor, setEmbedColor] = useState('5865F2')
+    const [shopTitle, setShopTitle] = useState('')
+    const [shopDescription, setShopDescription] = useState('')
 
     // Per-type settings
     const [customFieldsByType, setCustomFieldsByType] = useState({})
@@ -83,6 +85,8 @@ const TicketTypeSettingsPage = () => {
                 setFooterText(primary.footerText || '')
                 setBannerUrl(primary.bannerUrl || '')
                 setEmbedColor(primary.embedColor || '5865F2')
+                setShopTitle(primary.shopTitle || '')
+                setShopDescription(primary.shopDescription || '')
 
                 // Set custom fields for each type
                 const fieldsMap = {}
@@ -115,6 +119,8 @@ const TicketTypeSettingsPage = () => {
                     footerText,
                     bannerUrl,
                     embedColor,
+                    shopTitle,
+                    shopDescription,
                     customFields: customFieldsByType[type.ticketType],
                     // Keep per-type settings
                     groupKey: type.groupKey,
@@ -197,6 +203,9 @@ const TicketTypeSettingsPage = () => {
     if (loading) return <Loading />
 
     const groupInfo = GROUP_INFO[groupKey] || { label: groupKey, icon: '📋' }
+    // The shop header is the accounts channel message, not a ticket
+    // greeting, so these fields only mean anything for that group.
+    const hasAccountShop = typesInGroup.some((t) => t.ticketType === 'PURCHASE_ACCOUNT')
     const currentType = typesInGroup[activeTab]
     const currentFields = currentType ? customFieldsByType[currentType.ticketType]?.fields || [] : []
 
@@ -295,6 +304,42 @@ const TicketTypeSettingsPage = () => {
                         </div>
                     </div>
                 </Card>
+
+                {hasAccountShop && (
+                    <Card className={styles.settingsCard}>
+                        <h3>Account Shop Header</h3>
+                        <p className={styles.subtitle}>
+                            The message pinned at the top of the accounts channel. This is
+                            separate from the welcome message above, which is only sent
+                            inside a ticket.
+                        </p>
+
+                        <div className={styles.formGroup}>
+                            <InputBox
+                                label="Shop Title (Optional)"
+                                placeholder="OSRS Accounts For Sale"
+                                value={shopTitle}
+                                valueChange={setShopTitle}
+                            />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label>Shop Description (supports Markdown)</label>
+                            <textarea
+                                value={shopDescription}
+                                onChange={(e) => setShopDescription(e.target.value)}
+                                rows={10}
+                                className={styles.textarea}
+                                placeholder="**Browse our verified account inventory**"
+                            />
+                            <small>
+                                Leave empty to use the built-in text. Use{' '}
+                                <code>{'{total_accounts}'}</code> and{' '}
+                                <code>{'{category_count}'}</code> to show live stock numbers.
+                            </small>
+                        </div>
+                    </Card>
+                )}
 
                 {/* Custom Fields per Type */}
                 <Card className={styles.settingsCard}>
