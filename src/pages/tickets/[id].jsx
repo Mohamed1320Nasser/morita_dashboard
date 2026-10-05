@@ -41,6 +41,7 @@ const TicketDetailPage = () => {
 
     // Status update
     const [updatingStatus, setUpdatingStatus] = useState(false)
+    const [loadingTranscript, setLoadingTranscript] = useState(false)
     const [selectedStatus, setSelectedStatus] = useState('')
 
     useEffect(() => {
@@ -99,6 +100,33 @@ const TicketDetailPage = () => {
         } finally {
             setUpdatingStatus(false)
         }
+    }
+
+    // action: 'view' opens it in a new tab, 'download' saves the .html file
+    const handleTranscript = async (action) => {
+        // Open the tab now: browsers block window.open after an await
+        const tab = action === 'view' ? window.open('', '_blank') : null
+        setLoadingTranscript(true)
+        const res = await tickets.getTranscript(ticket.id)
+        setLoadingTranscript(false)
+
+        if (!res.success) {
+            tab?.close()
+            notify(res.error?.message || 'Could not load the transcript')
+            return
+        }
+
+        const url = URL.createObjectURL(new Blob([res.data.html], { type: 'text/html' }))
+        if (tab) {
+            tab.location.href = url
+        } else {
+            const link = document.createElement('a')
+            link.href = url
+            link.download = res.data.fileName || `ticket-${ticket.ticketNumber}.html`
+            link.click()
+        }
+        // Give the tab/download time to read it before releasing
+        setTimeout(() => URL.revokeObjectURL(url), 60000)
     }
 
     const handleCloseTicket = async () => {
@@ -165,6 +193,16 @@ const TicketDetailPage = () => {
                         </div>
 
                         <div className={styles.headerActions}>
+                            {ticket.transcriptFile && (
+                                <>
+                                    <Button onClick={() => handleTranscript('view')} disabled={loadingTranscript} secondary small>
+                                        {loadingTranscript ? 'Loading…' : '📄 View Transcript'}
+                                    </Button>
+                                    <Button onClick={() => handleTranscript('download')} disabled={loadingTranscript} secondary small>
+                                        ⬇ Download
+                                    </Button>
+                                </>
+                            )}
                             <Button onClick={handleCloseTicket} danger small>
                                 Close Ticket
                             </Button>
@@ -223,6 +261,17 @@ const TicketDetailPage = () => {
                                 <div className={styles.infoRow}>
                                     <span className={styles.label}>Closed:</span>
                                     <span className={styles.value}>{formatDate(ticket.closedAt)}</span>
+                                </div>
+                            )}
+
+                            {ticket.closedAt && (
+                                <div className={styles.infoRow}>
+                                    <span className={styles.label}>Transcript:</span>
+                                    <span className={styles.value}>
+                                        {ticket.transcriptCreatedAt
+                                            ? `Saved ${formatDate(ticket.transcriptCreatedAt)}`
+                                            : 'Not saved'}
+                                    </span>
                                 </div>
                             )}
                         </Card>
