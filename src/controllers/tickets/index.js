@@ -37,6 +37,23 @@ export default {
         }
     },
 
+    // Saved HTML transcript of a closed ticket (admin only on the API)
+    getTranscript: async (ticketId) => {
+        try {
+            const response = await getData(`/tickets/${ticketId}/transcript`)
+            if (response === false) {
+                return { success: false, error: { message: 'Could not load the transcript' } }
+            }
+            const payload = response?.data?.data ?? response?.data
+            if (!payload?.html) {
+                return { success: false, error: { message: response?.msg || 'No transcript saved for this ticket' } }
+            }
+            return { success: true, data: payload }
+        } catch (err) {
+            return { success: false, error: err }
+        }
+    },
+
     updateTicketStatus: async (ticketId, status) => {
         try {
             const response = await patchData(`/tickets/${ticketId}/status`, { status })

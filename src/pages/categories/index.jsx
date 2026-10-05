@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import DiscordEmoji from '@/components/atoms/discordEmoji'
 import styles from './categories.module.scss'
 import PageTitle from '@/components/atoms/labels/pageTitle'
 import Card from '@/components/atoms/cards'
@@ -32,28 +33,7 @@ const CategoriesPage = () => {
   const [deleting, setDeleting] = useState(false)
 
   // Helper to display emoji (extract name from Discord custom emoji)
-  const displayEmoji = (emoji) => {
-    if (!emoji) return <MdCategory />
-
-    // Trim whitespace
-    const trimmedEmoji = String(emoji).trim()
-
-    // Check if it's a Discord custom emoji with or without brackets
-    // Formats: <:name:id>, <a:name:id>, name:id, a:name:id
-    const discordEmojiMatch = trimmedEmoji.match(/^<?a?:?(.+?):(\d+)>?$/)
-    if (discordEmojiMatch) {
-      // Extract and display the emoji name
-      const emojiName = discordEmojiMatch[1]
-      return (
-        <span style={{ fontSize: 12, color: '#666', display: 'flex', alignItems: 'center', gap: 4 }}>
-          🎮 <span style={{ fontWeight: 500 }}>{emojiName}</span>
-        </span>
-      )
-    }
-
-    // It's a regular Unicode emoji, display as is
-    return <span style={{ fontSize: 18 }}>{trimmedEmoji}</span>
-  }
+  const displayEmoji = (emoji) => <DiscordEmoji emoji={emoji} fallback={<MdCategory />} />
 
   const handleSearchChange = (event) => {
     setSearch(event)
