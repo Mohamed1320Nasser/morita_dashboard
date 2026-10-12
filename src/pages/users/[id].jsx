@@ -10,6 +10,7 @@ import TabNavigation from '@/components/userProfile/TabNavigation'
 import OverviewTab from '@/components/userProfile/tabs/OverviewTab'
 import OrdersTab from '@/components/userProfile/tabs/OrdersTab'
 import WalletTab from '@/components/userProfile/tabs/WalletTab'
+import ReferralLinkCard from '@/components/userProfile/ReferralLinkCard'
 import adminController from '@/controllers/admin'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
@@ -107,7 +108,12 @@ const UserDetailPage = () => {
 
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
 
-        {activeTab === 'overview' && <OverviewTab profileData={profileData} />}
+        {activeTab === 'overview' && (
+          <>
+            <ReferralLinkCard userId={user.id} />
+            <OverviewTab profileData={profileData} />
+          </>
+        )}
         {activeTab === 'orders' && <OrdersTab profileData={profileData} />}
         {activeTab === 'wallet' && <WalletTab profileData={profileData} />}
       </Container>

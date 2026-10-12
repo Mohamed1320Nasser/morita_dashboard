@@ -119,6 +119,35 @@ export default {
         }
     },
 
+    // A user's personal referral link as stored (does not create one)
+    getUserInvite: async (userId) => {
+        try {
+            const response = await getData(`/referral/admin/invite/${userId}`)
+            const failed = failure(response)
+            if (failed) return failed
+            return { success: true, data: unwrap(response) }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
+
+    // Gets the link through the Discord bot, creating it if the user has none
+    createUserInvite: async (userId) => {
+        try {
+            const response = await postData(`/referral/admin/invite/${userId}`, {})
+            const failed = failure(response)
+            if (failed) return failed
+            if (response?.error === true) {
+                return { success: false, error: { message: response?.msg || 'Could not get the referral link' } }
+            }
+            return { success: true, data: unwrap(response) }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
+
     getLeaderboard: async (limit = 10) => {
         try {
             const response = await getData(`/referral-reward/leaderboard?limit=${limit}`)
