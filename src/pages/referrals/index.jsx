@@ -159,9 +159,29 @@ const ReferralsPage = () => {
             flex: 1,
             render: (row) => {
                 if (row.rewardGiven) {
-                    return <Badge type="success">Rewarded</Badge>
+                    // MILESTONE mode counts a referral without paying for it
+                    return Number(row.rewardAmount) > 0
+                        ? <Badge type="success">Rewarded</Badge>
+                        : <Badge type="info">Counted</Badge>
+                } else if (row.rewardEligible === false) {
+                    return (
+                        <span title="Joined while referral rewards were turned off">
+                            <Badge type="info">Not Eligible</Badge>
+                        </span>
+                    )
+                } else if (row.hasLeftServer) {
+                    return <Badge type="danger">Left Server</Badge>
                 } else if (row.onboardedAt) {
-                    return <Badge type="warning">Pending</Badge>
+                    return (
+                        <span title={row.holdReason || ''}>
+                            <Badge type="warning">Pending</Badge>
+                            {row.holdReason && (
+                                <div style={{ fontSize: '11px', color: '#7a7e85', marginTop: '4px' }}>
+                                    {row.holdReason}
+                                </div>
+                            )}
+                        </span>
+                    )
                 } else {
                     return <Badge type="info">Not Onboarded</Badge>
                 }
@@ -174,7 +194,7 @@ const ReferralsPage = () => {
             flex: 1,
             render: (row) => (
                 <span style={{ fontWeight: 600, color: row.rewardGiven ? '#22c55e' : '#7a7e85' }}>
-                    {row.rewardGiven ? `$${(row.rewardAmount || 0).toFixed(2)}` : '-'}
+                    {row.rewardGiven && Number(row.rewardAmount) > 0 ? `$${Number(row.rewardAmount).toFixed(2)}` : '-'}
                 </span>
             ),
         },
@@ -308,6 +328,24 @@ const ReferralsPage = () => {
                                 }}
                             >
                                 Not Onboarded
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${statusFilter === 'left' ? styles.active : ''}`}
+                                onClick={() => {
+                                    setStatusFilter('left')
+                                    setPage(1)
+                                }}
+                            >
+                                Left Server
+                            </button>
+                            <button
+                                className={`${styles.filterBtn} ${statusFilter === 'ineligible' ? styles.active : ''}`}
+                                onClick={() => {
+                                    setStatusFilter('ineligible')
+                                    setPage(1)
+                                }}
+                            >
+                                Not Eligible
                             </button>
                         </div>
                     </div>

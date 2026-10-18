@@ -403,6 +403,11 @@ export default {
     getAllReferrals: async (query) => {
         try {
             const response = await getData(`/referral/admin/all${query ? `?${query}` : ''}`);
+
+            if (response === false) {
+                return { success: false, error: { message: REQUEST_FAILED } }
+            }
+
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -414,6 +419,11 @@ export default {
     getReferralAnalytics: async () => {
         try {
             const response = await getData('/referral/admin/fraud-analytics');
+
+            if (response === false) {
+                return { success: false, error: { message: REQUEST_FAILED } }
+            }
+
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {
@@ -425,6 +435,11 @@ export default {
     getReferralNetwork: async (userId) => {
         try {
             const response = await getData(`/referral/admin/network/${userId}`);
+
+            if (response === false) {
+                return { success: false, error: { message: REQUEST_FAILED } }
+            }
+
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {

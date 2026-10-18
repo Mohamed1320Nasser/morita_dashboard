@@ -51,6 +51,7 @@ const SideBar = () => {
         { label: 'Fraud Analytics', icon: <IoStatsChart />, href: '/referrals/fraud-analytics' },
         { label: 'Reward Settings', icon: <IoGift />, href: '/referral-reward' },
         { label: 'Reward History', icon: <FaClipboardList />, href: '/referral-reward/rewards' },
+        { label: 'Order Rewards', icon: <FaClipboardList />, href: '/referral-reward/order-rewards' },
       ]
     },
     {

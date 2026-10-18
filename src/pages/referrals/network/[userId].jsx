@@ -7,6 +7,7 @@ import PageHead from '@/components/templates/pageHead'
 import Loading from '@/components/atoms/loading'
 import Badge from '@/components/atoms/badge'
 import adminController from '@/controllers/admin'
+import ReferralLinkCard from '@/components/userProfile/ReferralLinkCard'
 import { notify } from '@/config/error'
 import { useRouter } from 'next/router'
 import moment from 'moment'
@@ -72,6 +73,8 @@ const ReferralNetworkPage = () => {
                 <button className={styles.backBtn} onClick={() => router.back()}>
                     ← Back
                 </button>
+
+                <ReferralLinkCard userId={userId} />
 
                 {/* User Stats */}
                 <div className={styles.statsCards}>
