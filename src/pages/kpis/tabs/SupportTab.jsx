@@ -143,6 +143,7 @@ const SupportTab = () => {
 
   // Extract data for Ticket Conversion
   const conversionSummary = ticketConversion?.summary || {}
+  const noOrderReasons = ticketConversion?.noOrderReasons || null
   const conversionDistribution = ticketConversion?.distribution || {}
   const conversionByTicketType = ticketConversion?.conversionByTicketType || []
   const conversionByService = ticketConversion?.conversionByService || []
@@ -589,6 +590,62 @@ const SupportTab = () => {
             </Card>
           )}
         </div>
+
+        {/* Why closed tickets had no order (support picks it on close) */}
+        {noOrderReasons && (
+          <Card>
+            <h3 className={styles.chartTitle}>Why No Order?</h3>
+            <p className={styles.metricSubtext}>
+              {noOrderReasons.closedWithoutOrder} closed without an order · {noOrderReasons.withReason} with a reason · {noOrderReasons.withoutReason} not answered yet
+            </p>
+            <div className={styles.tableContainer}>
+              <table className={styles.compactTable}>
+                <thead>
+                  <tr>
+                    <th>Reason</th>
+                    <th>Tickets</th>
+                    <th>Share</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {noOrderReasons.byReason.map((row) => (
+                    <tr key={row.reason}>
+                      <td>{row.label}</td>
+                      <td>{row.count}</td>
+                      <td>{row.percentage}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {noOrderReasons.byStaff.length > 0 && (
+              <div className={styles.tableContainer} style={{ marginTop: 12 }}>
+                <table className={styles.compactTable}>
+                  <thead>
+                    <tr>
+                      <th>Staff</th>
+                      <th>Reasons given</th>
+                      <th>Breakdown</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {noOrderReasons.byStaff.map((row) => (
+                      <tr key={row.discordId}>
+                        <td>{row.name}</td>
+                        <td>{row.count}</td>
+                        <td>
+                          {Object.entries(row.reasons)
+                            .map(([reason, count]) => `${noOrderReasons.byReason.find((r) => r.reason === reason)?.label || reason}: ${count}`)
+                            .join(' · ')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        )}
       </KPISection>
 
       {/* ============================================

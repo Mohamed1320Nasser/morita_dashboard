@@ -130,6 +130,7 @@ const CommunityTab = () => {
   const repeatSummary = repeatCustomers?.summary || {}
   const distribution = repeatCustomers?.distribution || {}
   const topCustomers = repeatCustomers?.topCustomers || []
+  const tierDistribution = repeatCustomers?.tierDistribution || []
   const cohortAnalysis = repeatCustomers?.cohortAnalysis || []
 
   // DEBUG: Log cohort data
@@ -450,6 +451,12 @@ const CommunityTab = () => {
 
           <Card>
             <h3 className={styles.chartTitle}>Top Repeat Customers</h3>
+            {tierDistribution.length > 0 && (
+              <p className={styles.metricSubtext}>
+                {/* Bronze 1-2 orders · Silver 3-5 · Gold 6-10 · Platinum 11-25 · Diamond 26+ */}
+                {tierDistribution.map((t) => `${t.emoji} ${t.tier}: ${t.customers}`).join('  ·  ')}
+              </p>
+            )}
             <div className={styles.tableContainer}>
               {topCustomers.length > 0 ? (
                 <table className={styles.compactTable}>
@@ -457,6 +464,7 @@ const CommunityTab = () => {
                     <tr>
                       <th>Rank</th>
                       <th>Customer</th>
+                      <th>Tier</th>
                       <th>Purchases</th>
                       <th>Total Spent</th>
                     </tr>
@@ -466,6 +474,7 @@ const CommunityTab = () => {
                       <tr key={index}>
                         <td className={styles.rank}>#{index + 1}</td>
                         <td className={styles.username}>{customer.discordDisplayName || customer.discordUsername || customer.username || 'Unknown'}</td>
+                        <td>{customer.customerTier || '—'}</td>
                         <td>{customer.orderCount}</td>
                         <td>${customer.totalSpent?.toFixed(2) || 0}</td>
                       </tr>

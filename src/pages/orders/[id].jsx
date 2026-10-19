@@ -315,6 +315,30 @@ const OrderDetailPage = () => {
                   </div>
                 </>
               )}
+              {order.accountDataStatus.clearedAt && (
+                <div className={styles.row}>
+                  <span className={styles.label}>Cleared</span>
+                  <span className={styles.value}>
+                    {moment(order.accountDataStatus.clearedAt).format('DD/MM/YYYY HH:mm')} (order finished)
+                  </span>
+                </div>
+              )}
+              {(order.accountDataAccessLogs || []).length > 0 && (
+                <div style={{ marginTop: 10 }}>
+                  <div className={styles.label} style={{ marginBottom: 4 }}>Access log</div>
+                  {order.accountDataAccessLogs.map((log) => (
+                    <div key={log.id} className={styles.row}>
+                      <span className={styles.label}>{moment(log.createdAt).format('DD/MM/YYYY HH:mm')}</span>
+                      <span className={styles.value}>
+                        {log.action === 'VIEWED' ? '👁️ Viewed' : log.action === 'DENIED' ? '⛔ Refused' : '🧹 Cleared'}
+                        {' · '}
+                        {log.discordId === 'system' ? 'System' : `Discord ${log.discordId}`}
+                        {log.note ? ` · ${log.note}` : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className={styles.securityNote}>
                 ⚠️ Account credentials are encrypted and not visible in admin panel for security.
               </div>

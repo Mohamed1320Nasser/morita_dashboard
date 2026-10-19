@@ -21,6 +21,13 @@ import styles from './OperationsTab.module.scss'
  */
 const NOT_TRACKED = 'Not tracked yet: services have no expected time'
 
+const formatMinutes = (minutes) => {
+  if (minutes === null || minutes === undefined) return '—'
+  if (minutes < 60) return `${Math.round(minutes)}m`
+  if (minutes < 60 * 24) return `${(minutes / 60).toFixed(1)}h`
+  return `${(minutes / 60 / 24).toFixed(1)}d`
+}
+
 const OperationsTab = () => {
   // Order Issues State
   const [orderIssues, setOrderIssues] = useState(null)
@@ -29,6 +36,8 @@ const OperationsTab = () => {
   // Order Completion Time State
   const [completionTime, setCompletionTime] = useState(null)
   const [completionTimeRange, setCompletionTimeRange] = useState({ preset: 'this_month' })
+  const [lifecycle, setLifecycle] = useState(null)
+  const [lifecycleRange, setLifecycleRange] = useState({ preset: 'this_month' })
 
   // Service Requests State
   const [serviceRequests, setServiceRequests] = useState(null)
@@ -51,13 +60,14 @@ const OperationsTab = () => {
 
   useEffect(() => {
     fetchAllOperationsKPIs()
-  }, [orderIssuesRange, completionTimeRange, serviceRequestsRange, serviceConversionRange, workerRange, workerIssuesRange])
+  }, [orderIssuesRange, completionTimeRange, lifecycleRange, serviceRequestsRange, serviceConversionRange, workerRange, workerIssuesRange])
 
   const fetchAllOperationsKPIs = async () => {
     setLoading(true)
     await Promise.all([
       fetchOrderIssues(),
       fetchCompletionTime(),
+      fetchLifecycle(),
       fetchServiceRequests(),
       fetchServiceConversion(),
       fetchWorkerPerformance(),
@@ -82,6 +92,23 @@ const OperationsTab = () => {
       }
     } catch (error) {
       notify({ message: 'Error loading order issues data', type: 'error' })
+    }
+  }
+
+  // ============================================
+  // ORDER LIFECYCLE KPI
+  // ============================================
+
+  const fetchLifecycle = async () => {
+    try {
+      const res = await kpiController.getOrderLifecycle(toQuery(lifecycleRange))
+      if (res && res.error === false) {
+        setLifecycle(res.data)
+      } else {
+        notify({ message: res?.msg || 'Failed to load order lifecycle data', type: 'error' })
+      }
+    } catch (error) {
+      notify({ message: 'Error loading order lifecycle data', type: 'error' })
     }
   }
 
@@ -390,6 +417,62 @@ const OperationsTab = () => {
                       <td>{issue.reportedBy}</td>
                       <td>{issue.ageInDays} {issue.ageInDays === 1 ? 'day' : 'days'}</td>
                       <td>{moment(issue.createdAt).format('MMM DD, YYYY')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
+      </KPISection>
+
+      {/* ============================================
+          ORDER LIFECYCLE KPI
+          ============================================ */}
+      <KPISection
+        title="Order Lifecycle"
+        icon="🧭"
+        description="Average time at each stage, from ticket to customer confirmation"
+        defaultExpanded={false}
+        collapsible={true}
+      >
+        <div className={styles.controls}>
+          <DateRange value={lifecycleRange} onChange={setLifecycleRange} />
+        </div>
+
+        <div className={styles.metricsGrid}>
+          {(lifecycle?.stages || []).map((stage) => (
+            <div key={stage.key} className={`${styles.metricCard} ${styles.blue}`}>
+              <div className={styles.metricIcon}>
+                <IoTime />
+              </div>
+              <div className={styles.metricContent}>
+                <div className={styles.metricValue}>{formatMinutes(stage.avgMinutes)}</div>
+                <div className={styles.metricLabel}>{stage.label}</div>
+                <div className={styles.metricSubtext}>{stage.orders} orders</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {(lifecycle?.bySupport || []).length > 0 && (
+          <Card>
+            <h3 className={styles.chartTitle}>By Support Member</h3>
+            <div className={styles.tableContainer}>
+              <table className={styles.compactTable}>
+                <thead>
+                  <tr>
+                    <th>Support</th>
+                    <th>Orders</th>
+                    {(lifecycle.stages || []).map((stage) => <th key={stage.key}>{stage.label}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {lifecycle.bySupport.map((row) => (
+                    <tr key={row.supportId}>
+                      <td className={styles.workerName}>{row.supportName}</td>
+                      <td>{row.orders}</td>
+                      {row.stages.map((stage) => <td key={stage.key}>{formatMinutes(stage.avgMinutes)}</td>)}
                     </tr>
                   ))}
                 </tbody>
