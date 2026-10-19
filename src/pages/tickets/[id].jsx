@@ -264,6 +264,13 @@ const TicketDetailPage = () => {
                                 </div>
                             )}
 
+                            {ticket.closeReason && (
+                                <div className={styles.infoRow}>
+                                    <span className={styles.label}>Close reason:</span>
+                                    <span className={styles.value}>{ticket.closeReason}</span>
+                                </div>
+                            )}
+
                             {ticket.closedAt && (
                                 <div className={styles.infoRow}>
                                     <span className={styles.label}>Transcript:</span>

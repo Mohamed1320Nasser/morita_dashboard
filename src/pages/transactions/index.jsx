@@ -12,7 +12,30 @@ import { notify } from '@/config/error'
 import Table from '@/components/shared/Table'
 import moment from 'moment'
 import Pagination from '@mui/material/Pagination'
-import { IoWallet, IoArrowUp, IoArrowDown, IoSwapHorizontal } from 'react-icons/io5'
+import { IoWallet, IoArrowUp, IoArrowDown, IoSwapHorizontal, IoDownload } from 'react-icons/io5'
+import { exportToCSV, getTimestampFilename } from '@/utils/csvExport'
+
+const TRANSACTION_TYPES = [
+  'DEPOSIT', 'WITHDRAWAL', 'PAYMENT', 'REFUND', 'EARNING', 'COMMISSION', 'SYSTEM_FEE',
+  'ADJUSTMENT', 'RELEASE', 'WORKER_DEPOSIT', 'DAILY_REWARD', 'ORDER_REWARD',
+  'REFERRAL_REWARD', 'REFERRAL_ORDER_REWARD',
+]
+const TRANSACTION_STATUSES = ['PENDING', 'COMPLETED', 'FAILED', 'REVERSED']
+
+const TRANSACTION_EXPORT_HEADERS = [
+  { key: 'id', label: 'Transaction ID' },
+  { key: 'date', label: 'Date' },
+  { key: 'type', label: 'Type' },
+  { key: 'amount', label: 'Amount' },
+  { key: 'currency', label: 'Currency' },
+  { key: 'status', label: 'Status' },
+  { key: 'user', label: 'User' },
+  { key: 'walletType', label: 'Wallet Type' },
+  { key: 'order', label: 'Order #' },
+  { key: 'performedBy', label: 'Performed By' },
+  { key: 'reference', label: 'Reference' },
+  { key: 'notes', label: 'Notes' },
+]
 
 const TransactionsPage = () => {
   const [pageLoading, setPageLoading] = useState(true)
@@ -23,6 +46,9 @@ const TransactionsPage = () => {
   const [filterCount, setFilterCount] = useState(0)
   const [refreshKey, setRefreshKey] = useState(0)
   const [typeFilter, setTypeFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [stats, setStats] = useState({
     totalTransactions: 0,
     todayTransactions: 0,
@@ -35,12 +61,57 @@ const TransactionsPage = () => {
     setPage(1)
   }
 
+  const appendFilters = (queryParams) => {
+    if (search) queryParams.append('search', search)
+    if (typeFilter) queryParams.append('type', typeFilter)
+    if (statusFilter) queryParams.append('status', statusFilter)
+    if (fromDate) queryParams.append('startDate', fromDate)
+    if (toDate) queryParams.append('endDate', toDate)
+  }
+
+  const performedBy = (t) =>
+    t.createdBy?.discordDisplayName || t.createdBy?.discordUsername || t.createdBy?.username || t.createdBy?.email || '-'
+
+  // Every matching row with the current filters, for the weekly review
+  // done outside the dashboard
+  const handleExport = async () => {
+    try {
+      const queryParams = new URLSearchParams()
+      appendFilters(queryParams)
+      queryParams.append('page', '1')
+      queryParams.append('limit', '10000')
+      const res = await adminController.getAllTransactions(queryParams.toString())
+      if (!res || !res.success) {
+        notify(res?.error?.message || 'Failed to export transactions')
+        return
+      }
+      const rows = (res.data.items || res.data.transactions || []).map((t) => ({
+        id: t.id,
+        date: t.createdAt ? moment(t.createdAt).format('YYYY-MM-DD HH:mm') : '',
+        type: t.type,
+        amount: t.amount,
+        currency: t.currency,
+        status: t.status,
+        user: t.wallet?.user?.username || t.wallet?.user?.fullname || t.wallet?.user?.discordId || '',
+        walletType: t.wallet?.walletType || '',
+        order: t.order?.orderNumber ? `#${t.order.orderNumber}` : '',
+        performedBy: performedBy(t),
+        reference: t.reference || '',
+        notes: t.notes || '',
+      }))
+      exportToCSV(rows, getTimestampFilename('transactions'), TRANSACTION_EXPORT_HEADERS)
+      notify('Transactions exported successfully!', 'success')
+    } catch (e) {
+      notify('Error exporting transactions')
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const queryParams = new URLSearchParams()
         if (search) queryParams.append('search', search)
-        if (typeFilter) queryParams.append('type', typeFilter)
+        appendFilters(queryParams)
         queryParams.append('page', String(page))
         queryParams.append('limit', String(limit))
         const query = queryParams.toString()
@@ -79,7 +150,7 @@ const TransactionsPage = () => {
 
     fetchData()
     fetchStats()
-  }, [refreshKey, page, limit, search, typeFilter])
+  }, [refreshKey, page, limit, search, typeFilter, statusFilter, fromDate, toDate])
 
   const handleRefresh = () => setRefreshKey((v) => v + 1)
 
@@ -199,41 +270,28 @@ const TransactionsPage = () => {
               />
             </div>
             <div className={styles.filters}>
-              <button
-                className={`${styles.filterBtn} ${typeFilter === '' ? styles.active : ''}`}
-                onClick={() => {
-                  setTypeFilter('')
-                  setPage(1)
-                }}
-              >
-                All
-              </button>
-              <button
-                className={`${styles.filterBtn} ${typeFilter === 'DEPOSIT' ? styles.active : ''}`}
-                onClick={() => {
-                  setTypeFilter('DEPOSIT')
-                  setPage(1)
-                }}
-              >
-                Deposits
-              </button>
-              <button
-                className={`${styles.filterBtn} ${typeFilter === 'WITHDRAWAL' ? styles.active : ''}`}
-                onClick={() => {
-                  setTypeFilter('WITHDRAWAL')
-                  setPage(1)
-                }}
-              >
-                Withdrawals
-              </button>
-              <button
-                className={`${styles.filterBtn} ${typeFilter === 'PAYMENT' ? styles.active : ''}`}
-                onClick={() => {
-                  setTypeFilter('PAYMENT')
-                  setPage(1)
-                }}
-              >
-                Payments
+              <select className={styles.filterBtn} value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }}>
+                <option value="">All types</option>
+                {TRANSACTION_TYPES.map((type) => (
+                  <option key={type} value={type}>{type.replace(/_/g, ' ')}</option>
+                ))}
+              </select>
+              <select className={styles.filterBtn} value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}>
+                <option value="">All statuses</option>
+                {TRANSACTION_STATUSES.map((status) => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
+              <label className={styles.filterBtn} style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                From
+                <input type="date" value={fromDate} max={toDate || undefined} onChange={(e) => { setFromDate(e.target.value); setPage(1) }} />
+              </label>
+              <label className={styles.filterBtn} style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                To
+                <input type="date" value={toDate} min={fromDate || undefined} onChange={(e) => { setToDate(e.target.value); setPage(1) }} />
+              </label>
+              <button className={styles.filterBtn} onClick={handleExport}>
+                <IoDownload /> Export CSV
               </button>
             </div>
           </div>
@@ -326,6 +384,13 @@ const TransactionsPage = () => {
                     ) : (
                       <span style={{ color: '#9ca3af' }}>-</span>
                     ),
+                },
+                {
+                  key: 'performedBy',
+                  header: 'Performed By',
+                  className: 'performedBy',
+                  flex: 1,
+                  render: (t) => performedBy(t),
                 },
                 {
                   key: 'createdAt',

@@ -66,6 +66,23 @@ const DashboardPage = () => {
     )
   }
 
+  // New users vs last month as a count: with 1 sign-up last month and 46 this
+  // month the percentage read "4500%", which says nothing useful
+  const renderUserGrowth = (users) => {
+    const difference = (users?.newThisMonth || 0) - (users?.newLastMonth || 0)
+    if (!difference) return null
+    const isPositive = difference > 0
+    return (
+      <div
+        className={`${styles.growth} ${isPositive ? styles.positive : styles.negative}`}
+        title={`${users.newThisMonth} new this month, ${users.newLastMonth} last month`}
+      >
+        {isPositive ? <IoArrowUp /> : <IoArrowDown />}
+        {Math.abs(difference)} vs last month
+      </div>
+    )
+  }
+
   const getActivityIcon = (type) => {
     switch (type) {
       case 'order':
@@ -86,7 +103,7 @@ const DashboardPage = () => {
       case 'transaction':
         return `${activity.action} ${formatCurrency(Math.abs(activity.data.amount))} - ${activity.data.username || 'System'}`
       case 'user':
-        return `${activity.data.username} ${activity.action} as ${activity.data.role}`
+        return `${activity.data.username || 'New member'} ${activity.action} as ${activity.data.role}`
       default:
         return JSON.stringify(activity.data)
     }
@@ -176,7 +193,7 @@ const DashboardPage = () => {
             <div className={styles.statContent}>
               <div className={styles.statHeader}>
                 <div className={styles.statValue}>{stats?.users?.total || 0}</div>
-                {renderGrowth(stats?.users?.growth)}
+                {renderUserGrowth(stats?.users)}
               </div>
               <div className={styles.statLabel}>Total Users</div>
               <div className={styles.statSubtext}>

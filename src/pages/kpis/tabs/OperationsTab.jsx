@@ -19,6 +19,15 @@ import styles from './OperationsTab.module.scss'
  * OperationsTab - Operations & Worker metrics
  * Contains: Order Issues, Completion Time, Service Requests, Service Conversion, Worker Performance, Worker Issues
  */
+const NOT_TRACKED = 'Not tracked yet: services have no expected time'
+
+const formatMinutes = (minutes) => {
+  if (minutes === null || minutes === undefined) return '—'
+  if (minutes < 60) return `${Math.round(minutes)}m`
+  if (minutes < 60 * 24) return `${(minutes / 60).toFixed(1)}h`
+  return `${(minutes / 60 / 24).toFixed(1)}d`
+}
+
 const OperationsTab = () => {
   // Order Issues State
   const [orderIssues, setOrderIssues] = useState(null)
@@ -27,6 +36,8 @@ const OperationsTab = () => {
   // Order Completion Time State
   const [completionTime, setCompletionTime] = useState(null)
   const [completionTimeRange, setCompletionTimeRange] = useState({ preset: 'this_month' })
+  const [lifecycle, setLifecycle] = useState(null)
+  const [lifecycleRange, setLifecycleRange] = useState({ preset: 'this_month' })
 
   // Service Requests State
   const [serviceRequests, setServiceRequests] = useState(null)
@@ -49,13 +60,14 @@ const OperationsTab = () => {
 
   useEffect(() => {
     fetchAllOperationsKPIs()
-  }, [orderIssuesRange, completionTimeRange, serviceRequestsRange, serviceConversionRange, workerRange, workerIssuesRange])
+  }, [orderIssuesRange, completionTimeRange, lifecycleRange, serviceRequestsRange, serviceConversionRange, workerRange, workerIssuesRange])
 
   const fetchAllOperationsKPIs = async () => {
     setLoading(true)
     await Promise.all([
       fetchOrderIssues(),
       fetchCompletionTime(),
+      fetchLifecycle(),
       fetchServiceRequests(),
       fetchServiceConversion(),
       fetchWorkerPerformance(),
@@ -80,6 +92,23 @@ const OperationsTab = () => {
       }
     } catch (error) {
       notify({ message: 'Error loading order issues data', type: 'error' })
+    }
+  }
+
+  // ============================================
+  // ORDER LIFECYCLE KPI
+  // ============================================
+
+  const fetchLifecycle = async () => {
+    try {
+      const res = await kpiController.getOrderLifecycle(toQuery(lifecycleRange))
+      if (res && res.error === false) {
+        setLifecycle(res.data)
+      } else {
+        notify({ message: res?.msg || 'Failed to load order lifecycle data', type: 'error' })
+      }
+    } catch (error) {
+      notify({ message: 'Error loading order lifecycle data', type: 'error' })
     }
   }
 
@@ -201,6 +230,9 @@ const OperationsTab = () => {
 
   // Extract data for Completion Time
   const completionSummary = completionTime?.summary || {}
+  // On-time / late need an expected time per order, which services do not
+  // have yet, so these cards would only ever show 0
+  const hasEstimates = (completionSummary.ordersWithEstimates || 0) > 0
   const completionDistribution = completionTime?.distribution || {}
   const completionByService = completionTime?.serviceBreakdown || []
   const fastestOrders = completionTime?.fastest || []
@@ -395,6 +427,62 @@ const OperationsTab = () => {
       </KPISection>
 
       {/* ============================================
+          ORDER LIFECYCLE KPI
+          ============================================ */}
+      <KPISection
+        title="Order Lifecycle"
+        icon="🧭"
+        description="Average time at each stage, from ticket to customer confirmation"
+        defaultExpanded={false}
+        collapsible={true}
+      >
+        <div className={styles.controls}>
+          <DateRange value={lifecycleRange} onChange={setLifecycleRange} />
+        </div>
+
+        <div className={styles.metricsGrid}>
+          {(lifecycle?.stages || []).map((stage) => (
+            <div key={stage.key} className={`${styles.metricCard} ${styles.blue}`}>
+              <div className={styles.metricIcon}>
+                <IoTime />
+              </div>
+              <div className={styles.metricContent}>
+                <div className={styles.metricValue}>{formatMinutes(stage.avgMinutes)}</div>
+                <div className={styles.metricLabel}>{stage.label}</div>
+                <div className={styles.metricSubtext}>{stage.orders} orders</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {(lifecycle?.bySupport || []).length > 0 && (
+          <Card>
+            <h3 className={styles.chartTitle}>By Support Member</h3>
+            <div className={styles.tableContainer}>
+              <table className={styles.compactTable}>
+                <thead>
+                  <tr>
+                    <th>Support</th>
+                    <th>Orders</th>
+                    {(lifecycle.stages || []).map((stage) => <th key={stage.key}>{stage.label}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {lifecycle.bySupport.map((row) => (
+                    <tr key={row.supportId}>
+                      <td className={styles.workerName}>{row.supportName}</td>
+                      <td>{row.orders}</td>
+                      {row.stages.map((stage) => <td key={stage.key}>{formatMinutes(stage.avgMinutes)}</td>)}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
+      </KPISection>
+
+      {/* ============================================
           ORDER COMPLETION TIME KPI
           ============================================ */}
       <KPISection
@@ -431,10 +519,12 @@ const OperationsTab = () => {
               <IoCheckmarkCircle />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{completionSummary.onTimeOrders || 0}</div>
+              <div className={styles.metricValue}>{hasEstimates ? (completionSummary.onTimeOrders || 0) : '—'}</div>
               <div className={styles.metricLabel}>On-Time Orders</div>
               <div className={styles.metricSubtext}>
-                {completionSummary.onTimeRate ? `${completionSummary.onTimeRate.toFixed(1)}%` : '0%'} on-time rate
+                {hasEstimates
+                  ? `${(completionSummary.onTimeRate || 0).toFixed(1)}% on-time rate`
+                  : NOT_TRACKED}
               </div>
             </div>
           </div>
@@ -444,9 +534,9 @@ const OperationsTab = () => {
               <IoTime />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{completionSummary.earlyOrders || 0}</div>
+              <div className={styles.metricValue}>{hasEstimates ? (completionSummary.earlyOrders || 0) : '—'}</div>
               <div className={styles.metricLabel}>Early Completions</div>
-              <div className={styles.metricSubtext}>Ahead of schedule</div>
+              <div className={styles.metricSubtext}>{hasEstimates ? 'Ahead of schedule' : NOT_TRACKED}</div>
             </div>
           </div>
 
@@ -455,9 +545,9 @@ const OperationsTab = () => {
               <IoAlertCircle />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{completionSummary.lateOrders || 0}</div>
+              <div className={styles.metricValue}>{hasEstimates ? (completionSummary.lateOrders || 0) : '—'}</div>
               <div className={styles.metricLabel}>Late Orders</div>
-              <div className={styles.metricSubtext}>Needs improvement</div>
+              <div className={styles.metricSubtext}>{hasEstimates ? 'Needs improvement' : NOT_TRACKED}</div>
             </div>
           </div>
         </div>
@@ -616,7 +706,7 @@ const OperationsTab = () => {
             </div>
             <div className={styles.metricContent}>
               <div className={styles.metricValue}>
-                {requestsSummary.avgRequestsPerDay ? requestsSummary.avgRequestsPerDay.toFixed(0) : 0}
+                {requestsSummary.avgRequestsPerDay != null ? requestsSummary.avgRequestsPerDay.toFixed(1) : '—'}
               </div>
               <div className={styles.metricLabel}>Avg Requests/Day</div>
               <div className={styles.metricSubtext}>Daily average</div>
@@ -727,7 +817,7 @@ const OperationsTab = () => {
                 {conversionSummary.conversionRate ? `${conversionSummary.conversionRate.toFixed(1)}%` : '0%'}
               </div>
               <div className={styles.metricLabel}>Conversion Rate</div>
-              <div className={styles.metricSubtext}>Requests → Orders</div>
+              <div className={styles.metricSubtext}>Of tickets with a service picked</div>
             </div>
           </div>
 
@@ -736,7 +826,7 @@ const OperationsTab = () => {
               <IoStatsChart />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{conversionSummary.totalRequests || 0}</div>
+              <div className={styles.metricValue}>{conversionSummary.totalServiceRequests || 0}</div>
               <div className={styles.metricLabel}>Total Requests</div>
               <div className={styles.metricSubtext}>This period</div>
             </div>
@@ -747,7 +837,7 @@ const OperationsTab = () => {
               <IoCheckmarkCircle />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{conversionSummary.convertedOrders || 0}</div>
+              <div className={styles.metricValue}>{conversionSummary.convertedToOrders || 0}</div>
               <div className={styles.metricLabel}>Converted Orders</div>
               <div className={styles.metricSubtext}>Successfully converted</div>
             </div>
@@ -937,10 +1027,13 @@ const OperationsTab = () => {
                   <tr>
                     <th>Worker</th>
                     <th>Total Orders</th>
+                    <th>Jobs Claimed</th>
+                    <th>Direct Assignments</th>
                     <th>Completed</th>
                     <th>Active</th>
                     <th>Avg Time</th>
                     <th>Success Rate</th>
+                    <th>Issue Rate</th>
                     <th>Customer Rating</th>
                     <th>Staff Feedback</th>
                     <th>Revenue</th>
@@ -954,12 +1047,19 @@ const OperationsTab = () => {
                         {worker.workerName || worker.discordUsername || `Worker ${worker.workerId}`}
                       </td>
                       <td>{worker.totalOrders}</td>
+                      <td>{worker.jobsClaimed ?? 0}</td>
+                      <td>{worker.directAssignments ?? 0}</td>
                       <td className={styles.successText}>{worker.completedOrders}</td>
                       <td>{worker.activeOrders}</td>
                       <td>{worker.avgCompletionMinutes ? worker.avgCompletionMinutes.toFixed(1) : '0.0'}m</td>
                       <td>
                         <span className={`${worker.successRate >= 80 ? styles.successText : worker.successRate >= 50 ? styles.warningText : styles.errorText}`}>
                           {worker.successRate.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td>
+                        <span className={(worker.issueRate || 0) > 10 ? styles.errorText : ''}>
+                          {(worker.issueRate || 0).toFixed(1)}%
                         </span>
                       </td>
                       <td>

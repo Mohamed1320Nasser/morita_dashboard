@@ -17,6 +17,9 @@ import styles from './SupportTab.module.scss'
  * SupportTab - Support & Customer Service metrics
  * Contains: Response Time, Ticket Conversion, Peak Times, Reply Speed
  */
+// heatmap rows come Sunday-first (index 0); shown Monday-first
+const HEATMAP_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((label, i) => ({ label, index: (i + 1) % 7 }))
+
 const SupportTab = () => {
   // Support Response Time State
   const [supportResponseTime, setSupportResponseTime] = useState(null)
@@ -58,9 +61,11 @@ const SupportTab = () => {
 
   const fetchSupportResponseTime = async () => {
     try {
+      // The range object itself used to be sent as `period`, which the API
+      // rejected, so this section always showed 0
       const res = await kpiController.getSupportResponseTime({
-        period: supportRange,
-        slaTarget
+        ...toQuery(supportRange),
+        slaTargetMinutes: slaTarget
       })
 
       if (res && res.error === false) {
@@ -138,6 +143,7 @@ const SupportTab = () => {
 
   // Extract data for Ticket Conversion
   const conversionSummary = ticketConversion?.summary || {}
+  const noOrderReasons = ticketConversion?.noOrderReasons || null
   const conversionDistribution = ticketConversion?.distribution || {}
   const conversionByTicketType = ticketConversion?.conversionByTicketType || []
   const conversionByService = ticketConversion?.conversionByService || []
@@ -148,6 +154,8 @@ const SupportTab = () => {
   const peakSummary = peakTimes?.summary || {}
   const hourlyDistribution = peakTimes?.hourlyDistribution || []
   const dayOfWeekDistribution = peakTimes?.dailyDistribution || []
+  const heatmap = peakTimes?.heatmap || []
+  const heatmapMax = Math.max(0, ...heatmap.flat())
   // Generate peak and quiet hours from hourlyDistribution
   const peakHours = [...(peakTimes?.hourlyDistribution || [])]
     .sort((a, b) => b.count - a.count)
@@ -582,6 +590,62 @@ const SupportTab = () => {
             </Card>
           )}
         </div>
+
+        {/* Why closed tickets had no order (support picks it on close) */}
+        {noOrderReasons && (
+          <Card>
+            <h3 className={styles.chartTitle}>Why No Order?</h3>
+            <p className={styles.metricSubtext}>
+              {noOrderReasons.closedWithoutOrder} closed without an order · {noOrderReasons.withReason} with a reason · {noOrderReasons.withoutReason} not answered yet
+            </p>
+            <div className={styles.tableContainer}>
+              <table className={styles.compactTable}>
+                <thead>
+                  <tr>
+                    <th>Reason</th>
+                    <th>Tickets</th>
+                    <th>Share</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {noOrderReasons.byReason.map((row) => (
+                    <tr key={row.reason}>
+                      <td>{row.label}</td>
+                      <td>{row.count}</td>
+                      <td>{row.percentage}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {noOrderReasons.byStaff.length > 0 && (
+              <div className={styles.tableContainer} style={{ marginTop: 12 }}>
+                <table className={styles.compactTable}>
+                  <thead>
+                    <tr>
+                      <th>Staff</th>
+                      <th>Reasons given</th>
+                      <th>Breakdown</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {noOrderReasons.byStaff.map((row) => (
+                      <tr key={row.discordId}>
+                        <td>{row.name}</td>
+                        <td>{row.count}</td>
+                        <td>
+                          {Object.entries(row.reasons)
+                            .map(([reason, count]) => `${noOrderReasons.byReason.find((r) => r.reason === reason)?.label || reason}: ${count}`)
+                            .join(' · ')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        )}
       </KPISection>
 
       {/* ============================================
@@ -598,6 +662,47 @@ const SupportTab = () => {
         <div className={styles.controls}>
           <DateRange value={peakTimesRange} onChange={setPeakTimesRange} />
         </div>
+
+        {/* Day x hour heatmap: darker = more tickets opened */}
+        {heatmap.length === 7 && heatmapMax > 0 && (
+          <Card>
+            <h3 className={styles.chartTitle}>Busy Times (day × hour)</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ borderCollapse: 'collapse', fontSize: 11, width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th />
+                    {Array.from({ length: 24 }, (_, hour) => (
+                      <th key={hour} style={{ padding: 2, fontWeight: 500 }}>{hour}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {HEATMAP_DAYS.map(({ label, index }) => (
+                    <tr key={label}>
+                      <th style={{ padding: '2px 6px', textAlign: 'left', fontWeight: 500 }}>{label}</th>
+                      {heatmap[index].map((count, hour) => (
+                        <td
+                          key={hour}
+                          title={`${label} ${hour}:00 · ${count} tickets`}
+                          style={{
+                            minWidth: 18,
+                            height: 20,
+                            textAlign: 'center',
+                            border: '1px solid rgba(127,127,127,0.15)',
+                            background: count ? `rgba(6, 182, 212, ${0.15 + 0.85 * (count / heatmapMax)})` : 'transparent',
+                          }}
+                        >
+                          {count || ''}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
 
         {/* Hourly Distribution */}
         {hourlyDistribution.length > 0 && (

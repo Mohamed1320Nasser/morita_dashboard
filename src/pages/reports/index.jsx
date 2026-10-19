@@ -38,9 +38,9 @@ const ReportsPage = () => {
 
         const [orderVolumeRes, performanceRes] = await Promise.all([
           adminController.getOrderVolumeStats(volumeParams),
-          fetch('/api/admin/system/metrics/performance')
-            .then((r) => r.json())
-            .catch(() => null),
+          // Was fetched from the dashboard's own host, where no such route
+          // exists, so the section never appeared
+          adminController.getOrderPerformanceStats(volumeParams),
         ])
 
         if (orderVolumeRes && orderVolumeRes.success) {
@@ -48,6 +48,7 @@ const ReportsPage = () => {
             label: moment(item.date).format('MMM DD'),
             value: item.value || 0,
             count: item.count || 0,
+            completed: item.completed || 0,
           }))
           setOrderVolumeData(chartData)
         }
@@ -273,7 +274,7 @@ const ReportsPage = () => {
                 )}
               </div>
               <div className={styles.summarySubtext}>
-                {getPeriodText()} • {orderVolumeData.reduce((sum, d) => sum + d.count, 0)} orders
+                {getPeriodText()} • {orderVolumeData.reduce((sum, d) => sum + d.completed, 0)} completed orders
               </div>
             </div>
           </Card>
@@ -287,7 +288,7 @@ const ReportsPage = () => {
               <div className={styles.summaryValue}>
                 {formatCurrency(
                   orderVolumeData.reduce((sum, d) => sum + d.value, 0) /
-                    (orderVolumeData.reduce((sum, d) => sum + d.count, 0) || 1)
+                    (orderVolumeData.reduce((sum, d) => sum + d.completed, 0) || 1)
                 )}
               </div>
               <div className={styles.summarySubtext}>Based on completed orders</div>

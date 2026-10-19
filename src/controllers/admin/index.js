@@ -4,6 +4,15 @@ import { getData, postData, putData } from '../../constant/axiosClon'
 // so callers must reject it explicitly or a dead backend renders as empty data.
 const REQUEST_FAILED = 'Could not reach the server. Please try again.'
 
+// Reports take either a start/end date pair or a number of days back
+const reportQuery = (params) => {
+    if (params.startDate && params.endDate) {
+        return `?startDate=${params.startDate}&endDate=${params.endDate}`;
+    }
+    const days = params.days || params || 30;
+    return `?days=${days}`;
+}
+
 export default {
     // Dashboard Statistics
     getDashboardStats: async () => {
@@ -85,16 +94,24 @@ export default {
 
     getOrderVolumeStats: async (params = {}) => {
         try {
-            // Support both old (days) and new (startDate, endDate) parameters
-            let queryString = '';
-            if (params.startDate && params.endDate) {
-                queryString = `?startDate=${params.startDate}&endDate=${params.endDate}`;
-            } else {
-                const days = params.days || params || 30;
-                queryString = `?days=${days}`;
+            const response = await getData(`/admin/orders/stats/volume${reportQuery(params)}`);
+            if (response === false) {
+                return { success: false, error: { message: REQUEST_FAILED } }
             }
+            const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
+            return { success: true, data: payload }
+        } catch (err) {
+            console.log(err)
+            return { success: false, error: err }
+        }
+    },
 
-            const response = await getData(`/admin/orders/stats/volume${queryString}`);
+    getOrderPerformanceStats: async (params = {}) => {
+        try {
+            const response = await getData(`/admin/orders/stats/performance${reportQuery(params)}`);
+            if (response === false) {
+                return { success: false, error: { message: REQUEST_FAILED } }
+            }
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: payload }
         } catch (err) {

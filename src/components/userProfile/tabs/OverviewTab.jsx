@@ -7,7 +7,7 @@ import BalanceHistoryChart from '../charts/BalanceHistoryChart'
 import styles from './TabStyles.module.scss'
 
 const OverviewTab = ({ profileData }) => {
-  const { user, financial, loyalty, orders, charts, activity } = profileData
+  const { user, financial, loyalty, orders, charts, activity, terms } = profileData
 
   const formatCurrency = (amount) => {
     const num = parseFloat(amount) || 0
@@ -101,6 +101,26 @@ const OverviewTab = ({ profileData }) => {
           </div>
         </Card>
       )}
+
+      <Card>
+        <h3 className={styles.sectionTitle}>Terms of Service</h3>
+        {terms && terms.length > 0 ? (
+          <div className={styles.infoGrid}>
+            {terms.map((t, i) => (
+              <div key={i} className={styles.infoItem}>
+                <span className={styles.infoLabel}>
+                  {t.title} (v{t.version}) {t.isCurrent && <Badge type="success">Current</Badge>}
+                </span>
+                <span className={styles.infoValue}>
+                  Accepted {new Date(t.acceptedAt).toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className={styles.infoLabel}>Not accepted yet</p>
+        )}
+      </Card>
     </div>
   )
 }

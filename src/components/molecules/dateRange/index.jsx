@@ -51,7 +51,9 @@ export function toQuery(value) {
     if (!preset) return {}
 
     const [start, end] = preset.range(new Date())
-    if (!start) return {}
+    // Sending nothing let most endpoints fall back to "this month", so
+    // "All time" quietly showed only this month
+    if (!start) return { period: 'all' }
 
     return { startDate: iso(start), endDate: iso(end) }
 }

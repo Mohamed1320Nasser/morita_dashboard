@@ -168,6 +168,18 @@ const kpiController = {
     }
   },
 
+  // Order Lifecycle (time at each stage)
+  getOrderLifecycle: async (params = {}) => {
+    try {
+      const queryString = new URLSearchParams(params).toString()
+      const response = await getData(`/kpi/order-lifecycle${queryString ? `?${queryString}` : ''}`)
+      return response
+    } catch (error) {
+      console.error('Error fetching order lifecycle:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
   // Financial Overview
   getFinancialOverview: async (params = {}) => {
     try {
