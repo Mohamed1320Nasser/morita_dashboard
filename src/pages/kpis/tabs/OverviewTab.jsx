@@ -49,8 +49,10 @@ const OverviewTab = () => {
       }
 
       // Process member data
-      if (memberRes?.data?.currentStats) {
-        const { totalMembers, growthRate } = memberRes.data.currentStats
+      // The API sends `summary`; `currentStats` never existed, so this card
+      // always showed 0
+      if (memberRes?.data?.summary) {
+        const { totalMembers, growthRate } = memberRes.data.summary
         setHeroMetrics(prev => ({
           ...prev,
           members: {
@@ -65,8 +67,8 @@ const OverviewTab = () => {
       }
 
       // Process support data
-      if (supportRes?.data?.averageResponseTime) {
-        const avgMinutes = supportRes.data.averageResponseTime
+      if (supportRes?.data?.summary?.averageResponseTimeMinutes) {
+        const avgMinutes = supportRes.data.summary.averageResponseTimeMinutes
         setHeroMetrics(prev => ({
           ...prev,
           responseTime: {
@@ -107,7 +109,7 @@ const OverviewTab = () => {
             onClick={() => router.push('/kpis?tab=financial')}
           />
           <MetricCard
-            label="Active Members"
+            label="Members"
             value={heroMetrics.members?.value || '0'}
             trend={heroMetrics.members?.trend}
             icon="👥"

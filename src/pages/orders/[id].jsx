@@ -13,6 +13,34 @@ import { useRouter } from 'next/router'
 import moment from 'moment'
 import { ORDER_STATUS, STATUS_LABELS, STATUS_BADGE_TYPES, getNextStatuses } from '@/constants/orderStatus'
 
+const personName = (u) => u?.discordDisplayName || u?.discordUsername || u?.fullname || u?.username || null
+
+// Steps that happened, in order. A claimed job counts as assigned when the
+// claim went through.
+const timelineSteps = (order) => [
+  order.ticket?.createdAt && { title: 'Ticket Opened', at: order.ticket.createdAt, done: true },
+  { title: 'Order Created', at: order.createdAt, by: personName(order.support), done: true },
+  (order.assignedAt || order.claimedAt) && {
+    title: order.claimedAt && !order.assignedAt ? 'Job Claimed' : 'Worker Assigned',
+    at: order.assignedAt || order.claimedAt,
+    by: personName(order.worker),
+    done: true,
+  },
+  order.startedAt && { title: 'Work Started', at: order.startedAt, done: true },
+  order.completedAt && { title: 'Work Completed', at: order.completedAt, done: true },
+  order.confirmedAt && { title: 'Customer Confirmed', at: order.confirmedAt, done: true },
+  order.cancelledAt && { title: 'Cancelled', at: order.cancelledAt, done: false },
+  order.reviewedAt && { title: 'Customer Review', at: order.reviewedAt, done: true },
+].filter(Boolean)
+
+const formatGap = (ms) => {
+  const minutes = Math.max(0, Math.round(ms / 60000))
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ${minutes % 60}m`
+  return `${Math.floor(hours / 24)}d ${hours % 24}h`
+}
+
 const OrderDetailPage = () => {
   const router = useRouter()
   const { id } = router.query
@@ -396,85 +424,31 @@ const OrderDetailPage = () => {
           </Card>
         )}
 
-        {/* Order Timeline */}
+        {/* Order Timeline: each step with the time since the step before */}
         <Card>
           <h3 className={styles.cardTitle}>Order Timeline</h3>
           <div className={styles.timeline}>
-            {/* Order Created */}
-            <div className={styles.timelineItem}>
-              <div className={`${styles.timelineIcon} ${styles.iconWarning}`}>
-                <span>!</span>
-              </div>
-              <div className={styles.timelineContent}>
-                <div className={styles.timelineTitle}>Order Created</div>
-                <div className={styles.timelineDate}>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</div>
-              </div>
-            </div>
-
-            {/* Worker Assigned */}
-            {order.assignedAt && (
-              <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.iconPending}`}>
-                  <span className={styles.clockIcon}></span>
+            {timelineSteps(order).map((step, index, steps) => (
+              <div key={step.title} className={styles.timelineItem}>
+                <div className={`${styles.timelineIcon} ${step.done ? styles.iconSuccess : styles.iconPending}`}>
+                  <span className={step.done ? styles.checkIcon : styles.clockIcon}></span>
                 </div>
                 <div className={styles.timelineContent}>
-                  <div className={styles.timelineTitle}>Worker Assigned</div>
-                  <div className={styles.timelineDate}>{moment(order.assignedAt).format('DD/MM/YYYY HH:mm')}</div>
+                  <div className={styles.timelineTitle}>
+                    {step.title}
+                    {step.by && <span style={{ fontWeight: 400, opacity: 0.75 }}> · {step.by}</span>}
+                  </div>
+                  <div className={styles.timelineDate}>
+                    {moment(step.at).format('DD/MM/YYYY HH:mm')}
+                    {index > 0 && (
+                      <span style={{ marginLeft: 8, opacity: 0.75 }}>
+                        (+{formatGap(new Date(step.at) - new Date(steps[index - 1].at))})
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            )}
-
-            {/* Work Started */}
-            {order.startedAt && (
-              <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.iconPending}`}>
-                  <span className={styles.clockIcon}></span>
-                </div>
-                <div className={styles.timelineContent}>
-                  <div className={styles.timelineTitle}>Work Started</div>
-                  <div className={styles.timelineDate}>{moment(order.startedAt).format('DD/MM/YYYY HH:mm')}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Order Completed */}
-            {order.completedAt && (
-              <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
-                  <span className={styles.checkIcon}></span>
-                </div>
-                <div className={styles.timelineContent}>
-                  <div className={styles.timelineTitle}>Order Completed</div>
-                  <div className={styles.timelineDate}>{moment(order.completedAt).format('DD/MM/YYYY HH:mm')}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Completion Confirmed */}
-            {order.confirmedAt && (
-              <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
-                  <span className={styles.checkIcon}></span>
-                </div>
-                <div className={styles.timelineContent}>
-                  <div className={styles.timelineTitle}>Completion Confirmed</div>
-                  <div className={styles.timelineDate}>{moment(order.confirmedAt).format('DD/MM/YYYY HH:mm')}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Reviewed */}
-            {order.reviewedAt && (
-              <div className={styles.timelineItem}>
-                <div className={`${styles.timelineIcon} ${styles.iconSuccess}`}>
-                  <span className={styles.checkIcon}></span>
-                </div>
-                <div className={styles.timelineContent}>
-                  <div className={styles.timelineTitle}>Customer Review</div>
-                  <div className={styles.timelineDate}>{moment(order.reviewedAt).format('DD/MM/YYYY HH:mm')}</div>
-                </div>
-              </div>
-            )}
+            ))}
           </div>
         </Card>
       </Container>

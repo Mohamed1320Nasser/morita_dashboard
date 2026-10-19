@@ -28,6 +28,8 @@ const OrdersPage = () => {
   const [filterCount, setFilterCount] = useState(0)
   const [refreshKey, setRefreshKey] = useState(0)
   const [statusFilter, setStatusFilter] = useState('')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [stats, setStats] = useState({
     totalOrders: 0,
     pendingOrders: 0,
@@ -47,6 +49,8 @@ const OrdersPage = () => {
         const queryParams = new URLSearchParams()
         if (search) queryParams.append('search', search)
         if (statusFilter) queryParams.append('status', statusFilter)
+        if (fromDate) queryParams.append('startDate', fromDate)
+        if (toDate) queryParams.append('endDate', toDate)
         queryParams.append('page', String(page))
         queryParams.append('limit', String(limit))
         const query = queryParams.toString()
@@ -78,7 +82,7 @@ const OrdersPage = () => {
 
     fetchData()
     fetchStats()
-  }, [refreshKey, page, limit, search, statusFilter])
+  }, [refreshKey, page, limit, search, statusFilter, fromDate, toDate])
 
   const handleView = (id) => router.push(`/orders/${id}`)
 
@@ -90,6 +94,8 @@ const OrdersPage = () => {
       const queryParams = new URLSearchParams()
       if (search) queryParams.append('search', search)
       if (statusFilter) queryParams.append('status', statusFilter)
+      if (fromDate) queryParams.append('startDate', fromDate)
+      if (toDate) queryParams.append('endDate', toDate)
       queryParams.append('limit', '1000') // Get up to 1000 records
       const query = queryParams.toString()
 
@@ -233,6 +239,15 @@ const OrdersPage = () => {
                   {STATUS_LABELS[value]}
                 </button>
               ))}
+              {/* Created between these dates (whole days, business timezone) */}
+              <label className={styles.filterBtn} style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                From
+                <input type="date" value={fromDate} max={toDate || undefined} onChange={(e) => { setFromDate(e.target.value); setPage(1) }} />
+              </label>
+              <label className={styles.filterBtn} style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                To
+                <input type="date" value={toDate} min={fromDate || undefined} onChange={(e) => { setToDate(e.target.value); setPage(1) }} />
+              </label>
             </div>
           </div>
 

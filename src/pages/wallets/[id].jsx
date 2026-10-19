@@ -198,10 +198,21 @@ const WalletDetailPage = () => {
   }
 
   if (pageLoading) return <Loading />
-  if (!wallet) return null
+  if (!wallet) {
+    return (
+      <Container>
+        <Card>
+          <p>Could not load this wallet. Refresh the page or go back to <a href="/wallets">Wallets</a>.</p>
+        </Card>
+      </Container>
+    )
+  }
 
   const userName = wallet.user?.discordDisplayName || wallet.user?.fullname || wallet.user?.username || 'Unknown User'
-  const availableBalance = (parseFloat(wallet.balance) - parseFloat(wallet.pendingBalance)).toFixed(2)
+  // Locked money is already taken out of Balance when an order starts, and
+  // Pending only shows that amount; subtracting it again made Available too
+  // low (even negative).
+  const availableBalance = (parseFloat(wallet.balance) || 0).toFixed(2)
 
   return (
     <div className={styles.viewPage}>

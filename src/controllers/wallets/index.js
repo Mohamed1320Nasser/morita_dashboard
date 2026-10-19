@@ -1,5 +1,28 @@
 import { getData, postData, putData, patchData } from '../../constant/axiosClon'
 
+const REQUEST_FAILED = 'Could not reach the server. Please try again.'
+
+// getData resolves to `false` on failure and postData/putData resolve to the
+// axios error itself on an HTTP error, instead of throwing. Without this the
+// page said "Balance adjusted successfully" when the backend refused it.
+const failure = (response) => {
+    if (response === false || response == null) {
+        return { success: false, error: { message: REQUEST_FAILED } }
+    }
+    if (response instanceof Error || response?.isAxiosError) {
+        const body = response.response?.data
+        const validation = body?.errors?.[0]?.constraints
+        const message =
+            (validation && Object.values(validation)[0]) ||
+            body?.msg ||
+            body?.message ||
+            response.message ||
+            REQUEST_FAILED
+        return { success: false, error: { message } }
+    }
+    return null
+}
+
 export default {
     getAllWallets: async (query) => {
         try {
@@ -41,6 +64,8 @@ export default {
     getWalletById: async (id) => {
         try {
             const response = await getData(`/admin/wallets/${id}`);
+            const failed = failure(response)
+            if (failed) return failed
             const payload = (response && response.data && response.data.data) ? response.data.data : (response?.data ?? response)
             return { success: true, data: { wallet: payload } }
         } catch (err) {
@@ -87,6 +112,8 @@ export default {
     addBalance: async (walletId, data) => {
         try {
             const response = await postData(`/admin/wallets/${walletId}/add-balance`, data);
+            const failed = failure(response)
+            if (failed) return failed
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -97,6 +124,8 @@ export default {
     adjustBalance: async (walletId, data) => {
         try {
             const response = await postData(`/admin/wallets/${walletId}/adjust`, data);
+            const failed = failure(response)
+            if (failed) return failed
             return { success: true, data: response }
         } catch (err) {
             console.log(err)
@@ -107,6 +136,8 @@ export default {
     toggleWalletStatus: async (walletId, isActive) => {
         try {
             const response = await putData(`/admin/wallets/${walletId}/status`, { isActive });
+            const failed = failure(response)
+            if (failed) return failed
             return { success: true, data: response }
         } catch (err) {
             console.log(err)

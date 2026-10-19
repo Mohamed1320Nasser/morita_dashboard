@@ -408,7 +408,7 @@ const CommunityTab = () => {
               <IoRepeat />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{repeatSummary.repeatRate || 0}%</div>
+              <div className={styles.metricValue}>{repeatSummary.repeatCustomerRate || 0}%</div>
               <div className={styles.metricLabel}>Repeat Customer Rate</div>
               <div className={styles.metricSubtext}>Customer loyalty metric</div>
             </div>
@@ -419,7 +419,7 @@ const CommunityTab = () => {
               <IoRepeat />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{repeatSummary.avgPurchasesPerCustomer?.toFixed(1) || 0}</div>
+              <div className={styles.metricValue}>{repeatSummary.averageOrdersPerCustomer?.toFixed(1) || 0}</div>
               <div className={styles.metricLabel}>Avg Purchases</div>
               <div className={styles.metricSubtext}>Per customer</div>
             </div>
@@ -555,7 +555,7 @@ const CommunityTab = () => {
               <IoSparkles />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{engagementSummary.avgEngagementScore?.toFixed(0) || 0}</div>
+              <div className={styles.metricValue}>{engagementSummary.avgEngagementScore?.toFixed(1) || 0}</div>
               <div className={styles.metricLabel}>Avg Engagement Score</div>
               <div className={styles.metricSubtext}>Per active user</div>
             </div>
@@ -658,9 +658,9 @@ const CommunityTab = () => {
                   </div>
                   <div className={styles.rankInfo}>
                     <div className={styles.rankName}>{rank.username}</div>
-                    <div className={styles.rankScore}>Score: {rank.engagementScore}</div>
+                    {rank.reason && <div className={styles.rankScore}>{rank.reason}</div>}
                     <div className={styles.rankDate}>
-                      Awarded: {moment(rank.awardedAt).format('MMM DD, YYYY')}
+                      Awarded: {moment(rank.earnedAt).format('MMM DD, YYYY')}
                     </div>
                   </div>
                 </div>

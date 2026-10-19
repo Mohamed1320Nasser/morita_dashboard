@@ -19,6 +19,8 @@ import styles from './OperationsTab.module.scss'
  * OperationsTab - Operations & Worker metrics
  * Contains: Order Issues, Completion Time, Service Requests, Service Conversion, Worker Performance, Worker Issues
  */
+const NOT_TRACKED = 'Not tracked yet: services have no expected time'
+
 const OperationsTab = () => {
   // Order Issues State
   const [orderIssues, setOrderIssues] = useState(null)
@@ -201,6 +203,9 @@ const OperationsTab = () => {
 
   // Extract data for Completion Time
   const completionSummary = completionTime?.summary || {}
+  // On-time / late need an expected time per order, which services do not
+  // have yet, so these cards would only ever show 0
+  const hasEstimates = (completionSummary.ordersWithEstimates || 0) > 0
   const completionDistribution = completionTime?.distribution || {}
   const completionByService = completionTime?.serviceBreakdown || []
   const fastestOrders = completionTime?.fastest || []
@@ -431,10 +436,12 @@ const OperationsTab = () => {
               <IoCheckmarkCircle />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{completionSummary.onTimeOrders || 0}</div>
+              <div className={styles.metricValue}>{hasEstimates ? (completionSummary.onTimeOrders || 0) : '—'}</div>
               <div className={styles.metricLabel}>On-Time Orders</div>
               <div className={styles.metricSubtext}>
-                {completionSummary.onTimeRate ? `${completionSummary.onTimeRate.toFixed(1)}%` : '0%'} on-time rate
+                {hasEstimates
+                  ? `${(completionSummary.onTimeRate || 0).toFixed(1)}% on-time rate`
+                  : NOT_TRACKED}
               </div>
             </div>
           </div>
@@ -444,9 +451,9 @@ const OperationsTab = () => {
               <IoTime />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{completionSummary.earlyOrders || 0}</div>
+              <div className={styles.metricValue}>{hasEstimates ? (completionSummary.earlyOrders || 0) : '—'}</div>
               <div className={styles.metricLabel}>Early Completions</div>
-              <div className={styles.metricSubtext}>Ahead of schedule</div>
+              <div className={styles.metricSubtext}>{hasEstimates ? 'Ahead of schedule' : NOT_TRACKED}</div>
             </div>
           </div>
 
@@ -455,9 +462,9 @@ const OperationsTab = () => {
               <IoAlertCircle />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{completionSummary.lateOrders || 0}</div>
+              <div className={styles.metricValue}>{hasEstimates ? (completionSummary.lateOrders || 0) : '—'}</div>
               <div className={styles.metricLabel}>Late Orders</div>
-              <div className={styles.metricSubtext}>Needs improvement</div>
+              <div className={styles.metricSubtext}>{hasEstimates ? 'Needs improvement' : NOT_TRACKED}</div>
             </div>
           </div>
         </div>
@@ -616,7 +623,7 @@ const OperationsTab = () => {
             </div>
             <div className={styles.metricContent}>
               <div className={styles.metricValue}>
-                {requestsSummary.avgRequestsPerDay ? requestsSummary.avgRequestsPerDay.toFixed(0) : 0}
+                {requestsSummary.avgRequestsPerDay != null ? requestsSummary.avgRequestsPerDay.toFixed(1) : '—'}
               </div>
               <div className={styles.metricLabel}>Avg Requests/Day</div>
               <div className={styles.metricSubtext}>Daily average</div>
@@ -727,7 +734,7 @@ const OperationsTab = () => {
                 {conversionSummary.conversionRate ? `${conversionSummary.conversionRate.toFixed(1)}%` : '0%'}
               </div>
               <div className={styles.metricLabel}>Conversion Rate</div>
-              <div className={styles.metricSubtext}>Requests → Orders</div>
+              <div className={styles.metricSubtext}>Of tickets with a service picked</div>
             </div>
           </div>
 
@@ -736,7 +743,7 @@ const OperationsTab = () => {
               <IoStatsChart />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{conversionSummary.totalRequests || 0}</div>
+              <div className={styles.metricValue}>{conversionSummary.totalServiceRequests || 0}</div>
               <div className={styles.metricLabel}>Total Requests</div>
               <div className={styles.metricSubtext}>This period</div>
             </div>
@@ -747,7 +754,7 @@ const OperationsTab = () => {
               <IoCheckmarkCircle />
             </div>
             <div className={styles.metricContent}>
-              <div className={styles.metricValue}>{conversionSummary.convertedOrders || 0}</div>
+              <div className={styles.metricValue}>{conversionSummary.convertedToOrders || 0}</div>
               <div className={styles.metricLabel}>Converted Orders</div>
               <div className={styles.metricSubtext}>Successfully converted</div>
             </div>
@@ -937,10 +944,13 @@ const OperationsTab = () => {
                   <tr>
                     <th>Worker</th>
                     <th>Total Orders</th>
+                    <th>Jobs Claimed</th>
+                    <th>Direct Assignments</th>
                     <th>Completed</th>
                     <th>Active</th>
                     <th>Avg Time</th>
                     <th>Success Rate</th>
+                    <th>Issue Rate</th>
                     <th>Customer Rating</th>
                     <th>Staff Feedback</th>
                     <th>Revenue</th>
@@ -954,12 +964,19 @@ const OperationsTab = () => {
                         {worker.workerName || worker.discordUsername || `Worker ${worker.workerId}`}
                       </td>
                       <td>{worker.totalOrders}</td>
+                      <td>{worker.jobsClaimed ?? 0}</td>
+                      <td>{worker.directAssignments ?? 0}</td>
                       <td className={styles.successText}>{worker.completedOrders}</td>
                       <td>{worker.activeOrders}</td>
                       <td>{worker.avgCompletionMinutes ? worker.avgCompletionMinutes.toFixed(1) : '0.0'}m</td>
                       <td>
                         <span className={`${worker.successRate >= 80 ? styles.successText : worker.successRate >= 50 ? styles.warningText : styles.errorText}`}>
                           {worker.successRate.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td>
+                        <span className={(worker.issueRate || 0) > 10 ? styles.errorText : ''}>
+                          {(worker.issueRate || 0).toFixed(1)}%
                         </span>
                       </td>
                       <td>
